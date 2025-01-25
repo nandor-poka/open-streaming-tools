@@ -1,24 +1,48 @@
 package com.openstreamingtools.MainServer.messages.stagelinqmessages;
 
-import com.fasterxml.jackson.core.JsonGenerator;
-import com.fasterxml.jackson.databind.JsonDeserializer;
-import com.fasterxml.jackson.databind.JsonSerializer;
-import com.fasterxml.jackson.databind.SerializerProvider;
-import com.openstreamingtools.MainServer.dj.ModelType;
-import com.openstreamingtools.MainServer.dj.StageLinQAction;
-import org.springframework.boot.jackson.JsonComponent;
+import com.openstreamingtools.MainServer.dj.stagelinq.ModelCode;
+import com.openstreamingtools.MainServer.dj.stagelinq.ModelType;
+import com.openstreamingtools.MainServer.dj.stagelinq.StageLinQAction;
+import com.openstreamingtools.MainServer.messages.GeneralMessage;
+import com.openstreamingtools.MainServer.utils.Utils;
 
-import java.io.IOException;
+import java.nio.ByteBuffer;
+import java.nio.charset.StandardCharsets;
+import java.util.Arrays;
+import java.util.UUID;
 
-public class StageLinqDiscoveryMessage {
+public class StageLinQDiscoveryMessage extends GeneralMessage {
     private StageLinQAction action;
     private ModelType modelType;
     private String softwareVersion;
+    private UUID deviceID;
+    private ModelCode modelCode;
 
-    public StageLinqDiscoveryMessage(StageLinQAction action, ModelType modelType, String softwareVersion) {
+
+    public StageLinQDiscoveryMessage(UUID deviceID, StageLinQAction action, ModelType modelType, ModelCode modelCode, String softwareVersion) {
+        super("StageLinq Discovery Message","StageLinQ device found.");
         this.action = action;
         this.modelType = modelType;
         this.softwareVersion = softwareVersion;
+        this.deviceID = deviceID;
+        this.modelCode = modelCode;
+    }
+
+
+    public static StageLinQDiscoveryMessage parse(byte[] rawMessage){
+        //raw message as string airDV$C2{scx4"DISCOVERER_HOWDY_JP21
+        //4.2.0=
+
+        UUID deviceID = Utils.convertBytesToUUID(Arrays.copyOfRange(rawMessage, 4, 21));
+        StageLinQAction action = StageLinQAction.getByValue(new String(Arrays.copyOfRange(rawMessage,37,71), StandardCharsets.UTF_16LE) );
+        ModelType type = ModelType.getByValue(new String(Arrays.copyOfRange(rawMessage,25,33), StandardCharsets.UTF_16LE) );
+        ModelCode name = ModelCode.getByValue(new String(Arrays.copyOfRange(rawMessage,75,83), StandardCharsets.UTF_16LE) );
+        // must replace last byte with 0 because in the original message the last byte is padding only and is not UTF-16 encoded
+        // for 5 UTF-16 chars we need an array of 10 bytes and the last needs to be fixed.
+        byte[] versionRaw = Arrays.copyOfRange(rawMessage,87,97);
+        versionRaw[9]=0;
+        String version = new String(versionRaw, StandardCharsets.UTF_16LE);
+        return new StageLinQDiscoveryMessage(deviceID,action, type, name, version);
     }
 
     @Override
@@ -26,7 +50,7 @@ public class StageLinqDiscoveryMessage {
         return "StageLinqDiscoveryMessage{" +
                 "action=" + action +
                 ", modelType=" + modelType +
-                ", softwareVersion='" + softwareVersion + '\'' +
+                ", softwareVersion='" + softwareVersion  +
                 '}';
     }
 
@@ -53,5 +77,13 @@ public class StageLinqDiscoveryMessage {
 
     public void setSoftwareVersion(String softwareVersion) {
         this.softwareVersion = softwareVersion;
+    }
+
+    public UUID getDeviceID() {
+        return deviceID;
+    }
+
+    public ModelCode getModelCode() {
+        return modelCode;
     }
 }

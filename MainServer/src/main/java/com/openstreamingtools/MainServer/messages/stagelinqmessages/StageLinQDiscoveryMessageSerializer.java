@@ -8,13 +8,17 @@ import org.springframework.boot.jackson.JsonComponent;
 import java.io.IOException;
 
 @JsonComponent
-public class StageLinQDiscoveryMessageSerializer extends JsonSerializer<StageLinqDiscoveryMessage> {
+public class StageLinQDiscoveryMessageSerializer extends JsonSerializer<StageLinQDiscoveryMessage> {
 
     @Override
-    public void serialize(StageLinqDiscoveryMessage value, JsonGenerator jgen, SerializerProvider serializers) throws IOException {
+    public void serialize(StageLinQDiscoveryMessage value, JsonGenerator jgen, SerializerProvider serializers) throws IOException {
         jgen.writeStartObject();
+        jgen.writeStringField("type", value.getType());
+        jgen.writeStringField("message", value.getMessage());
+        jgen.writeStringField("deviceID", value.getDeviceID().toString());
         jgen.writeStringField("action", value.getAction().toString());
         jgen.writeStringField("modelType", value.getModelType().toString());
+        jgen.writeStringField("modelName", value.getModelCode().toString());
         jgen.writeStringField("version", value.getSoftwareVersion());
         jgen.writeEndObject();
     }

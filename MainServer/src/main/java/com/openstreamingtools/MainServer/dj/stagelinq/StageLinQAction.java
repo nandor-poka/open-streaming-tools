@@ -1,10 +1,8 @@
-package com.openstreamingtools.MainServer.dj;
-
-import org.springframework.context.annotation.Bean;
+package com.openstreamingtools.MainServer.dj.stagelinq;
 
 
 public enum StageLinQAction {
-    HOWDY("DISCOVERER_HOWDY"),EXI("DISCOVERER_EXIT"), UNKNOWN("UNKNOWN");
+    HOWDY("DISCOVERER_HOWDY_"),EXIT("DISCOVERER_EXIT_"), UNKNOWN("UNKNOWN");
     public final String action;
 
     StageLinQAction(String action){
@@ -18,5 +16,9 @@ public enum StageLinQAction {
             }
         }
         return UNKNOWN;
+    }
+
+    public String getAction() {
+        return action;
     }
 }

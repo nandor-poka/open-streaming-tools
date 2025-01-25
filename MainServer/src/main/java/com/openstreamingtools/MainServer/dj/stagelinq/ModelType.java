@@ -1,8 +1,8 @@
-package com.openstreamingtools.MainServer.dj;
+package com.openstreamingtools.MainServer.dj.stagelinq;
 
 
 public enum ModelType {
-    SCX4("scx4"),JP21("JP21"), UNKOWN("UNKNOWN");
+    SCX4("scx4"), UNKOWN("UNKNOWN");
 
     private String modelType;
     ModelType(String modelType) {
