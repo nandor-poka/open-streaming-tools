@@ -7,4 +7,17 @@ public class GeneralMessage {
     public GeneralMessage(String message) {
         this.message = message;
     }
+
+    public GeneralMessage(String type, String message) {
+        this.type = type;
+        this.message = message;
+    }
+
+    public String getType() {
+        return type;
+    }
+
+    public String getMessage() {
+        return message;
+    }
 }

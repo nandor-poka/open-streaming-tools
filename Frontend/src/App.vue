@@ -1,6 +1,5 @@
 <script setup lang="ts">
 import Dashboard from './components/Dashboard.vue'
-import StageLinQLog from './components/StageLinQLog.vue'
 </script>
 
 <template>
@@ -9,8 +8,4 @@ import StageLinQLog from './components/StageLinQLog.vue'
       <Dashboard msg="Open Streaming Tools Dashboard" />
     </div>
   </header>
-
-  <main>
-    <StageLinQLog />
-  </main>
 </template>

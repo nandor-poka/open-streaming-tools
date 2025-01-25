@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { Client } from '@stomp/stompjs';
+import { Client } from '@stomp/stompjs'
 const message = 'Log goes here'
 </script>
 
@@ -8,16 +8,15 @@ const messages = new Array<string>()
 const client = new Client({
   brokerURL: 'ws://localhost:8080/stagelinq',
   onConnect: () => {
-    client.subscribe('/topic', message =>{
+    client.subscribe('/topic', (message) => {
       //console.log(`Received: ${message.body}`)
       messages.push(message.body)
-    }
-    );
-    client.publish({ destination: '/app/incoming', body: 'Hello Denon' });
+    })
+    client.publish({ destination: '/app/incoming', body: 'Hello Denon' })
   },
-});
-messages.push("dummy message")
-client.activate();
+})
+messages.push('dummy message')
+client.activate()
 console.log(client)
 </script>
 <template>

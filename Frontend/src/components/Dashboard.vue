@@ -8,6 +8,12 @@ defineProps<{
   <div class="greetings">
     <h1 class="green">{{ msg }}</h1>
   </div>
+  <div>
+    <router-link to="/stagelinqlog">StageLinQ log</router-link>
+  </div>
+  <div>
+    <RouterView />
+  </div>
 </template>
 
 <style scoped>
