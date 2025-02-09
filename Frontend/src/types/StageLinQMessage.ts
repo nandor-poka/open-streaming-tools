@@ -1,4 +1,4 @@
 export interface StageLinQMessage {
   type: string
-  message: string
+  message?: string
 }

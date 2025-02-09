@@ -3,6 +3,7 @@ package com.openstreamingtools.MainServer.tcp;
 import com.openstreamingtools.MainServer.messages.stagelinqmessages.DirectoryMessage;
 import com.openstreamingtools.MainServer.messages.stagelinqmessages.ServiceAnnouncement;
 import com.openstreamingtools.MainServer.services.stagelinq.DirectoryService;
+import com.openstreamingtools.MainServer.services.stagelinq.StateMapService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.integration.annotation.MessageEndpoint;
@@ -18,14 +19,15 @@ public class DirectoryMessageHandler {
     Logger logger = LoggerFactory.getLogger(DirectoryMessageHandler.class);
 
     @ServiceActivator(inputChannel = "toDirectory")
-    public byte[] handleTCPMessage(Message message) {
-        DirectoryMessage directoryMessage = DirectoryMessage.parseMessage((byte[]) message.getPayload());
+    public byte[] handleTCPMessage(Message<DirectoryMessage> message) {
+        DirectoryMessage directoryMessage = message.getPayload();
         //logger.debug("TCP Message Received:" + directoryMessage);
         if (DirectoryService.hasUnit(directoryMessage.getDeviceId())) {
             switch (directoryMessage.getMessageId()) {
                 case DirectoryService.SERVICE_REQUEST:
                     if (DirectoryService.hasUnit(directoryMessage.getDeviceId())) {
-                        return new ServiceAnnouncement().toBytes();
+                        return new ServiceAnnouncement(DirectoryService.SERVICE_REQUEST,
+                                new StateMapService()).toBytes();
 
                     }
                     return new byte[0];

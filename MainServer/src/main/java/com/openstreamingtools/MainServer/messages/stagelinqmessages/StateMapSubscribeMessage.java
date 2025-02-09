@@ -10,7 +10,7 @@ import java.util.Vector;
 public class StateMapSubscribeMessage {
 
     private State state;
-    private int paddingMarkger = 0;
+    private int paddingMarker = 0;
 
     public StateMapSubscribeMessage(State state) {
         this.state = state;
@@ -30,13 +30,18 @@ public class StateMapSubscribeMessage {
             buffer.add(b);
         }
 
-        for(byte b: Utils.convertIntegerToByteArray(paddingMarkger)){
+        for(byte b: Utils.convertIntegerToByteArray(paddingMarker)){
             buffer.add(b);
         }
 
-        byte[] bytes = new byte[buffer.size()];
-        for (int i =0;i< bytes.length;i++){
-            bytes[i] = buffer.get(i);
+
+        byte[] bytes = new byte[buffer.size()+4];
+        byte[] msgLengthAsBytes = Utils.convertIntegerToByteArray(buffer.size());
+        for (int i =0;i< 4;i++){
+            bytes[i] = msgLengthAsBytes[i];
+        }
+        for (int i =4;i< bytes.length;i++){
+            bytes[i] = buffer.get(i-4);
         }
         return bytes;
     }

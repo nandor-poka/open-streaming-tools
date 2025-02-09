@@ -2,22 +2,27 @@ package com.openstreamingtools.MainServer.tcp;
 
 import com.openstreamingtools.MainServer.utils.Utils;
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.integration.annotation.IntegrationComponentScan;
 import org.springframework.integration.annotation.MessagingGateway;
 import org.springframework.integration.channel.DirectChannel;
+import org.springframework.integration.config.EnableIntegration;
 import org.springframework.integration.ip.IpHeaders;
 import org.springframework.integration.ip.tcp.TcpInboundGateway;
 import org.springframework.integration.ip.tcp.TcpOutboundGateway;
 import org.springframework.integration.ip.tcp.connection.*;
-import org.springframework.integration.ip.tcp.serializer.ByteArrayLengthHeaderSerializer;
 import org.springframework.messaging.MessageChannel;
 import org.springframework.messaging.handler.annotation.Header;
 
-public class StatemapServiceTCPSocketServerConfiguration {
+@Configuration
+@EnableIntegration
+@IntegrationComponentScan
+public class StateMapServiceTCPSocketServerConfiguration {
 
 
     private final int socketPort = Utils.STATEMAP_SERVICE_PORT;
-    public static final ByteArrayLengthHeaderSerializer SERIALIZER = new ByteArrayLengthHeaderSerializer();
-    public static final String NEW_STATEMAP_CONNECTION_CHANNEL_NAME = "new StateMap connection";
+    public static final StateMapMessageSerializer SERIALIZER = new StateMapMessageSerializer();
+
     //serializer is headerbytearray
 
     /**
@@ -39,53 +44,50 @@ public class StatemapServiceTCPSocketServerConfiguration {
         return new DirectChannel();
     }
 
-    @Bean(NEW_STATEMAP_CONNECTION_CHANNEL_NAME)
-    public MessageChannel toStateMapNewConnection(){
-        return new DirectChannel();
-    }
+
     @Bean
     public AbstractServerConnectionFactory StateMapServiceServerCF() {
-        TcpNetServerConnectionFactory serverCf = new TcpNetServerConnectionFactory(socketPort);
-        serverCf.setSerializer(SERIALIZER);
-        serverCf.setDeserializer(SERIALIZER);
-        serverCf.setSoTcpNoDelay(true);
-        serverCf.setSoKeepAlive(true);
+        TcpNetServerConnectionFactory stateMapServerCf = new TcpNetServerConnectionFactory(socketPort);
+        stateMapServerCf.setSerializer(SERIALIZER);
+        stateMapServerCf.setDeserializer(SERIALIZER);
+        stateMapServerCf.setSoTcpNoDelay(true);
+        stateMapServerCf.setSoKeepAlive(true);
         // serverCf.setSingleUse(true);
         // final int soTimeout = 5000;
         // serverCf.setSoTimeout(soTimeout);
-        return serverCf;
+        return stateMapServerCf;
     }
 
     @Bean
     public AbstractClientConnectionFactory StateMapServiceClientCF() {
 
-        TcpNetClientConnectionFactory clientCf = new TcpNetClientConnectionFactory("localhost", socketPort);
-        clientCf.setSerializer(SERIALIZER);
-        clientCf.setDeserializer(SERIALIZER);
-        clientCf.setSoTcpNoDelay(true);
-        clientCf.setSoKeepAlive(true);
+        TcpNetClientConnectionFactory sstateMapClientCf = new TcpNetClientConnectionFactory("localhost", socketPort);
+        sstateMapClientCf.setSerializer(SERIALIZER);
+        sstateMapClientCf.setDeserializer(SERIALIZER);
+        sstateMapClientCf.setSoTcpNoDelay(true);
+        sstateMapClientCf.setSoKeepAlive(true);
         // clientCf.setSingleUse(true);
         // final int soTimeout = 5000;
         // clientCf.setSoTimeout(soTimeout);
-        return clientCf;
+        return sstateMapClientCf;
     }
 
 
     @Bean
-    public TcpInboundGateway tcpInGate() {
-        TcpInboundGateway inGate = new TcpInboundGateway();
-        inGate.setConnectionFactory(StateMapServiceServerCF());
-        inGate.setRequestChannel(toStateMap());
-        inGate.setReplyChannel(fromStateMap());
-        return inGate;
+    public TcpInboundGateway StateMapTcpInGate() {
+        TcpInboundGateway StateMapServiceTCPInGate = new TcpInboundGateway();
+        StateMapServiceTCPInGate.setConnectionFactory(StateMapServiceServerCF());
+        StateMapServiceTCPInGate.setRequestChannel(toStateMap());
+        StateMapServiceTCPInGate.setReplyChannel(fromStateMap());
+        return StateMapServiceTCPInGate;
     }
 
     @Bean
-    public TcpOutboundGateway tcpOutGate() {
-        TcpOutboundGateway outGate = new TcpOutboundGateway();
-        outGate.setConnectionFactory(StateMapServiceClientCF());
-        outGate.setReplyChannel(fromStateMap());
-        return outGate;
+    public TcpOutboundGateway StateMapTcpOutGate() {
+        TcpOutboundGateway StateMapServiceTCPOutGate = new TcpOutboundGateway();
+        StateMapServiceTCPOutGate.setConnectionFactory(StateMapServiceClientCF());
+        StateMapServiceTCPOutGate.setReplyChannel(fromStateMap());
+        return StateMapServiceTCPOutGate;
     }
 
 

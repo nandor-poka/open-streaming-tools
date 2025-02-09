@@ -2,7 +2,6 @@ package com.openstreamingtools.MainServer.utils;
 
 import java.nio.ByteBuffer;
 import java.nio.charset.Charset;
-import java.nio.charset.StandardCharsets;
 import java.util.UUID;
 
 public class Utils {
@@ -23,6 +22,7 @@ public class Utils {
         bytes[1] = (byte)((i >> 16)& 0xFF);
         bytes[2] = (byte)((i >> 8)& 0xFF);
         bytes[3] = (byte)(i & 0xFF);
+        ByteBuffer bb = ByteBuffer.wrap(bytes);
         return bytes;
     }
     public static byte[] convertShortToByteArray(int i){
@@ -53,7 +53,7 @@ public class Utils {
 
         // add length first
         for (int i=0;i<intAsBytes.length;i++){
-            networkBytes[i] = intAsBytes    [i];
+            networkBytes[i] = intAsBytes[i];
         }
 
         for (int i = 0; i < stringAsBytes.length; i++){
@@ -61,5 +61,13 @@ public class Utils {
         }
         return networkBytes;
      }
+
+     public static int convertBytesToInt(byte[] bytes) {
+         return ByteBuffer.wrap(bytes).getInt();
+     }
+
+    public static int convertBytesToShort(byte[] bytes) {
+        return ByteBuffer.wrap(bytes).getShort();
+    }
 
 }

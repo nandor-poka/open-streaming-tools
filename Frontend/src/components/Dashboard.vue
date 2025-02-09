@@ -1,18 +1,12 @@
+<!-- eslint-disable vue/multi-word-component-names -->
 <script setup lang="ts">
-defineProps<{
-  msg: string
-}>()
+import Navbar from './Navbar.vue'
 </script>
 
 <template>
+  <Navbar />
   <div class="greetings">
-    <h1 class="green">{{ msg }}</h1>
-  </div>
-  <div>
-    <router-link to="/stagelinqlog">StageLinQ log</router-link>
-  </div>
-  <div>
-    <RouterView />
+    <h1 class="green">Dashboard</h1>
   </div>
 </template>
 
@@ -38,5 +32,20 @@ h3 {
   .greetings h3 {
     text-align: left;
   }
+}
+
+.box {
+  width: 300px;
+  height: 150px;
+  border: 1px solid black;
+  padding: 10px;
+  margin: 10px;
+}
+.right-aligned {
+  margin-left: auto;
+  margin-right: 0;
+}
+.parent {
+  display: flex;
 }
 </style>
