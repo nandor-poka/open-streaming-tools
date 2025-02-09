@@ -1,32 +1,47 @@
+<!-- eslint-disable vue/multi-word-component-names -->
 <script setup lang="ts">
+import type { DeckState } from '@/types/DeckState'
 import { Client } from '@stomp/stompjs'
-const message = 'Log goes here'
-</script>
+import { stageLinQStore } from '@/stores/stagelinqStore'
+import Navbar from './Navbar.vue'
 
-<script lang="ts">
-const messages = new Array<string>()
+const stagelingqstore = stageLinQStore()
+const message = 'Log goes here'
 const client = new Client({
   brokerURL: 'ws://localhost:8080/stagelinq',
   onConnect: () => {
     client.subscribe('/topic', (message) => {
-      //console.log(`Received: ${message.body}`)
-      messages.push(message.body)
+      const msg = JSON.parse(message.body)
+      stagelingqstore.stagelinQmessages.push(message.body)
+      switch (msg.type) {
+        case 'DECK_STATE':
+          const deckState: DeckState = {
+            deckNum: msg.deckNumber,
+            trackTitle: msg.trackTitle,
+            artistName: msg.artistName,
+            tempo: msg.tempo,
+            faderPos: msg.faderPos,
+          }
+          stagelingqstore.updateState(deckState)
+          break
+      }
     })
     client.publish({ destination: '/app/incoming', body: 'Hello Denon' })
   },
 })
-messages.push('dummy message')
 client.activate()
-console.log(client)
 </script>
+
 <template>
+  <Navbar />
   <div>
     <h4 class="blue">{{ message }}</h4>
   </div>
+
   <div>
     <ul>
-      <li v-for="message in messages" :key="message.id">
-        {{ message }}
+      <li v-for="mesg in stagelingqstore.stagelinQmessages" :key="mesg">
+        {{ mesg }}
       </li>
     </ul>
   </div>

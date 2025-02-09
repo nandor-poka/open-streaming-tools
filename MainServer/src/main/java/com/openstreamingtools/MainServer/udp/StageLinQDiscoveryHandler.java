@@ -9,6 +9,7 @@ import com.openstreamingtools.MainServer.events.NewStageLinQDeviceEvent;
 import com.openstreamingtools.MainServer.messages.stagelinqmessages.DirectoryMessage;
 import com.openstreamingtools.MainServer.messages.stagelinqmessages.ServerDiscoveryMessage;
 import com.openstreamingtools.MainServer.messages.stagelinqmessages.StageLinQDiscoveryMessage;
+import com.openstreamingtools.MainServer.messaging.MessageSender;
 import com.openstreamingtools.MainServer.services.stagelinq.DirectoryService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -33,10 +34,6 @@ import java.net.*;
 @Controller
 @Component
 public class StageLinQDiscoveryHandler {
-    @Autowired
-    private ApplicationEventPublisher publisher;
-
-
     Logger logger = LoggerFactory.getLogger(StageLinQDiscoveryHandler.class);
 
     public static final String StageLinQChannelID = "StangelinQ Broadcast Discovery";
@@ -86,6 +83,10 @@ public class StageLinQDiscoveryHandler {
         unit.setDeviceID(disMessage.getDeviceID());
         unit.setVersion(disMessage.getSoftwareVersion());
         unit.setIpString((String) message.getHeaders().get(IpHeaders.IP_ADDRESS));
+        if(!DirectoryService.hasUnit(unit.getDeviceID())){
+            DirectoryService.addUnit(unit);
+        }
+
         ServerDiscoveryMessage broadcastMessage = new ServerDiscoveryMessage();
         DatagramPacket packet = new DatagramPacket(broadcastMessage.getMessageAsBytes(), broadcastMessage.getMessageAsBytes().length);
         packet.setSocketAddress(new InetSocketAddress("192.168.178.255", 51337));
@@ -97,12 +98,8 @@ public class StageLinQDiscoveryHandler {
         } catch (IOException e) {
             logger.error(e.getMessage());
         }
-        this.template.convertAndSend("/topic", objectMapper.writeValueAsString(disMessage));
-        if (!DirectoryService.hasUnit(unit.getDeviceID())){
-            DirectoryService.addUnit(unit);
-            NewStageLinQDeviceEvent newUnitEvent = new NewStageLinQDeviceEvent(unit.getIpString(), unit);
-            publisher.publishEvent(newUnitEvent);
-        }
+        MessageSender.sendMessage(objectMapper.writeValueAsString(disMessage));
+
 
     }
 

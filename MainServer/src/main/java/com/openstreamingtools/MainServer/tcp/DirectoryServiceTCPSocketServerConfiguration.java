@@ -32,7 +32,7 @@ public class DirectoryServiceTCPSocketServerConfiguration {
      * Reply messages are routed to the connection only if the reply contains the ip_connectionId header
      * that was inserted into the original message by the connection factory.
      */
-    @MessagingGateway(defaultRequestChannel = "toDirectory")
+   @MessagingGateway(defaultRequestChannel = "toDirectory")
     public interface Gateway {
         void send(String message, @Header(IpHeaders.CONNECTION_ID) String connectionId);
     }
@@ -49,46 +49,46 @@ public class DirectoryServiceTCPSocketServerConfiguration {
 
     @Bean
     public AbstractServerConnectionFactory DirectoryServiceServerCF() {
-        TcpNetServerConnectionFactory serverCf = new TcpNetServerConnectionFactory(socketPort);
-        serverCf.setSerializer(SERIALIZER);
-        serverCf.setDeserializer(SERIALIZER);
-        serverCf.setSoTcpNoDelay(true);
-        serverCf.setSoKeepAlive(true);
+        TcpNetServerConnectionFactory directoryServerCf = new TcpNetServerConnectionFactory(socketPort);
+        directoryServerCf.setSerializer(SERIALIZER);
+        directoryServerCf.setDeserializer(SERIALIZER);
+        directoryServerCf.setSoTcpNoDelay(true);
+        directoryServerCf.setSoKeepAlive(true);
         // serverCf.setSingleUse(true);
         // final int soTimeout = 5000;
         // serverCf.setSoTimeout(soTimeout);
-        return serverCf;
+        return directoryServerCf;
     }
 
     @Bean
     public AbstractClientConnectionFactory DirectoryServiceClientCF() {
 
-        TcpNetClientConnectionFactory clientCf = new TcpNetClientConnectionFactory("localhost", socketPort);
-        clientCf.setSerializer(SERIALIZER);
-        clientCf.setDeserializer(SERIALIZER);
-        clientCf.setSoTcpNoDelay(true);
-        clientCf.setSoKeepAlive(true);
+        TcpNetClientConnectionFactory directoryClientCf = new TcpNetClientConnectionFactory("localhost", socketPort);
+        directoryClientCf.setSerializer(SERIALIZER);
+        directoryClientCf.setDeserializer(SERIALIZER);
+        directoryClientCf.setSoTcpNoDelay(true);
+        directoryClientCf.setSoKeepAlive(true);
         // clientCf.setSingleUse(true);
         // final int soTimeout = 5000;
         // clientCf.setSoTimeout(soTimeout);
-        return clientCf;
+        return directoryClientCf;
     }
 
     @Bean
-    public TcpInboundGateway tcpInGate() {
-        TcpInboundGateway inGate = new TcpInboundGateway();
-        inGate.setConnectionFactory(DirectoryServiceServerCF());
-        inGate.setRequestChannel(toDirectory());
-        inGate.setReplyChannel(fromDirectory());
-        return inGate;
+    public TcpInboundGateway DirectoryTcpInGate() {
+        TcpInboundGateway DriectoryServiceTCPInGate = new TcpInboundGateway();
+        DriectoryServiceTCPInGate.setConnectionFactory(DirectoryServiceServerCF());
+        DriectoryServiceTCPInGate.setRequestChannel(toDirectory());
+        DriectoryServiceTCPInGate.setReplyChannel(fromDirectory());
+        return DriectoryServiceTCPInGate;
     }
 
     @Bean
-    public TcpOutboundGateway tcpOutGate() {
-        TcpOutboundGateway outGate = new TcpOutboundGateway();
-        outGate.setConnectionFactory(DirectoryServiceClientCF());
-        outGate.setReplyChannel(fromDirectory());
-        return outGate;
+    public TcpOutboundGateway DirectoryTcpOutGate() {
+        TcpOutboundGateway DirectoryServiceTCPOutgate = new TcpOutboundGateway();
+        DirectoryServiceTCPOutgate.setConnectionFactory(DirectoryServiceClientCF());
+        DirectoryServiceTCPOutgate.setReplyChannel(fromDirectory());
+        return DirectoryServiceTCPOutgate;
     }
 
 

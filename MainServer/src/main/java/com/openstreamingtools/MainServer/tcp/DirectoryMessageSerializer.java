@@ -9,6 +9,7 @@ import org.springframework.core.serializer.Deserializer;
 import org.springframework.core.serializer.Serializer;
 import org.springframework.lang.NonNull;
 
+import java.io.BufferedInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -16,39 +17,42 @@ import java.util.Arrays;
 
 import static com.openstreamingtools.MainServer.utils.Utils.putIntegerToByteArray;
 
-public class DirectoryMessageSerializer implements Serializer<byte[]>, Deserializer<byte[]>  {
+public class DirectoryMessageSerializer implements Serializer<byte[]>, Deserializer<DirectoryMessage>  {
 
 
     private static final Logger logger = LoggerFactory.getLogger(DirectoryMessageSerializer.class);
 
     @NonNull
     @Override
-    public byte[] deserialize(InputStream inputStream) throws IOException {
-        byte[] messageAsBytes = new byte[44];
-        if (inputStream.available() > 0) {
-            int messageId = DirectoryMessage.parseMessageId(inputStream.readNBytes(4));
+    public DirectoryMessage deserialize(InputStream inputStream) throws IOException {
+        byte[] messageAsBytes;
+        BufferedInputStream bis = new BufferedInputStream(inputStream);
+        //if (bis.available() > 0) {
+            int messageId = DirectoryMessage.parseMessageId(bis.readNBytes(4));
              switch (messageId){
                  case DirectoryService.SERVICE_ANNOUNCEMENT:
-                     messageAsBytes = new byte[44];
+                     messageAsBytes = new byte[26];
                      putIntegerToByteArray( DirectoryService.SERVICE_ANNOUNCEMENT, messageAsBytes);
-                     inputStream.readNBytes(messageAsBytes, 4, 22);
-                     break;
+                     bis.readNBytes(messageAsBytes, 4, 22);
+                     return DirectoryMessage.parseMessage(messageAsBytes);
                  case DirectoryService.SERVICE_REQUEST:
                      messageAsBytes = new byte[20];
                      putIntegerToByteArray( DirectoryService.SERVICE_REQUEST, messageAsBytes);
-                     inputStream.readNBytes(messageAsBytes, 4, 16);
-                     break;
+                     bis.readNBytes(messageAsBytes, 4, 16);
+                     return DirectoryMessage.parseMessage(messageAsBytes);
                  case DirectoryService.TIMESTAMP:
                      messageAsBytes = new byte[44];
                      putIntegerToByteArray( DirectoryService.TIMESTAMP, messageAsBytes);
-                     inputStream.readNBytes(messageAsBytes, 4, 40);
-                     break;
+                     bis.readNBytes(messageAsBytes, 4, 40);
+                     return DirectoryMessage.parseMessage(messageAsBytes);
+                 default:
+                     return new DirectoryMessage(-1);
              }
 
-        }
+       // }
 
-        //logger.debug("Deserialized message {}", Arrays.toString(messageAsBytes));
-        return messageAsBytes;
+        //logger.debug("No bytes were available.");
+        //return new DirectoryMessage(-1);
     }
 
     @Override

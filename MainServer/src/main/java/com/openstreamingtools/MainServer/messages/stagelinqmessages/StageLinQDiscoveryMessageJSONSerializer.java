@@ -8,18 +8,18 @@ import org.springframework.boot.jackson.JsonComponent;
 import java.io.IOException;
 
 @JsonComponent
-public class StageLinQDiscoveryMessageSerializer extends JsonSerializer<StageLinQDiscoveryMessage> {
+public class StageLinQDiscoveryMessageJSONSerializer extends JsonSerializer<StageLinQDiscoveryMessage> {
 
     @Override
-    public void serialize(StageLinQDiscoveryMessage value, JsonGenerator jgen, SerializerProvider serializers) throws IOException {
+    public void serialize(StageLinQDiscoveryMessage stageLinQDiscoveryMessage, JsonGenerator jgen, SerializerProvider serializers) throws IOException {
         jgen.writeStartObject();
-        jgen.writeStringField("type", value.getType());
-        jgen.writeStringField("message", value.getMessage());
-        jgen.writeStringField("deviceID", value.getDeviceID().toString());
-        jgen.writeStringField("action", value.getAction().toString());
-        jgen.writeStringField("modelType", value.getModelType().toString());
-        jgen.writeStringField("modelName", value.getModelCode().toString());
-        jgen.writeStringField("version", value.getSoftwareVersion());
+        jgen.writeStringField("type", stageLinQDiscoveryMessage.getType().getName());
+        jgen.writeStringField("message", stageLinQDiscoveryMessage.getMessage());
+        jgen.writeStringField("deviceID", stageLinQDiscoveryMessage.getDeviceID().toString());
+        jgen.writeStringField("action", stageLinQDiscoveryMessage.getAction().toString());
+        jgen.writeStringField("modelType", stageLinQDiscoveryMessage.getModelType().toString());
+        jgen.writeStringField("modelName", stageLinQDiscoveryMessage.getModelCode().toString());
+        jgen.writeStringField("version", stageLinQDiscoveryMessage.getSoftwareVersion());
         jgen.writeEndObject();
     }
 

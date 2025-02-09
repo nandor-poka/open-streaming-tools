@@ -1,14 +1,17 @@
 package com.openstreamingtools.MainServer.dj.stagelinq;
 
 import com.openstreamingtools.MainServer.dj.GenericUnit;
+import com.openstreamingtools.MainServer.messages.stagelinqmessages.Service;
+import com.openstreamingtools.MainServer.messages.stagelinqmessages.ServiceType;
 
 import java.util.UUID;
+import java.util.Vector;
 
 public class DenonUnit extends GenericUnit {
 
     private UUID deviceID;
     private String ipString;
-
+    private final Vector<Service> registeredServices = new Vector<Service>();
     public DenonUnit(UnitType type, ModelType modelType, String longName, int deckCount ) {
         super();
         this.type = type;
@@ -46,4 +49,20 @@ public class DenonUnit extends GenericUnit {
                 ", deckCount=" + deckCount +
                 '}';
     }
+    public void addService(Service service){
+        registeredServices.add(service);
+    }
+
+
+    public boolean hasService(ServiceType serviceType){
+        for (Service service : registeredServices){
+            if (service.getType() == serviceType){
+                return true;
+            }
+
+        }
+        return false;
+    }
+
+
 }

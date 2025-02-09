@@ -3,15 +3,15 @@ package com.openstreamingtools.MainServer.messages.stagelinqmessages;
 import com.openstreamingtools.MainServer.dj.stagelinq.ModelCode;
 import com.openstreamingtools.MainServer.dj.stagelinq.ModelType;
 import com.openstreamingtools.MainServer.dj.stagelinq.StageLinQAction;
-import com.openstreamingtools.MainServer.messages.GeneralMessage;
+import com.openstreamingtools.MainServer.messages.MessageToFrontend;
+import com.openstreamingtools.MainServer.messages.MessageType;
 import com.openstreamingtools.MainServer.utils.Utils;
 
-import java.nio.ByteBuffer;
 import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
 import java.util.UUID;
 
-public class StageLinQDiscoveryMessage extends GeneralMessage {
+public class StageLinQDiscoveryMessage extends MessageToFrontend {
     private StageLinQAction action;
     private ModelType modelType;
     private String softwareVersion;
@@ -20,7 +20,7 @@ public class StageLinQDiscoveryMessage extends GeneralMessage {
 
 
     public StageLinQDiscoveryMessage(UUID deviceID, StageLinQAction action, ModelType modelType, ModelCode modelCode, String softwareVersion) {
-        super("StageLinq Discovery Message","StageLinQ device found.");
+        super(MessageType.STAGELINQ_DISCOVERY_MESSAGE,"StageLinQ device found.");
         this.action = action;
         this.modelType = modelType;
         this.softwareVersion = softwareVersion;

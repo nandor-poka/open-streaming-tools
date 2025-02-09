@@ -9,7 +9,7 @@ public class GenericUnit {
     public String LongName;
     public String version;
     public int deckCount;
-
+// TODO maybe store published services here
     public String getVersion() {
         return version;
     }
