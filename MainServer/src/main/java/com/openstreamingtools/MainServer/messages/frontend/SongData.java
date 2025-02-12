@@ -1,27 +1,23 @@
 package com.openstreamingtools.MainServer.messages.frontend;
 
-import com.fasterxml.jackson.core.JsonGenerator;
 import com.openstreamingtools.MainServer.messages.MessageToFrontend;
 import com.openstreamingtools.MainServer.messages.MessageType;
 
-public class DeckState extends MessageToFrontend {
+public class SongData extends MessageToFrontend {
 
     private int deckNumber;
     private String trackTitle;
     private String artistName;
-    private int tempo;
-    private int faderPos;
 
-    public DeckState( int deckNumber, String trackTitle, String artistName, int tempo, int faderPos) {
+
+    public SongData(int deckNumber, String trackTitle, String artistName) {
         super();
-        this.type =MessageType.DECK_STATE;
+        this.type =MessageType.SONG_DATA;
         this.deckNumber = deckNumber;
         this.trackTitle = trackTitle;
         this.artistName = artistName;
-        this.tempo = tempo;
-        this.faderPos = faderPos;
-    }
 
+    }
     public int getDeckNumber() {
         return deckNumber;
     }
@@ -34,11 +30,4 @@ public class DeckState extends MessageToFrontend {
         return artistName;
     }
 
-    public int getTempo() {
-        return tempo;
-    }
-
-    public int getFaderPos() {
-        return faderPos;
-    }
 }

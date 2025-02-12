@@ -10,6 +10,9 @@ import org.springframework.web.socket.config.annotation.EnableWebSocketMessageBr
 import org.springframework.web.socket.config.annotation.StompEndpointRegistry;
 import org.springframework.web.socket.config.annotation.WebSocketMessageBrokerConfigurer;
 
+import static com.openstreamingtools.MainServer.config.Configuration.WEBSOCKET_CONNECTION_PATH;
+import static com.openstreamingtools.MainServer.config.Configuration.WEBSOCKET_DATA_PATH;
+
 @Configuration
 @EnableWebSocketMessageBroker
 public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
@@ -22,14 +25,14 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
     }
     @Override
     public void configureMessageBroker(MessageBrokerRegistry config) {
-        config.enableSimpleBroker("/topic").setHeartbeatValue(new long[] {1000, 2000})
+        config.enableSimpleBroker(WEBSOCKET_DATA_PATH).setHeartbeatValue(new long[] {10000, 20000})
                 .setTaskScheduler(this.messageBrokerTaskScheduler);;
         config.setApplicationDestinationPrefixes("/app");
     }
 
     @Override
     public void registerStompEndpoints(StompEndpointRegistry registry) {
-        registry.addEndpoint("/stagelinq").setAllowedOrigins("*");
-        registry.addEndpoint("/stagelinq").setAllowedOrigins("*").withSockJS();
+        registry.addEndpoint(WEBSOCKET_CONNECTION_PATH).setAllowedOrigins("*");
+        registry.addEndpoint(WEBSOCKET_CONNECTION_PATH).setAllowedOrigins("*").withSockJS();
     }
 }

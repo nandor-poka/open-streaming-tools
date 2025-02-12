@@ -26,7 +26,7 @@ public class StateMapSubscribeMessage {
             buffer.add(b);
         }
 
-        for (byte b : Utils.getNetworkBytesWithLenghForString(state.getStateValue(),StandardCharsets.UTF_16BE)){
+        for (byte b : Utils.getNetworkBytesWithLenghForString(state.getStateName(),StandardCharsets.UTF_16BE)){
             buffer.add(b);
         }
 
@@ -49,7 +49,7 @@ public class StateMapSubscribeMessage {
     @Override
     public String toString() {
         return "StateMapSubscribeMessage{" +
-                "state=" + state.getStateValue() +
+                "state=" + state.getStateName() +
                 '}';
     }
 }

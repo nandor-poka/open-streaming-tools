@@ -1,7 +1,7 @@
 <!-- eslint-disable vue/multi-word-component-names -->
 <script setup lang="ts">
-import { stageLinQStore } from '@/stores/stagelinqStore'
-const stagelingqstore = stageLinQStore()
+import { UnitStore } from '@/stores/UnitStore'
+const unitStore = UnitStore()
 </script>
 
 <template>
@@ -10,13 +10,11 @@ const stagelingqstore = stageLinQStore()
       v-bind:style="{
         backgroundImage:
           'linear-gradient(to right, rgba(0, 114, 4, 1) ' +
-          (stagelingqstore.deck1State.faderPos > 50
-            ? stagelingqstore.deck1State.faderPos
-            : 100 - stagelingqstore.deck1State.faderPos) +
+          unitStore.deck1VolumeData.volume +
           '% , rgba(255, 255, 255, 0) ' +
-          (stagelingqstore.deck1State.faderPos > 50
-            ? 100 - stagelingqstore.deck1State.faderPos
-            : stagelingqstore.deck1State.faderPos) +
+          (unitStore.deck1VolumeData.volume > 50
+            ? 100 - unitStore.deck1VolumeData.volume
+            : unitStore.deck1VolumeData.volume) +
           '%)',
       }"
       class="box"
@@ -24,26 +22,24 @@ const stagelingqstore = stageLinQStore()
       <p class="deckNumber">Deck 1</p>
       <p
         v-bind:style="{
-          fontSize: stagelingqstore.deck1State.trackTitle.length > 25 ? 'x-large' : 'xx-large',
+          fontSize: unitStore.deck1SongData.trackTitle.length > 25 ? 'x-large' : 'xx-large',
         }"
         class="songTitle textWrap"
       >
-        {{ stagelingqstore.deck1State.trackTitle }}
+        {{ unitStore.deck1SongData.trackTitle }}
       </p>
-      <p class="artist">{{ stagelingqstore.deck1State.artistName }}</p>
+      <p class="artist">{{ unitStore.deck1SongData.artistName }}</p>
     </div>
 
     <div
       v-bind:style="{
         backgroundImage:
           'linear-gradient(to left, rgba(0, 114, 4, 1) ' +
-          (stagelingqstore.deck2State.faderPos > 50
-            ? stagelingqstore.deck2State.faderPos
-            : 100 - stagelingqstore.deck2State.faderPos) +
+          unitStore.deck2VolumeData.volume +
           '% , rgba(255, 255, 255, 0) ' +
-          (stagelingqstore.deck2State.faderPos > 50
-            ? 100 - stagelingqstore.deck2State.faderPos
-            : stagelingqstore.deck2State.faderPos) +
+          (unitStore.deck2VolumeData.volume > 50
+            ? 100 - unitStore.deck2VolumeData.volume
+            : unitStore.deck2VolumeData.volume) +
           '%)',
       }"
       class="box right-aligned"
@@ -51,13 +47,13 @@ const stagelingqstore = stageLinQStore()
       <p class="deckNumber">Deck 2</p>
       <p
         v-bind:style="{
-          fontSize: stagelingqstore.deck2State.trackTitle.length > 25 ? 'x-large' : 'xx-large',
+          fontSize: unitStore.deck2SongData.trackTitle.length > 25 ? 'x-large' : 'xx-large',
         }"
         class="songTitle textWrap"
       >
-        {{ stagelingqstore.deck2State.trackTitle }}
+        {{ unitStore.deck2SongData.trackTitle }}
       </p>
-      <p class="artist">{{ stagelingqstore.deck2State.artistName }}</p>
+      <p class="artist">{{ unitStore.deck2SongData.artistName }}</p>
     </div>
   </div>
 
@@ -66,13 +62,11 @@ const stagelingqstore = stageLinQStore()
       v-bind:style="{
         backgroundImage:
           'linear-gradient(to right, rgba(0, 114, 4, 1) ' +
-          (stagelingqstore.deck3State.faderPos > 50
-            ? stagelingqstore.deck3State.faderPos
-            : 100 - stagelingqstore.deck3State.faderPos) +
+          unitStore.deck3VolumeData.volume +
           '% , rgba(255, 255, 255, 0) ' +
-          (stagelingqstore.deck3State.faderPos > 50
-            ? 100 - stagelingqstore.deck3State.faderPos
-            : stagelingqstore.deck3State.faderPos) +
+          (unitStore.deck3VolumeData.volume > 50
+            ? 100 - unitStore.deck3VolumeData.volume
+            : unitStore.deck3VolumeData.volume) +
           '%)',
       }"
       class="box"
@@ -80,26 +74,24 @@ const stagelingqstore = stageLinQStore()
       <p class="deckNumber">Deck 3</p>
       <p
         v-bind:style="{
-          fontSize: stagelingqstore.deck3State.trackTitle.length > 25 ? 'x-large' : 'xx-large',
+          fontSize: unitStore.deck3SongData.trackTitle.length > 25 ? 'x-large' : 'xx-large',
         }"
         class="songTitle textWrap"
       >
-        {{ stagelingqstore.deck3State.trackTitle }}
+        {{ unitStore.deck3SongData.trackTitle }}
       </p>
-      <p class="artist">{{ stagelingqstore.deck3State.artistName }}</p>
+      <p class="artist">{{ unitStore.deck3SongData.artistName }}</p>
     </div>
 
     <div
       v-bind:style="{
         backgroundImage:
           'linear-gradient(to left, rgba(0, 114, 4, 1) ' +
-          (stagelingqstore.deck4State.faderPos > 50
-            ? stagelingqstore.deck4State.faderPos
-            : 100 - stagelingqstore.deck4State.faderPos) +
+          unitStore.deck4VolumeData.volume +
           '% , rgba(255, 255, 255, 0) ' +
-          (stagelingqstore.deck4State.faderPos > 50
-            ? 100 - stagelingqstore.deck4State.faderPos
-            : stagelingqstore.deck4State.faderPos) +
+          (unitStore.deck4VolumeData.volume > 50
+            ? 100 - unitStore.deck4VolumeData.volume
+            : unitStore.deck4VolumeData.volume) +
           '%)',
       }"
       class="box right-aligned"
@@ -107,13 +99,13 @@ const stagelingqstore = stageLinQStore()
       <p class="deckNumber">Deck 4</p>
       <p
         v-bind:style="{
-          fontSize: stagelingqstore.deck4State.trackTitle.length > 25 ? 'x-large' : 'xx-large',
+          fontSize: unitStore.deck4SongData.trackTitle.length > 25 ? 'x-large' : 'xx-large',
         }"
         class="songTitle textWrap"
       >
-        {{ stagelingqstore.deck4State.trackTitle }}
+        {{ unitStore.deck4SongData.trackTitle }}
       </p>
-      <p class="artist">{{ stagelingqstore.deck4State.artistName }}</p>
+      <p class="artist">{{ unitStore.deck4SongData.artistName }}</p>
     </div>
   </div>
 </template>
@@ -146,7 +138,7 @@ const stagelingqstore = stageLinQStore()
 }
 
 .deckNumber {
-  font-size: large;
+  font-size: x-large;
 }
 
 .textWrap {

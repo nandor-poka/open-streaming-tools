@@ -231,20 +231,16 @@ public enum PlayerState implements State {
     EngineDeck4TrackTrackURI("/Engine/Deck4/Track/TrackUri"),
     EngineDeck4TrackTrackWasPlayed("/Engine/Deck4/Track/TrackWasPlayed");
 
-    private String value;
+    private String name;
 
     PlayerState(String value) {
-        this.value = value;
+        this.name = value;
     }
 
 
-    String getValue(){
-        return this.value;
-    }
-
-    static PlayerState getByValue(String value){
+    public static PlayerState getByName(String name){
         for (PlayerState ps: values()){
-            if(ps.value.equals(value)){
+            if(ps.name.equals(name)){
                 return ps;
             }
         }
@@ -253,7 +249,7 @@ public enum PlayerState implements State {
 
 
     @Override
-    public String getStateValue() {
-        return this.value;
+    public String getStateName() {
+        return this.name;
     }
 }

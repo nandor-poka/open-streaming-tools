@@ -12,19 +12,16 @@ public enum MixerState implements State{
     MixerChannelAssignment4("/Mixer/ChannelAssignment4"),
     MixerNumberOfChannels("/Mixer/NumberOfChannels");
 
-    private String value;
+    private String name;
 
-    MixerState(String value) {
-        this.value = value;
+    MixerState(String name) {
+        this.name = name;
     }
 
-    String getValue(){
-        return this.value;
-    }
 
-    static MixerState getByValue(String value){
+   public static MixerState getByName(String name){
         for (MixerState ms: values()){
-            if(ms.value.equals(value)){
+            if(ms.name.equals(name)){
                 return ms;
             }
         }
@@ -32,7 +29,7 @@ public enum MixerState implements State{
     }
 
     @Override
-    public String getStateValue() {
-        return this.value;
+    public String getStateName() {
+        return this.name;
     }
 }
