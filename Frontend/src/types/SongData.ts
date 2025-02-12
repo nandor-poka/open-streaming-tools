@@ -1,12 +1,8 @@
-export type DeckState = {
+export type SongData = {
   /**
    * Which deck is the info for
    */
   deckNum: number
-  /**
-   * Channel volume output
-   */
-  volume: number
   /**
    * Current track's title
    */

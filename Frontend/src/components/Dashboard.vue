@@ -1,12 +1,18 @@
 <!-- eslint-disable vue/multi-word-component-names -->
 <script setup lang="ts">
 import Navbar from './Navbar.vue'
+import { UnitStore } from '@/stores/UnitStore'
+const unitStore = UnitStore()
 </script>
 
 <template>
   <Navbar />
   <div class="greetings">
     <h1 class="green">Dashboard</h1>
+  </div>
+  <div>
+    <h2>Current Device / Software</h2>
+    <h3>{{ unitStore.currentUnit.longName }} version {{ unitStore.currentUnit.version }}</h3>
   </div>
 </template>
 

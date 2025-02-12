@@ -2,32 +2,30 @@ package com.openstreamingtools.MainServer.udp;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.openstreamingtools.MainServer.config.Configuration;
+import com.openstreamingtools.MainServer.dj.UnitUtils;
 import com.openstreamingtools.MainServer.dj.stagelinq.DenonUnit;
 import com.openstreamingtools.MainServer.dj.stagelinq.ModelCode;
-import com.openstreamingtools.MainServer.dj.UnitUtils;
-import com.openstreamingtools.MainServer.events.NewStageLinQDeviceEvent;
-import com.openstreamingtools.MainServer.messages.stagelinqmessages.DirectoryMessage;
 import com.openstreamingtools.MainServer.messages.stagelinqmessages.ServerDiscoveryMessage;
 import com.openstreamingtools.MainServer.messages.stagelinqmessages.StageLinQDiscoveryMessage;
 import com.openstreamingtools.MainServer.messaging.MessageSender;
 import com.openstreamingtools.MainServer.services.stagelinq.DirectoryService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.aop.interceptor.AsyncUncaughtExceptionHandler;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.integration.annotation.ServiceActivator;
 import org.springframework.integration.ip.IpHeaders;
 import org.springframework.messaging.Message;
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.handler.annotation.SendTo;
-import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Controller;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
 import java.net.*;
+
+import static com.openstreamingtools.MainServer.config.Configuration.STAGELINQ_BORADCAST_IP;
+import static com.openstreamingtools.MainServer.config.Configuration.STAGELINQ_BROADCAST_PORT;
 
 
 @Service
@@ -37,9 +35,8 @@ public class StageLinQDiscoveryHandler {
     Logger logger = LoggerFactory.getLogger(StageLinQDiscoveryHandler.class);
 
     public static final String StageLinQChannelID = "StangelinQ Broadcast Discovery";
-    private final SimpMessagingTemplate template;
-    ObjectMapper objectMapper = new ObjectMapper();
-    DatagramSocket broadcastSocket = new DatagramSocket(51337, InetAddress.getLocalHost());
+    private final ObjectMapper objectMapper = new ObjectMapper();
+    DatagramSocket broadcastSocket = new DatagramSocket(STAGELINQ_BROADCAST_PORT, InetAddress.getLocalHost());
 
     byte[] staticTestMessageBytes = new byte[]{
             (byte)0x61,
@@ -56,15 +53,16 @@ public class StageLinQDiscoveryHandler {
             (byte)0x65,(byte)0x00,(byte)0x74,(byte)0x00,(byte)0x61,(byte)0xea,(byte)0x60
     };
 
-
-
-    @Autowired
-    public StageLinQDiscoveryHandler(SimpMessagingTemplate template) throws SocketException, UnknownHostException {
-        this.template = template;
+    public StageLinQDiscoveryHandler() throws SocketException, UnknownHostException {
     }
 
     @ServiceActivator(inputChannel = StageLinQChannelID)
     public void handleMessage(Message message) throws JsonProcessingException {
+
+        if (!Configuration.isFrontEndRunning()){
+            logger.debug("Waiting for frontend to connect.");
+            return;
+        }
         byte[] messageBytes = (byte[]) message.getPayload();
         try {
             if (message.getHeaders().get(IpHeaders.IP_ADDRESS).equals(InetAddress.getLocalHost().getHostAddress()) ){
@@ -74,7 +72,6 @@ public class StageLinQDiscoveryHandler {
             throw new RuntimeException(e);
         }
         StageLinQDiscoveryMessage disMessage = StageLinQDiscoveryMessage.parse(messageBytes);
-        //logger.debug(objectMapper.writeValueAsString(disMessage));
         // Retrun if we detect message from unknown model must change later
         if (disMessage.getModelCode().equals(ModelCode.UNKOWN)){
             return;
@@ -85,27 +82,19 @@ public class StageLinQDiscoveryHandler {
         unit.setIpString((String) message.getHeaders().get(IpHeaders.IP_ADDRESS));
         if(!DirectoryService.hasUnit(unit.getDeviceID())){
             DirectoryService.addUnit(unit);
+            MessageSender.sendMessage(objectMapper.writeValueAsString(disMessage));
         }
 
         ServerDiscoveryMessage broadcastMessage = new ServerDiscoveryMessage();
         DatagramPacket packet = new DatagramPacket(broadcastMessage.getMessageAsBytes(), broadcastMessage.getMessageAsBytes().length);
-        packet.setSocketAddress(new InetSocketAddress("192.168.178.255", 51337));
+        packet.setSocketAddress(new InetSocketAddress(STAGELINQ_BORADCAST_IP, STAGELINQ_BROADCAST_PORT));
         try {
             broadcastSocket.setBroadcast(true);
-            //packet = new DatagramPacket(staticTestMessageBytes, staticTestMessageBytes.length);
-            //packet.setSocketAddress(new InetSocketAddress("192.168.178.255", 51337));
             broadcastSocket.send(packet);
         } catch (IOException e) {
             logger.error(e.getMessage());
         }
-        MessageSender.sendMessage(objectMapper.writeValueAsString(disMessage));
-
-
     }
 
-    @MessageMapping("/app/incoming")
-    @SendTo("/topic")
-    public String send(Message message){
-       return "you sent us:"+message;
-    }
+
 }

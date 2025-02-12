@@ -2,16 +2,16 @@ package com.openstreamingtools.MainServer.messages.stagelinqmessages;
 
 public class StateMapMessage <T>{
 
-    private T message;
+    private StateData message;
 
     public StateMapMessage() {
     }
 
-    public StateMapMessage(T message) {
+    public StateMapMessage(StateData message) {
         this.message = message;
     }
 
-    public T getMessage() {
+    public StateData getMessage() {
         return message;
     }
 }

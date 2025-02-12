@@ -2,9 +2,11 @@ package com.openstreamingtools.MainServer.messages;
 
 public enum MessageType {
     GENERAL_MESSAGE("General Message"),
-    DECK_STATE("DeckState"),
-    STAGELINQ_DISCOVERY_MESSAGE("StageLinQ Discovery Message");
-
+    SONG_DATA("SongData"),
+    CHANNEL_VOLUME_DATA("ChannelVolumeData"),
+    STAGELINQ_DISCOVERY_MESSAGE("StageLinQ Discovery Message"),
+    UNIT_DATA("Unit data"),
+    ACKNOWLEDMENT_MESSAGE("Acknowledgement message");
     private final String name;
 
     MessageType(String type) {

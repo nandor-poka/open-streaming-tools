@@ -8,7 +8,7 @@ import org.springframework.boot.jackson.JsonComponent;
 import java.io.IOException;
 
 @JsonComponent
-public class DeckStateJSONSerializer extends JsonSerializer<DeckState> {
+public class SongDataSONSerializer extends JsonSerializer<SongData> {
 
 
     /*
@@ -19,15 +19,13 @@ public class DeckStateJSONSerializer extends JsonSerializer<DeckState> {
     private int faderPos;
      */
     @Override
-    public void serialize(DeckState deckState, JsonGenerator jgen, SerializerProvider serializers) throws IOException {
+    public void serialize(SongData deckState, JsonGenerator jgen, SerializerProvider serializers) throws IOException {
         jgen.writeStartObject();
         jgen.writeStringField("type", deckState.getType().getName());
         jgen.writeObjectFieldStart("message");
         jgen.writeObjectField("deckNumber", deckState.getDeckNumber());
         jgen.writeObjectField("trackTitle", deckState.getTrackTitle());
         jgen.writeObjectField("artistName", deckState.getArtistName());
-        jgen.writeObjectField("tempo", deckState.getTempo());
-        jgen.writeObjectField("faderPos", deckState.getFaderPos());
         jgen.writeEndObject();
         jgen.writeEndObject();
     }
