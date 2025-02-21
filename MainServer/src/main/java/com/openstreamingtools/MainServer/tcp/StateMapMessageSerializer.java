@@ -1,15 +1,12 @@
 package com.openstreamingtools.MainServer.tcp;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.openstreamingtools.MainServer.dj.stagelinq.MixerState;
 import com.openstreamingtools.MainServer.dj.stagelinq.PlayerState;
+import com.openstreamingtools.MainServer.dj.stagelinq.SimpleState;
 import com.openstreamingtools.MainServer.dj.stagelinq.State;
 import com.openstreamingtools.MainServer.messages.frontend.ChannelVolumeData;
-import com.openstreamingtools.MainServer.messages.frontend.SongData;
 import com.openstreamingtools.MainServer.messages.stagelinqmessages.StateData;
-import com.openstreamingtools.MainServer.messages.stagelinqmessages.StateMapMessage;
 import com.openstreamingtools.MainServer.messages.stagelinqmessages.ServiceAnnouncement;
-import com.openstreamingtools.MainServer.messages.stagelinqmessages.StateMapMessage;
 import com.openstreamingtools.MainServer.messaging.MessageSender;
 import com.openstreamingtools.MainServer.services.stagelinq.DirectoryService;
 import com.openstreamingtools.MainServer.services.stagelinq.StateMapService;
@@ -29,8 +26,6 @@ import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
 import java.util.UUID;
 import java.util.Vector;
-
-import static com.openstreamingtools.MainServer.utils.Utils.putIntegerToByteArray;
 
 public class StateMapMessageSerializer  implements Deserializer<byte[]>, Serializer<byte[]> {
 
@@ -56,6 +51,7 @@ public class StateMapMessageSerializer  implements Deserializer<byte[]>, Seriali
          *  then length - smaa- state repeats
          */
         // inputStream.mark();
+
         byte[] header = new byte[4];
         bis.read(header);
         if (Utils.convertBytesToInt(header) == DirectoryService.SERVICE_ANNOUNCEMENT){
@@ -120,17 +116,32 @@ public class StateMapMessageSerializer  implements Deserializer<byte[]>, Seriali
                 String jsonString = new String(Arrays.copyOfRange(messageBytes, 12+nameLength+4, messageBytes.length),StandardCharsets.UTF_16BE);
                 StateData stateData = StateData.parseStateData(messageBytes);
                 State state = stateData.getState();
-                if (state.equals(PlayerState.EngineDeck1TrackTrackName)
-                        || state.equals(PlayerState.EngineDeck2TrackTrackName)
-                        || state.equals(PlayerState.EngineDeck3TrackTrackName)
-                        || state.equals(PlayerState.EngineDeck4TrackTrackName)) {
-                    String[] songPathElements = stateData.getJsonString().split("\",\"")[0].split("/");
-                    String fullSong =songPathElements[songPathElements.length-1];
-                    String[] songElements = fullSong.split("\\.")[0].split("-");
-                    //logger.debug("SongElements: {}",Arrays.toString(songElements));
-                    if (songElements.length >=2){
-                        MessageSender.sendMessage(new SongData(stateData.getDeckNum(), songElements[1], songElements[0]));
+                ///Engine/Deck2/Track/ArtistName, type 0, jsonString: {"string":"Ekko & Sidetrack","type":8}
+                if (state.equals(PlayerState.EngineDeck1TrackArtistName)
+                        || state.equals(PlayerState.EngineDeck2TrackArtistName)
+                        || state.equals(PlayerState.EngineDeck3TrackArtistName)
+                        || state.equals(PlayerState.EngineDeck4TrackArtistName)) {
+                    //jsonString: {"string":"Ekko & Sidetrack","type":8}
+
+                    String[] artistNamePrep = stateData.getJsonString().split(":")[1].split(",")[0].split("\"");
+
+                    if (artistNamePrep.length>0){
+                        StateMapService.deckStates.get(stateData.getDeckNum()).put(SimpleState.ARTIST_NAME, artistNamePrep[1]);
                     }
+
+                }
+                //SateMap name /Engine/Deck2/Track/SongName, type 0, jsonString: {"string":"Synchronise","type":8}
+                if (state.equals(PlayerState.EngineDeck1TrackSongName)
+                        || state.equals(PlayerState.EngineDeck2TrackSongName)
+                        || state.equals(PlayerState.EngineDeck3TrackSongName)
+                        || state.equals(PlayerState.EngineDeck4TrackSongName)) {
+                    //jsonString: {"string":"Synchronise","type":8}
+                    String[] songNamePrep = stateData.getJsonString().split(":")[1].split(",")[0].split("\"");
+
+                    if (songNamePrep.length>0){
+                        StateMapService.updateDeckState(stateData.getDeckNum(), SimpleState.SONG_NAME, songNamePrep[1]);
+                    }
+
 
                 }
                 if (state.equals(PlayerState.EngineDeck1ExternalMixerVolume)
@@ -140,10 +151,11 @@ public class StateMapMessageSerializer  implements Deserializer<byte[]>, Seriali
                     //ExternalMixerVolume N{"type":0,"value":0.012926282361149788}
                     int volume = Math.round(Float.parseFloat(
                             stateData.getJsonString().split("\"value\":")[1].split("}")[0])*100);
-                    logger.debug("volume {}",volume);
+                    //logger.debug("volume {}",volume);
                     MessageSender.sendMessage(new ChannelVolumeData(stateData.getDeckNum(), volume));
+                    StateMapService.updateDeckState(stateData.getDeckNum(), SimpleState.VOLUME, volume);
                 }
-               // logger.debug("SateMap name {}, type {}, jsonString: {}", stateDataName,dataType, jsonString);
+                logger.debug("SateMap name {}, type {}, jsonString: {}", stateDataName,dataType, jsonString);
             }
             return messageBytes;
         }

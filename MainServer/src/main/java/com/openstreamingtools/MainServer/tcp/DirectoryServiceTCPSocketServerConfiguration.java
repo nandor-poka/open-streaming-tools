@@ -1,7 +1,6 @@
 package com.openstreamingtools.MainServer.tcp;
 
 
-import com.openstreamingtools.MainServer.utils.Utils;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.integration.annotation.IntegrationComponentScan;
@@ -25,7 +24,7 @@ public class DirectoryServiceTCPSocketServerConfiguration {
 
 
 
-    private final int socketPort = Utils.DIRECTORY_SERVICE_PORT;
+    private final int socketPort = com.openstreamingtools.MainServer.config.Configuration.DIRECTORY_SERVICE_PORT;
     public static final DirectoryMessageSerializer SERIALIZER = new DirectoryMessageSerializer();
 
     /**

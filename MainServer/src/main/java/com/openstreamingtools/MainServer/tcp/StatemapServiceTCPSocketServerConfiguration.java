@@ -1,6 +1,5 @@
 package com.openstreamingtools.MainServer.tcp;
 
-import com.openstreamingtools.MainServer.utils.Utils;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.integration.annotation.IntegrationComponentScan;
@@ -20,7 +19,7 @@ import org.springframework.messaging.handler.annotation.Header;
 public class StateMapServiceTCPSocketServerConfiguration {
 
 
-    private final int socketPort = Utils.STATEMAP_SERVICE_PORT;
+    private final int socketPort = com.openstreamingtools.MainServer.config.Configuration.STATEMAP_SERVICE_PORT;
     public static final StateMapMessageSerializer SERIALIZER = new StateMapMessageSerializer();
 
     //serializer is headerbytearray

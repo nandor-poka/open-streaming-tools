@@ -51,14 +51,14 @@ public class StateMapMessageHandler {
                     if (sa.hasService(ServiceType.STATEMAP)) {
                         Vector<Byte> buffer = new Vector<Byte>();
                         for (State state : PlayerState.values()) {
-                          //  logger.debug("Subscribing to state {}", state);
+                            logger.debug("Subscribing to state {}", state);
                             for (byte b : new StateMapSubscribeMessage(state).getBytes()) {
                                 buffer.add(b);
                             }
 
                         }
                         for (State state : MixerState.values()) {
-                        //    logger.debug("Subscribing to state {}", state);
+                           logger.debug("Subscribing to state {}", state);
                             for (byte b : new StateMapSubscribeMessage(state).getBytes()) {
                                 buffer.add(b);
                             }
@@ -88,8 +88,8 @@ public class StateMapMessageHandler {
                             || state.equals(PlayerState.EngineDeck4TrackTrackName)) {
                         String[] songElements = stateData.getJsonString().split("\",\"")[0].split("\\.")[0].split("-");
 
-                        MessageSender.sendMessage(new SongData(stateData.getDeckNum(), songElements[0], songElements[1])
-                        );
+                      //  MessageSender.sendMessage(new SongData(stateData.getDeckNum(), songElements[0], songElements[1])
+                     //   );
                     }
                     if (state.equals(PlayerState.EngineDeck1ExternalMixerVolume)
                             || state.equals(PlayerState.EngineDeck2ExternalMixerVolume)
@@ -98,7 +98,7 @@ public class StateMapMessageHandler {
                         //ExternalMixerVolume N{"type":0,"value":0.012926282361149788}
                         int volume = (int)Math.round(Math.ceil(Float.parseFloat(
                                 stateData.getJsonString().split("\"value\":")[1].split("}")[0])*100));
-                        MessageSender.sendMessage(new ChannelVolumeData(stateData.getDeckNum(), volume));
+                        //MessageSender.sendMessage(new ChannelVolumeData(stateData.getDeckNum(), volume));
                     }
 
                 }

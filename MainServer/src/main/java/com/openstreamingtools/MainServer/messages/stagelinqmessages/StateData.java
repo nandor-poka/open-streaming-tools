@@ -34,23 +34,23 @@ public class StateData {
             state = MixerState.getByName(stateDataName);
             return new StateData(state, jsonString, decknum);
         }
-
-        if (state.equals(PlayerState.EngineDeck1TrackTrackName)
-                || state.equals(PlayerState.EngineDeck2TrackTrackName)
-                || state.equals(PlayerState.EngineDeck3TrackTrackName)
-                || state.equals(PlayerState.EngineDeck4TrackTrackName)) {
+        if (state.equals(PlayerState.EngineDeck1TrackArtistName)
+                || state.equals(PlayerState.EngineDeck2TrackArtistName)
+                || state.equals(PlayerState.EngineDeck3TrackArtistName)
+                || state.equals(PlayerState.EngineDeck4TrackArtistName)
+                || state.equals(PlayerState.EngineDeck1TrackSongName)
+                || state.equals(PlayerState.EngineDeck2TrackSongName)
+                || state.equals(PlayerState.EngineDeck3TrackSongName)
+                || state.equals(PlayerState.EngineDeck4TrackSongName)
+                || state.equals(PlayerState.EngineDeck1ExternalMixerVolume)
+                || state.equals(PlayerState.EngineDeck2ExternalMixerVolume)
+                || state.equals(PlayerState.EngineDeck3ExternalMixerVolume)
+                || state.equals(PlayerState.EngineDeck4ExternalMixerVolume)) {
             decknum = Integer.parseInt(
                     state.getStateName().split("/Engine/Deck")[1].split("/")[0]);
             return new StateData(state, jsonString, decknum);
-        }else if (state.equals(PlayerState.EngineDeck1ExternalMixerVolume)
-                    || state.equals(PlayerState.EngineDeck2ExternalMixerVolume)
-                    || state.equals(PlayerState.EngineDeck3ExternalMixerVolume)
-                    || state.equals(PlayerState.EngineDeck4ExternalMixerVolume)
-            ) {
-                decknum = Integer.parseInt(
-                        state.getStateName().split("/Engine/Deck")[1].split("/ExternalMixerVolume")[0]);
-                return new StateData(state, jsonString, decknum);
-            }
+
+        }
         return new StateData(state, jsonString, decknum);
     }
 
