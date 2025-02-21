@@ -28,7 +28,7 @@ public class MessageSender {
     public MessageSender(SimpMessagingTemplate template) throws SocketException, UnknownHostException {
         this.template = template;
         instance = this;
-        //timer.scheduleAtFixedRate(new TestMessageSender(), 2000, 50);
+     //   timer.scheduleAtFixedRate(new TestMessageSender(), 2000, 50);
     }
 
     public static void sendMessage (String message){

@@ -233,8 +233,8 @@ public enum PlayerState implements State {
 
     private String name;
 
-    PlayerState(String value) {
-        this.name = value;
+    PlayerState(String name) {
+        this.name = name;
     }
 
 
@@ -247,6 +247,9 @@ public enum PlayerState implements State {
         return null;
     }
 
+    public String getName() {
+        return name;
+    }
 
     @Override
     public String getStateName() {

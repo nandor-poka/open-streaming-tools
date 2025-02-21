@@ -2,7 +2,31 @@
 <script setup lang="ts">
 import Navbar from './Navbar.vue'
 import { UnitStore } from '@/stores/UnitStore'
+import { SettingsStore } from '@/stores/SettingsStore'
+import { onMounted } from 'vue'
+import axios from 'axios'
 const unitStore = UnitStore()
+const settingsStore = SettingsStore()
+axios.defaults.baseURL = 'http://localhost:8080/'
+
+onMounted(() => {
+  axios
+    .get('getSettings', {
+      method: 'get',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+    })
+    .then(function (response) {
+      const settings = response.data
+      settingsStore.showTrackDelay = settings.showTrackDelay
+      settingsStore.volumeThreshold = settings.volumeThreshold
+    })
+    .catch(function (error) {
+      // handle error
+      console.log(error)
+    })
+})
 </script>
 
 <template>

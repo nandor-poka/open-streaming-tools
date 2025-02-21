@@ -28,7 +28,10 @@ const unitStore = UnitStore()
       >
         {{ unitStore.deck1SongData.trackTitle }}
       </p>
-      <p class="artist">{{ unitStore.deck1SongData.artistName }}</p>
+
+      <p class="artist">
+        {{ unitStore.deck1SongData.artistName }}
+      </p>
     </div>
 
     <div
@@ -147,5 +150,19 @@ const unitStore = UnitStore()
     white-space: normal;
     text-wrap-style: pretty;
   }
+}
+
+.slide-fade-enter-active {
+  transition: all 0.5s ease-out;
+}
+
+.slide-fade-leave-active {
+  transition: all 2s cubic-bezier(1, 0.5, 0.8, 1);
+}
+
+.slide-fade-enter-from,
+.slide-fade-leave-to {
+  transform: translateX(50px);
+  opacity: 0;
 }
 </style>

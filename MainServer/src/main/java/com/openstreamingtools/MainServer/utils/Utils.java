@@ -1,13 +1,18 @@
 package com.openstreamingtools.MainServer.utils;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import java.nio.ByteBuffer;
 import java.nio.charset.Charset;
+import java.util.Timer;
 import java.util.UUID;
 
 public class Utils {
 
-    public static final int DIRECTORY_SERVICE_PORT = 60000;
-    public static final int STATEMAP_SERVICE_PORT = 60001;
+    public static final ObjectMapper objectMapper = new ObjectMapper();
+    public static final Timer timer = new Timer();
 
     public static void putIntegerToByteArray(int i, byte[] array){
         array[0] = (byte)((i >> 24)& 0xFF);

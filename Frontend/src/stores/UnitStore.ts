@@ -5,6 +5,7 @@ import type { ChannelVolumeData } from '@/types/ChannelVolumeData'
 import type { Unit } from '@/types/Unit'
 import UnitType from '@/types/UnitType'
 export const UnitStore = defineStore('StageLinQSTore', () => {
+  const deck1UpdateSwtich = ref(false)
   const deck1SD: SongData = {
     deckNum: 1,
     artistName: '',
@@ -62,15 +63,12 @@ export const UnitStore = defineStore('StageLinQSTore', () => {
     switch (songData.deckNum) {
       case 1:
         deck1SongData.value = songData
-
         break
       case 2:
         deck2SongData.value = songData
-
         break
       case 3:
         deck3SongData.value = songData
-
         break
       case 4:
         deck4SongData.value = songData
@@ -107,6 +105,7 @@ export const UnitStore = defineStore('StageLinQSTore', () => {
     deck3VolumeData,
     deck4VolumeData,
     currentUnit,
+    deck1UpdateSwtich,
     updateUnit,
     updateSongData,
     updateVolumeData,

@@ -1,15 +1,20 @@
 import { createWebHistory, createRouter } from 'vue-router'
 import Dashboard from './components/Dashboard.vue'
-import StageLinQLog from './components/StageLinQLog.vue'
-import BrowserSource from './components/Browsersource.vue'
+import Log from './components/Log.vue'
+import BrowserSource from './components/BrowserSource.vue'
+import Settings from './components/Settings.vue'
 const routes = [
   {
     path: '/',
     component: Dashboard,
   },
   {
-    path: '/stagelinqlog',
-    component: StageLinQLog,
+    path: '/log',
+    component: Log,
+  },
+  {
+    path: '/settings',
+    component: Settings,
   },
   {
     path: '/browsersource',

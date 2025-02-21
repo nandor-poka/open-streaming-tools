@@ -5,7 +5,8 @@
   <p><strong>Current route path:</strong> {{ $route.fullPath }}</p>
   <nav>
     <RouterLink to="/">Dashboard</RouterLink>
-    <RouterLink to="/stagelinqlog">StageLinQ Log</RouterLink>
+    <RouterLink to="/log">Log</RouterLink>
+    <RouterLink to="/settings">Settings</RouterLink>
     <RouterLink to="/browsersource">BrowserSource</RouterLink>
   </nav>
 </template>
