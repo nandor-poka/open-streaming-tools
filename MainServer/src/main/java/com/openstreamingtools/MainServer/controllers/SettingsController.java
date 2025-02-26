@@ -2,14 +2,18 @@ package com.openstreamingtools.MainServer.controllers;
 
 import com.openstreamingtools.MainServer.api.Settings;
 import com.openstreamingtools.MainServer.config.Configuration;
-
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
-import static com.openstreamingtools.MainServer.utils.Utils.objectMapper;
 import java.io.IOException;
 
+import static com.openstreamingtools.MainServer.utils.Utils.objectMapper;
+
+
+/**
+ * REST Controller to allow the frontend to get and save its own settings.
+ */
 @RestController
 public class SettingsController {
 

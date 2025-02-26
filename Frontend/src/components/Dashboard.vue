@@ -32,7 +32,7 @@ onMounted(() => {
 <template>
   <Navbar />
   <div class="greetings">
-    <h1 class="green">Dashboard</h1>
+    <h1>Dashboard</h1>
   </div>
   <div>
     <h2>Current Device / Software</h2>

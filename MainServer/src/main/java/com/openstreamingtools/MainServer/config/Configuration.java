@@ -1,20 +1,24 @@
 package com.openstreamingtools.MainServer.config;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.openstreamingtools.MainServer.api.Settings;
 import com.openstreamingtools.MainServer.dj.stagelinq.ActingAs;
 import com.openstreamingtools.MainServer.utils.Utils;
-import jakarta.annotation.PostConstruct;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.context.annotation.Bean;
 import org.springframework.core.io.Resource;
 import org.springframework.stereotype.Component;
 
 import java.io.IOException;
 
+
+/**
+ * This class represents the backend application configuration
+ *
+ * @author Nandor Poka
+ * @since 0.0.1
+ */
 @Component
 public class Configuration {
 
+    // static constants
     public static final String NAME = "Open Streaming Tools";
     public static final String VERSION = "0.0.1";
     public static final String SOURCE = "OST";
@@ -26,11 +30,15 @@ public class Configuration {
     public static final String FRONTEND_ORIGN = "http://localhost:5173";
     public static final int DIRECTORY_SERVICE_PORT = 60000;
     public static final int STATEMAP_SERVICE_PORT = 60001;
-    private static boolean frontEndRunning = false;
 
+    // private globals
+    private static boolean frontEndRunning = false;
     private static Resource settingsFileResource;
     public static Settings settings;
 
+    /**#
+     * Initializes the configuration
+     */
      public static void init() {
         try {
             settings = Utils.objectMapper.readValue( settingsFileResource.getFile(), Settings.class);
@@ -38,6 +46,8 @@ public class Configuration {
             throw new RuntimeException(e);
         }
     }
+
+    // setters and getters
     public static boolean isFrontEndRunning() {
         return frontEndRunning;
     }
@@ -50,7 +60,6 @@ public class Configuration {
         return settingsFileResource;
     }
 
-    @Value("classpath:settings.json")
     public static void setSettingsFileResource(Resource settingsFileResource) {
         Configuration.settingsFileResource = settingsFileResource;
     }

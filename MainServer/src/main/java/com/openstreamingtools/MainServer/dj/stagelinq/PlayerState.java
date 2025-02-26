@@ -1,5 +1,9 @@
 package com.openstreamingtools.MainServer.dj.stagelinq;
 
+/**
+ * Enum class representing available states in a DENON DJ / StagelinQ compatible player
+ * to which the StateMap service can subscribe.
+ */
 public enum PlayerState implements State {
     ClientLibrarianDevicesControllerCurrentDevice("/Client/Librarian/DevicesController/CurrentDevice"),
     ClientLibrarianDevicesControllerCurrentDeviceNetworkPath("/Client/Librarian/DevicesController/CurrentDeviceNetworkPath"),

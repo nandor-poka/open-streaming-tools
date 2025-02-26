@@ -15,8 +15,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.integration.annotation.ServiceActivator;
 import org.springframework.integration.ip.IpHeaders;
 import org.springframework.messaging.Message;
-import org.springframework.messaging.handler.annotation.MessageMapping;
-import org.springframework.messaging.handler.annotation.SendTo;
 import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Controller;
 import org.springframework.stereotype.Service;
@@ -68,7 +66,11 @@ public class StageLinQDiscoveryHandler {
         unit.setIpString((String) message.getHeaders().get(IpHeaders.IP_ADDRESS));
         if(!DirectoryService.hasUnit(unit.getDeviceID())){
             DirectoryService.addUnit(unit);
+        }
+        if (DirectoryService.hasUnit(unit.getDeviceID() )
+                && !DirectoryService.getUnit(unit.getDeviceID()).acknowledged ){
             MessageSender.sendMessage(objectMapper.writeValueAsString(disMessage));
+
         }
 
         ServerDiscoveryMessage broadcastMessage = new ServerDiscoveryMessage();

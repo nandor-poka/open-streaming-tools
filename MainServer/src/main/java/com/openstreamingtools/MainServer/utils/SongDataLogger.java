@@ -14,7 +14,7 @@ public class SongDataLogger {
     private static final  String userDirectory = Paths.get("")
             .toAbsolutePath()
             .toString();
-    private static final DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern("dd-MM-yyyy_HHmmss");
+    private static final DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd_HHmmss");
 
     private static final File file = new File(userDirectory + "/songData_"+ LocalDateTime.now().format(dateFormatter) +".txt");
 
@@ -23,9 +23,15 @@ public class SongDataLogger {
             if (!file.exists()) {
                 file.createNewFile();
             }
-            FileWriter fileWriter = new FileWriter(file, true);
-            fileWriter.write(songData.getDeckNumber() + " " + songData.getTrackTitle() + " " + songData.getArtistName() + "\n");
-            fileWriter.close();
+            if (!songData.getArtistName().equals(" ") || !songData.getTrackTitle().equals(" ")){
+                FileWriter fileWriter = new FileWriter(file, true);
+                fileWriter.write(LocalDateTime.now().format(dateFormatter)+" on deck "
+                        +songData.getDeckNumber() + " " + songData.getTrackTitle() + " - " + songData.getArtistName() + "\n");
+                fileWriter.close();
+            }
+
+
+
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
