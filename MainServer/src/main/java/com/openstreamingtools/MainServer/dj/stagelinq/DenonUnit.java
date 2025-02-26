@@ -7,6 +7,9 @@ import com.openstreamingtools.MainServer.messages.stagelinqmessages.ServiceType;
 import java.util.UUID;
 import java.util.Vector;
 
+/**
+ * A class representing a DENON DJ unit.
+ */
 public class DenonUnit extends GenericUnit {
 
     private UUID deviceID;

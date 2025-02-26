@@ -26,10 +26,11 @@ public class UnitRequestHandler {
     @MessageMapping("/getUnit")
     @SendTo(Configuration.WEBSOCKET_DATA_PATH)
     public String frontendStartup(Message<String> message) throws JsonProcessingException {
-        logger.debug("Frontent requested unit data for : {}",message.getPayload());
+        logger.debug("Frontend requested unit data for : {}",message.getPayload());
         UnitRequest unitRequest = objectMapper.readValue(message.getPayload(), UnitRequest.class);
         GenericUnit unit = DirectoryService.getUnit(UUID.fromString(unitRequest.getUuid()));
         UnitData unitData = new UnitData(MessageType.UNIT_DATA,"Denon unit",unit);
+        DirectoryService.getUnit(UUID.fromString(unitRequest.getUuid())).acknowledged=true;
         return objectMapper.writeValueAsString(unitData);
     }
 }

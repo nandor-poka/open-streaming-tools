@@ -6,6 +6,9 @@ import type { Unit } from '@/types/Unit'
 import UnitType from '@/types/UnitType'
 export const UnitStore = defineStore('StageLinQSTore', () => {
   const deck1UpdateSwtich = ref(false)
+  const deck2UpdateSwtich = ref(false)
+  const deck3UpdateSwtich = ref(false)
+  const deck4UpdateSwtich = ref(false)
   const deck1SD: SongData = {
     deckNum: 1,
     artistName: '',
@@ -62,16 +65,49 @@ export const UnitStore = defineStore('StageLinQSTore', () => {
   function updateSongData(songData: SongData) {
     switch (songData.deckNum) {
       case 1:
-        deck1SongData.value = songData
+        if (deck1SongData.value != songData) {
+          if (songData.artistName == ' ' && songData.trackTitle == ' ') {
+            deck1UpdateSwtich.value = false
+          } else {
+            deck1UpdateSwtich.value = true
+          }
+
+          deck1SongData.value = songData
+        }
+
         break
       case 2:
-        deck2SongData.value = songData
+        if (deck2SongData.value != songData) {
+          if (songData.artistName == ' ' && songData.trackTitle == ' ') {
+            deck2UpdateSwtich.value = false
+          } else {
+            deck2UpdateSwtich.value = true
+          }
+
+          deck2SongData.value = songData
+        }
         break
       case 3:
-        deck3SongData.value = songData
+        if (deck3SongData.value != songData) {
+          if (songData.artistName == ' ' && songData.trackTitle == ' ') {
+            deck3UpdateSwtich.value = false
+          } else {
+            deck3UpdateSwtich.value = true
+          }
+
+          deck3SongData.value = songData
+        }
         break
       case 4:
-        deck4SongData.value = songData
+        if (deck4SongData.value != songData) {
+          if (songData.artistName == ' ' && songData.trackTitle == ' ') {
+            deck4UpdateSwtich.value = false
+          } else {
+            deck4UpdateSwtich.value = true
+          }
+
+          deck4SongData.value = songData
+        }
         break
     }
   }
@@ -106,6 +142,9 @@ export const UnitStore = defineStore('StageLinQSTore', () => {
     deck4VolumeData,
     currentUnit,
     deck1UpdateSwtich,
+    deck2UpdateSwtich,
+    deck3UpdateSwtich,
+    deck4UpdateSwtich,
     updateUnit,
     updateSongData,
     updateVolumeData,
