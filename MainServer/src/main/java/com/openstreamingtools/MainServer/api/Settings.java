@@ -6,8 +6,8 @@ package com.openstreamingtools.MainServer.api;
  */
 public class Settings {
     //defauls to avoid null valuse
-    private int showTrackDelay = 0;
-    private int volumeThreshold = 0;
+    private int showTrackDelay = 5;
+    private int volumeThreshold = 75;
 
 
     public Settings(int showTrackDelay, int volumeThreshold) {

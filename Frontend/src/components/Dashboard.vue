@@ -4,10 +4,11 @@ import Navbar from './Navbar.vue'
 import { UnitStore } from '@/stores/UnitStore'
 import { SettingsStore } from '@/stores/SettingsStore'
 import { onMounted } from 'vue'
-import axios from 'axios'
+import { inject } from 'vue'
+import type { Axios } from 'axios'
+const axios: Axios = inject('axios') as Axios
 const unitStore = UnitStore()
 const settingsStore = SettingsStore()
-axios.defaults.baseURL = 'http://localhost:8080/'
 
 onMounted(() => {
   axios

@@ -6,9 +6,11 @@ import com.openstreamingtools.MainServer.messages.stagelinqmessages.Service;
 import com.openstreamingtools.MainServer.messages.stagelinqmessages.ServiceType;
 import com.openstreamingtools.MainServer.messaging.SongDataUpdateTask;
 import com.openstreamingtools.MainServer.utils.Utils;
-import static com.openstreamingtools.MainServer.config.Configuration.settings;
+
 import java.util.HashMap;
 import java.util.Map;
+
+import static com.openstreamingtools.MainServer.config.Configuration.settings;
 
 public class StateMapService extends Service {
 

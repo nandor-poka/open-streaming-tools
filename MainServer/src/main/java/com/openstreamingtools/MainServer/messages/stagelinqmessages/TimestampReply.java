@@ -1,7 +1,6 @@
 package com.openstreamingtools.MainServer.messages.stagelinqmessages;
 
 import com.openstreamingtools.MainServer.config.Configuration;
-import com.openstreamingtools.MainServer.dj.stagelinq.ActingAs;
 
 import java.util.UUID;
 

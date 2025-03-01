@@ -5,8 +5,8 @@ import com.openstreamingtools.MainServer.dj.stagelinq.PlayerState;
 import com.openstreamingtools.MainServer.dj.stagelinq.SimpleState;
 import com.openstreamingtools.MainServer.dj.stagelinq.State;
 import com.openstreamingtools.MainServer.messages.frontend.ChannelVolumeData;
-import com.openstreamingtools.MainServer.messages.stagelinqmessages.StateData;
 import com.openstreamingtools.MainServer.messages.stagelinqmessages.ServiceAnnouncement;
+import com.openstreamingtools.MainServer.messages.stagelinqmessages.StateData;
 import com.openstreamingtools.MainServer.messaging.MessageSender;
 import com.openstreamingtools.MainServer.services.stagelinq.DirectoryService;
 import com.openstreamingtools.MainServer.services.stagelinq.StateMapService;
@@ -16,7 +16,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.core.serializer.Deserializer;
 import org.springframework.core.serializer.Serializer;
 import org.springframework.lang.NonNull;
-
 
 import java.io.BufferedInputStream;
 import java.io.IOException;
