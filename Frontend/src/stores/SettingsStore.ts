@@ -1,6 +1,6 @@
 import { ref } from 'vue'
 import { defineStore } from 'pinia'
-export const SettingsStore = defineStore('StageLinQSTore', () => {
+export const SettingsStore = defineStore('SettingsStore', () => {
   const showTrackDelay = ref(0)
   const volumeThreshold = ref(0)
   const volumeSliderValue = ref(50)

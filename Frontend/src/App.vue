@@ -3,6 +3,9 @@ import { Client } from '@stomp/stompjs'
 import { UnitStore } from '@/stores/UnitStore'
 import type { SongData } from '@/types/SongData'
 import type { ChannelVolumeData } from '@/types/ChannelVolumeData'
+import Axios from 'axios'
+const axiosInstance = Axios.create()
+axiosInstance.defaults.baseURL = 'http://localhost:8080/'
 
 const unitStore = UnitStore()
 const client = new Client({

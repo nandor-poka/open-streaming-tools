@@ -2,11 +2,8 @@ package com.openstreamingtools.MainServer.config;
 
 import com.openstreamingtools.MainServer.api.Settings;
 import com.openstreamingtools.MainServer.dj.stagelinq.ActingAs;
-import com.openstreamingtools.MainServer.utils.Utils;
 import org.springframework.core.io.Resource;
 import org.springframework.stereotype.Component;
-
-import java.io.IOException;
 
 
 /**
@@ -34,17 +31,19 @@ public class Configuration {
     // private globals
     private static boolean frontEndRunning = false;
     private static Resource settingsFileResource;
-    public static Settings settings;
+    public static Settings settings = new Settings();
 
     /**#
      * Initializes the configuration
      */
      public static void init() {
-        try {
+       /* try {
             settings = Utils.objectMapper.readValue( settingsFileResource.getFile(), Settings.class);
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
+        */
+        
     }
 
     // setters and getters

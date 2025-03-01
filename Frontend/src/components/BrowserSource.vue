@@ -1,8 +1,9 @@
 <!-- eslint-disable vue/multi-word-component-names -->
 <script setup lang="ts">
+import { SettingsStore } from '@/stores/SettingsStore'
 import { UnitStore } from '@/stores/UnitStore'
 const unitStore = UnitStore()
-const audioContext = new AudioContext()
+const settingsStore = SettingsStore()
 </script>
 
 <template>
@@ -17,6 +18,14 @@ const audioContext = new AudioContext()
             ? 100 - unitStore.deck1VolumeData.volume
             : unitStore.deck1VolumeData.volume) +
           '%)',
+        color:
+          'rgb( ' +
+          settingsStore.sdRed +
+          ',' +
+          settingsStore.sdGreen +
+          ',' +
+          settingsStore.sdBlue +
+          ') ',
       }"
       class="box"
     >
@@ -49,6 +58,14 @@ const audioContext = new AudioContext()
             ? 100 - unitStore.deck2VolumeData.volume
             : unitStore.deck2VolumeData.volume) +
           '%)',
+        color:
+          'rgb( ' +
+          settingsStore.sdRed +
+          ',' +
+          settingsStore.sdGreen +
+          ',' +
+          settingsStore.sdBlue +
+          ') ',
       }"
       class="box right-aligned"
     >
@@ -83,6 +100,14 @@ const audioContext = new AudioContext()
             ? 100 - unitStore.deck3VolumeData.volume
             : unitStore.deck3VolumeData.volume) +
           '%)',
+        color:
+          'rgb( ' +
+          settingsStore.sdRed +
+          ',' +
+          settingsStore.sdGreen +
+          ',' +
+          settingsStore.sdBlue +
+          ') ',
       }"
       class="box"
     >
@@ -115,6 +140,14 @@ const audioContext = new AudioContext()
             ? 100 - unitStore.deck4VolumeData.volume
             : unitStore.deck4VolumeData.volume) +
           '%)',
+        color:
+          'rgb( ' +
+          settingsStore.sdRed +
+          ',' +
+          settingsStore.sdGreen +
+          ',' +
+          settingsStore.sdBlue +
+          ') ',
       }"
       class="box right-aligned"
     >

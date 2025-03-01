@@ -1,9 +1,8 @@
 package com.openstreamingtools.MainServer.messages.stagelinqmessages;
 
 import com.openstreamingtools.MainServer.config.Configuration;
-import com.openstreamingtools.MainServer.dj.stagelinq.ActingAs;
-import com.openstreamingtools.MainServer.dj.stagelinq.StageLinQAction;
 import com.openstreamingtools.MainServer.dj.UnitUtils;
+import com.openstreamingtools.MainServer.dj.stagelinq.StageLinQAction;
 
 import java.nio.charset.StandardCharsets;
 import java.util.Vector;

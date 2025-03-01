@@ -34,3 +34,6 @@ build/
 
 ### Text files
 **/**/*.txt
+
+### Databases
+**/**/*.db
