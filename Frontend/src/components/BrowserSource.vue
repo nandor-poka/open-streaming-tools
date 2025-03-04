@@ -7,6 +7,7 @@ const settingsStore = SettingsStore()
 </script>
 
 <template>
+  <h1>Powered by OST</h1>
   <div class="parent">
     <div
       v-bind:style="{

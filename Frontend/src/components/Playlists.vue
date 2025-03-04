@@ -55,7 +55,7 @@ onMounted(() => {
       <option disabled value="">Select playlist</option>
       <option
         v-for="playlist in playlistStore.playlists"
-        :key="playlist"
+        :key="playlist.id"
         v-bind:value="playlist.id"
       >
         {{ playlist.title }}
@@ -70,7 +70,7 @@ onMounted(() => {
           <th>Artist</th>
           <th>Key</th>
         </tr>
-        <tr v-for="track in trackStore.tracks" :key="track">
+        <tr v-for="track in trackStore.tracks" :key="track.title">
           <td>{{ track.title }}</td>
           <td>{{ track.artist }}</td>
           <td>{{ track.key }}</td>
