@@ -1,8 +1,8 @@
 package com.openstreamingtools.MainServer.api;
 
 public class Settings {
-    private int showTrackDelay = 0;
-    private int volumeThreshold = 0;
+    private int showTrackDelay = 5;
+    private int volumeThreshold = 75;
 
     public Settings(int showTrackDelay, int volumeThreshold) {
         this.showTrackDelay = showTrackDelay;
