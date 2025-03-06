@@ -17,18 +17,17 @@ import java.util.Timer;
 @Component
 public class MessageSender {
     private static final Logger logger = LoggerFactory.getLogger(MessageSender.class);
+
+
     private final SimpMessagingTemplate template;
     private final ObjectMapper objectMapper = new ObjectMapper();
-    private Timer timer = new Timer();
 
-    @Autowired
     public static MessageSender instance;
 
     @Autowired
     public MessageSender(SimpMessagingTemplate template) throws SocketException, UnknownHostException {
         this.template = template;
         instance = this;
-     //   timer.scheduleAtFixedRate(new TestMessageSender(), 2000, 50);
     }
 
     public static void sendMessage (String message){
