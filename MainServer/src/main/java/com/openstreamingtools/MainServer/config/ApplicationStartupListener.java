@@ -20,11 +20,11 @@ public class ApplicationStartupListener implements
 
 
     @Override public void onApplicationEvent(ContextRefreshedEvent event) {
-        File settingsFileDir = new File(Configuration.SETTINGS_DIR_PATH);
+        File settingsFileDir = new File(OSTConfiguration.SETTINGS_DIR_PATH);
         if (!settingsFileDir.exists()) {
             settingsFileDir.mkdirs();
         }
-        File settingsFile = new File(Configuration.SETTINGS_FILE_PATH);
+        File settingsFile = new File(OSTConfiguration.SETTINGS_FILE_PATH);
         if (!settingsFile.exists()) {
             try {
                 settingsFile.createNewFile();
@@ -34,7 +34,7 @@ public class ApplicationStartupListener implements
             }
         }
 
-        Configuration.setSettingsFile(settingsFile);
-        Configuration.init();
+        OSTConfiguration.setSettingsFile(settingsFile);
+        OSTConfiguration.init();
     }
 }

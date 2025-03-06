@@ -1,7 +1,6 @@
 package com.openstreamingtools.MainServer.messages.stagelinqmessages;
 
-import com.openstreamingtools.MainServer.config.Configuration;
-import com.openstreamingtools.MainServer.dj.stagelinq.ActingAs;
+import com.openstreamingtools.MainServer.config.OSTConfiguration;
 import com.openstreamingtools.MainServer.dj.stagelinq.StageLinQAction;
 import com.openstreamingtools.MainServer.dj.UnitUtils;
 
@@ -9,10 +8,10 @@ import java.nio.charset.StandardCharsets;
 import java.util.Vector;
 
 public class ServerDiscoveryMessage {
-    String name = Configuration.NAME;
-    String version = Configuration.VERSION;
-    String source = Configuration.SOURCE;
-    byte[] actingAs = Configuration.STAGELINQ_ACTING_AS.getValue();
+    String name = OSTConfiguration.NAME;
+    String version = OSTConfiguration.VERSION;
+    String source = OSTConfiguration.SOURCE;
+    byte[] actingAs = OSTConfiguration.STAGELINQ_ACTING_AS.getValue();
     private Byte[] messageAsBytes = null;
 
 
