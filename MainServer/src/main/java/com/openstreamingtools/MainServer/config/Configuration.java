@@ -33,7 +33,7 @@ public class Configuration {
 
      public static void init() {
         try {
-            settings = Utils.objectMapper.readValue( settingsFileResource.getFile(), Settings.class);
+            settings = Utils.objectMapper.readValue( settingsFileResource.getInputStream(), Settings.class);
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
@@ -50,8 +50,7 @@ public class Configuration {
         return settingsFileResource;
     }
 
-    @Value("classpath:settings.json")
-    public static void setSettingsFileResource(Resource settingsFileResource) {
-        Configuration.settingsFileResource = settingsFileResource;
+    public static void setSettingsFileResource(Resource Resource) {
+        settingsFileResource = Resource;
     }
 }
