@@ -1,16 +1,14 @@
 package com.openstreamingtools.MainServer.config;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.openstreamingtools.MainServer.api.Settings;
 import com.openstreamingtools.MainServer.dj.stagelinq.ActingAs;
 import com.openstreamingtools.MainServer.utils.Utils;
-import jakarta.annotation.PostConstruct;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.context.annotation.Bean;
 import org.springframework.core.io.Resource;
 import org.springframework.stereotype.Component;
 
+import java.io.File;
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 
 @Component
 public class Configuration {
@@ -27,13 +25,15 @@ public class Configuration {
     public static final int DIRECTORY_SERVICE_PORT = 60000;
     public static final int STATEMAP_SERVICE_PORT = 60001;
     private static boolean frontEndRunning = false;
+    public static final String SETTINGS_DIR_PATH = "../settings";
+    public static final String SETTINGS_FILE_PATH = "../settings/settings.json";
 
-    private static Resource settingsFileResource;
+    private static File settingsFile;
     public static Settings settings;
 
      public static void init() {
         try {
-            settings = Utils.objectMapper.readValue( settingsFileResource.getInputStream(), Settings.class);
+            settings = Utils.objectMapper.readValue(settingsFile , Settings.class);
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
@@ -46,11 +46,11 @@ public class Configuration {
         Configuration.frontEndRunning = frontEndRunning;
     }
 
-    public static Resource getSettingsFileResource() {
-        return settingsFileResource;
+    public static File getSettingsFile() {
+        return settingsFile;
     }
 
-    public static void setSettingsFileResource(Resource Resource) {
-        settingsFileResource = Resource;
+    public static void setSettingsFile(File file) {
+        settingsFile = file;
     }
 }
