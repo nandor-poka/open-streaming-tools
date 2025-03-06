@@ -1,6 +1,6 @@
 package com.openstreamingtools.MainServer.messaging;
 
-import com.openstreamingtools.MainServer.config.Configuration;
+import com.openstreamingtools.MainServer.config.OSTConfiguration;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.messaging.Message;
@@ -16,9 +16,9 @@ public class FrontendStartupHandler {
 
 
     @MessageMapping("/startup")
-    @SendTo(Configuration.WEBSOCKET_DATA_PATH)
+    @SendTo(OSTConfiguration.WEBSOCKET_DATA_PATH)
     public void frontendStartup(Message<String> message){
         logger.debug("Frontend startup message received: {}",message.getPayload());
-        Configuration.setFrontEndRunning(true);
+        OSTConfiguration.setFrontEndRunning(true);
     }
 }

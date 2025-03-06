@@ -1,13 +1,12 @@
 package com.openstreamingtools.MainServer.services.stagelinq;
 
-import com.openstreamingtools.MainServer.config.Configuration;
 import com.openstreamingtools.MainServer.dj.stagelinq.SimpleState;
 import com.openstreamingtools.MainServer.messages.frontend.SongData;
 import com.openstreamingtools.MainServer.messages.stagelinqmessages.Service;
 import com.openstreamingtools.MainServer.messages.stagelinqmessages.ServiceType;
 import com.openstreamingtools.MainServer.messaging.SongDataUpdateTask;
 import com.openstreamingtools.MainServer.utils.Utils;
-import static com.openstreamingtools.MainServer.config.Configuration.settings;
+import static com.openstreamingtools.MainServer.config.OSTConfiguration.settings;
 import java.util.HashMap;
 import java.util.Map;
 
