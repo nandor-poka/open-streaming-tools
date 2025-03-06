@@ -2,7 +2,7 @@ package com.openstreamingtools.MainServer.messaging;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.openstreamingtools.MainServer.config.Configuration;
+import com.openstreamingtools.MainServer.config.OSTConfiguration;
 import com.openstreamingtools.MainServer.dj.GenericUnit;
 import com.openstreamingtools.MainServer.messages.MessageType;
 import com.openstreamingtools.MainServer.messages.frontend.UnitData;
@@ -23,7 +23,7 @@ public class UnitRequestHandler {
     private final ObjectMapper objectMapper = new ObjectMapper();
 
     @MessageMapping("/getUnit")
-    @SendTo(Configuration.WEBSOCKET_DATA_PATH)
+    @SendTo(OSTConfiguration.WEBSOCKET_DATA_PATH)
     public String frontendStartup(Message<String> message) throws JsonProcessingException {
         logger.debug("Frontend requested unit data for : {}",message.getPayload());
         UnitRequest unitRequest = objectMapper.readValue(message.getPayload(), UnitRequest.class);

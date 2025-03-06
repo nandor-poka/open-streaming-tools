@@ -1,6 +1,6 @@
 package com.openstreamingtools.MainServer.messages.stagelinqmessages;
 
-import com.openstreamingtools.MainServer.config.Configuration;
+import com.openstreamingtools.MainServer.config.OSTConfiguration;
 import com.openstreamingtools.MainServer.services.stagelinq.DirectoryService;
 import com.openstreamingtools.MainServer.services.stagelinq.StateMapService;
 import com.openstreamingtools.MainServer.utils.Utils;
@@ -20,7 +20,7 @@ public class ServiceAnnouncement {
     public ServiceAnnouncement( int messageId, Service service){
         this.messageId = messageId;
         services.add(service);
-        this.deviceId = Utils.convertBytesToUUID(Configuration.STAGELINQ_ACTING_AS.getValue());
+        this.deviceId = Utils.convertBytesToUUID(OSTConfiguration.STAGELINQ_ACTING_AS.getValue());
         isServer = true;
     }
 
@@ -72,7 +72,7 @@ public class ServiceAnnouncement {
                 for (byte b : Utils.convertIntegerToByteArray(DirectoryService.SERVICE_ANNOUNCEMENT)){
                     buffer.add(b);
                 }
-                for (byte b: Configuration.STAGELINQ_ACTING_AS.getValue()){
+                for (byte b: OSTConfiguration.STAGELINQ_ACTING_AS.getValue()){
                     buffer.add(b);
                 }
             }

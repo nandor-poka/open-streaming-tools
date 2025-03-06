@@ -3,13 +3,11 @@
 import Navbar from './Navbar.vue'
 import { UnitStore } from '@/stores/UnitStore'
 import { SettingsStore } from '@/stores/SettingsStore'
-import { onMounted } from 'vue'
-import { inject } from 'vue'
+import { inject, onMounted } from 'vue'
 import type { Axios } from 'axios'
-const axios: Axios = inject('axios') as Axios
 const unitStore = UnitStore()
 const settingsStore = SettingsStore()
-
+const axios = inject("axios") as Axios
 onMounted(() => {
   axios
     .get('getSettings', {
@@ -33,7 +31,7 @@ onMounted(() => {
 <template>
   <Navbar />
   <div class="greetings">
-    <h1>Dashboard</h1>
+    <h1 class="green">Dashboard</h1>
   </div>
   <div>
     <h2>Current Device / Software</h2>
