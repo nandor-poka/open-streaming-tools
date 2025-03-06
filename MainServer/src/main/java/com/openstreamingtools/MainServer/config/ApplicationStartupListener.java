@@ -1,16 +1,18 @@
 package com.openstreamingtools.MainServer.config;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.cache.CacheManager;
-import org.springframework.cache.annotation.EnableCaching;
+
+import com.openstreamingtools.MainServer.api.Settings;
 import org.springframework.context.ApplicationListener;
 import org.springframework.context.event.ContextRefreshedEvent;
-import org.springframework.core.io.Resource;
+
 import org.springframework.stereotype.Component;
 
+import java.io.File;
+import java.io.IOException;
+
+import static com.openstreamingtools.MainServer.utils.Utils.objectMapper;
+
+@Component
 /**
  * Thic class listens for the Spring Boot Application startup event and
  * initializes the settings file resource object so that the settings
@@ -20,17 +22,27 @@ import org.springframework.stereotype.Component;
 public class ApplicationStartupListener implements
         ApplicationListener<ContextRefreshedEvent> {
 
-    private static final Logger logger = LogManager.getLogger(ApplicationStartupListener.class);
-
-
-    // MAnaged by Spring and loaded by the time the application finishes the startup sequence
     @Value("classpath:settings.json")
     Resource settingsFileResource;
 
 
     // event listener to for the startup event
     @Override public void onApplicationEvent(ContextRefreshedEvent event) {
-        Configuration.setSettingsFileResource(settingsFileResource);
-        Configuration.init();
+        File settingsFileDir = new File(OSTConfiguration.SETTINGS_DIR_PATH);
+        if (!settingsFileDir.exists()) {
+            settingsFileDir.mkdirs();
+        }
+        File settingsFile = new File(OSTConfiguration.SETTINGS_FILE_PATH);
+        if (!settingsFile.exists()) {
+            try {
+                settingsFile.createNewFile();
+                objectMapper.writeValue(settingsFile, new Settings());
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
+        }
+
+        OSTConfiguration.setSettingsFile(settingsFile);
+        OSTConfiguration.init();
     }
 }

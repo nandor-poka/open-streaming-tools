@@ -2,7 +2,7 @@ package com.openstreamingtools.MainServer.udp;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.openstreamingtools.MainServer.config.Configuration;
+import com.openstreamingtools.MainServer.config.OSTConfiguration;
 import com.openstreamingtools.MainServer.dj.UnitUtils;
 import com.openstreamingtools.MainServer.dj.stagelinq.DenonUnit;
 import com.openstreamingtools.MainServer.dj.stagelinq.ModelCode;
@@ -22,8 +22,8 @@ import org.springframework.stereotype.Service;
 import java.io.IOException;
 import java.net.*;
 
-import static com.openstreamingtools.MainServer.config.Configuration.STAGELINQ_BORADCAST_IP;
-import static com.openstreamingtools.MainServer.config.Configuration.STAGELINQ_BROADCAST_PORT;
+import static com.openstreamingtools.MainServer.config.OSTConfiguration.STAGELINQ_BORADCAST_IP;
+import static com.openstreamingtools.MainServer.config.OSTConfiguration.STAGELINQ_BROADCAST_PORT;
 
 
 @Service
@@ -43,7 +43,7 @@ public class StageLinQDiscoveryHandler {
     @ServiceActivator(inputChannel = StageLinQChannelID)
     public void handleMessage(Message message) throws JsonProcessingException {
 
-        if (!Configuration.isFrontEndRunning()){
+        if (!OSTConfiguration.isFrontEndRunning()){
             logger.debug("Waiting for frontend to connect.");
             return;
         }
