@@ -2,7 +2,11 @@ package com.openstreamingtools.MainServer.db.entities;
 
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
+import lombok.Getter;
+import lombok.Setter;
 
+@Setter
+@Getter
 @Entity
 public class PlaylistEntity {
     @Id
@@ -25,51 +29,4 @@ public class PlaylistEntity {
         this.membershipReference = membershipReference;
     }
 
-    public Integer getMembershipReference() {
-        return membershipReference;
-    }
-
-    public void setMembershipReference(Integer membershipReference) {
-        this.membershipReference = membershipReference;
-    }
-
-    public Integer getNextEntityId() {
-        return nextEntityId;
-    }
-
-    public void setNextEntityId(Integer nextEntityId) {
-        this.nextEntityId = nextEntityId;
-    }
-
-    public String getDatabaseUuid() {
-        return databaseUuid;
-    }
-
-    public void setDatabaseUuid(String databaseUuid) {
-        this.databaseUuid = databaseUuid;
-    }
-
-    public Integer getTrackId() {
-        return trackId;
-    }
-
-    public void setTrackId(Integer trackId) {
-        this.trackId = trackId;
-    }
-
-    public Integer getListId() {
-        return listId;
-    }
-
-    public void setListId(Integer listId) {
-        this.listId = listId;
-    }
-
-    public Integer getId() {
-        return id;
-    }
-
-    public void setId(Integer id) {
-        this.id = id;
-    }
 }

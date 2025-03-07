@@ -1,16 +1,14 @@
 package com.openstreamingtools.MainServer.dj;
 
-import com.openstreamingtools.MainServer.dj.stagelinq.*;
-import com.openstreamingtools.MainServer.messages.stagelinqmessages.StageLinQDiscoveryMessage;
+import com.openstreamingtools.MainServer.dj.stagelinq.DenonUnit;
+import com.openstreamingtools.MainServer.dj.stagelinq.ModelCode;
+import com.openstreamingtools.MainServer.dj.stagelinq.ModelType;
+import com.openstreamingtools.MainServer.dj.stagelinq.UnitType;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import java.nio.ByteBuffer;
-import java.nio.charset.StandardCharsets;
 import java.util.AbstractMap;
-import java.util.Arrays;
 import java.util.Map;
-import java.util.UUID;
 
 
 public class UnitUtils {
