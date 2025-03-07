@@ -4,10 +4,10 @@ import Navbar from './Navbar.vue'
 import { SettingsStore } from '@/stores/SettingsStore'
 import type { Axios } from 'axios'
 import { inject, onMounted, useTemplateRef } from 'vue'
-const volSlider = useTemplateRef('volSliderRef')
+/* const volSlider = useTemplateRef('volSliderRef')
 const songDataRed = useTemplateRef('sdRed')
 const songDataGreen = useTemplateRef('sdGreen')
-const songDataBlue = useTemplateRef('sdBlue')
+const songDataBlue = useTemplateRef('sdBlue') */
 const settingsStore = SettingsStore()
 const saveSettingButton = useTemplateRef("saveSettings")
 const axios = inject("axios") as Axios
@@ -19,6 +19,13 @@ onMounted(() => {
     .post('saveSettings', {
       showTrackDelay:  settingsStore.showTrackDelay,
       volumeThreshold:  settingsStore.volumeThreshold ,
+      sdRed: settingsStore.sdRed,
+      sdGreen: settingsStore.sdGreen,
+      sdBlue: settingsStore.sdBlue,
+      faderRed: settingsStore.faderRed,
+      faderGreen: settingsStore.faderGreen,
+      faderBlue: settingsStore.faderBlue
+
     })
     .catch(function (error) {
       // handle error
@@ -26,7 +33,7 @@ onMounted(() => {
     })
     }
   }
-
+/* 
   if (volSlider.value) {
     volSlider.value.oninput = function () {
       if (volSlider.value) {
@@ -54,7 +61,7 @@ onMounted(() => {
         settingsStore.sdBlue = parseInt(songDataBlue.value.value)
       }
     }
-  }
+  } */
 })
 </script>
 
@@ -102,20 +109,35 @@ onMounted(() => {
   <div class="parent">
     <div class="box">
       <label for="volumeSlider">Volume slider tester</label>
-      <input ref="volSliderRef" type="range" min="0" max="100" class="slider" id="volumeSlider" />
+      <input ref="volSliderRef"  v-model="settingsStore.volumeSliderValue" type="range" min="0" max="100" class="slider" id="volumeSlider" />
+      <div>
+        <p>Fader level indicator color</p>
+        <p>
+          <label for="faderRed">Red</label>
+          <input v-model="settingsStore.faderRed" type="range" min="0" max="255" class="slider" id="faderRed" />
+        </p>
+        <p>
+          <label for="faderGreen">Green</label>
+          <input v-model="settingsStore.faderGreen" type="range" min="0" max="255" class="slider" id="faderGreen" />
+        </p>
+        <p>
+          <label for="faderBlue">Blue</label>
+          <input v-model="settingsStore.faderBlue" type="range" min="0" max="255" class="slider" id="sdblue" />
+        </p>
+      </div>
       <div>
         <p>Song data color</p>
         <p>
           <label for="sdred">Red</label>
-          <input ref="sdRed" type="range" min="0" max="255" class="slider" id="sdred" />
+          <input ref="sdRed"   v-model="settingsStore.sdRed" type="range" min="0" max="255" class="slider" id="sdred" />
         </p>
         <p>
           <label for="sdgreen">Green</label>
-          <input ref="sdGreen" type="range" min="0" max="255" class="slider" id="sdgreen" />
+          <input ref="sdGreen"  v-model="settingsStore.sdGreen" type="range" min="0" max="255" class="slider" id="sdgreen" />
         </p>
         <p>
           <label for="sdblue">Blue</label>
-          <input ref="sdBlue" type="range" min="0" max="255" class="slider" id="sdblue" />
+          <input ref="sdBlue"   v-model="settingsStore.sdBlue" type="range" min="0" max="255" class="slider" id="sdblue" />
         </p>
       </div>
       <div>
@@ -146,7 +168,10 @@ onMounted(() => {
       <div
         v-bind:style="{
           backgroundImage:
-            'linear-gradient(to right, var(--ost-deck-fill-color) ' +
+            'linear-gradient(to right, rgb( ' +
+              settingsStore.faderRed +',' +
+              settingsStore.faderGreen +',' +
+              settingsStore.faderBlue +') '  +
             settingsStore.volumeSliderValue +
             '% , var(--ost-deck-empty-color) ' +
             (settingsStore.volumeSliderValue > 50
