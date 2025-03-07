@@ -10,7 +10,8 @@ import org.springframework.web.socket.config.annotation.EnableWebSocketMessageBr
 import org.springframework.web.socket.config.annotation.StompEndpointRegistry;
 import org.springframework.web.socket.config.annotation.WebSocketMessageBrokerConfigurer;
 
-import static com.openstreamingtools.MainServer.config.OSTConfiguration.*;
+import static com.openstreamingtools.MainServer.config.OSTConfiguration.WEBSOCKET_CONNECTION_PATH;
+import static com.openstreamingtools.MainServer.config.OSTConfiguration.WEBSOCKET_DATA_PATH;
 
 @Configuration
 @EnableWebSocketMessageBroker

@@ -1,12 +1,10 @@
 package com.openstreamingtools.MainServer.db.configuration;
 
+import lombok.Setter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.Lazy;
 import org.springframework.core.env.Environment;
-import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
-import org.springframework.data.repository.config.BootstrapMode;
 import org.springframework.jdbc.datasource.DriverManagerDataSource;
 
 import javax.sql.DataSource;
@@ -32,9 +30,7 @@ public class DataSourceConfiguration {
         return dataSource;
     }
 
-    public static String getDbUrl() {
-        return dbUrl;
-    }
+
 
     public static void setDbUrl(String newDBUrl){
         dbUrl = "jdbc:sqlite:"+newDBUrl;

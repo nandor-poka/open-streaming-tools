@@ -3,10 +3,14 @@ package com.openstreamingtools.MainServer.db.entities;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
+import lombok.Getter;
+import lombok.Setter;
 
 import java.sql.Date;
 
 @Entity
+@Getter
+@Setter
 public class Playlist {
 
     @Id
@@ -36,59 +40,5 @@ public class Playlist {
         this.isExplicitlyExported = isExplicitlyExported;
     }
 
-    public int getId() {
-        return id;
-    }
 
-    public void setId(int id) {
-        this.id = id;
-    }
-
-    public String getTitle() {
-        return title;
-    }
-
-    public void setTitle(String title) {
-        this.title = title;
-    }
-
-    public int getParentListId() {
-        return parentListId;
-    }
-
-    public void setParentListId(int parentListId) {
-        this.parentListId = parentListId;
-    }
-
-    public boolean isPersisted() {
-        return isPersisted;
-    }
-
-    public void setPersisted(boolean persisted) {
-        isPersisted = persisted;
-    }
-
-    public int getNextListId() {
-        return nextListId;
-    }
-
-    public void setNextListId(int nextListId) {
-        this.nextListId = nextListId;
-    }
-
-    public Date getLastEditTime() {
-        return lastEditTime;
-    }
-
-    public void setLastEditTime(Date lastEditTime) {
-        this.lastEditTime = lastEditTime;
-    }
-
-    public boolean isExplicitlyExported() {
-        return isExplicitlyExported;
-    }
-
-    public void setExplicitlyExported(boolean explicitlyExported) {
-        isExplicitlyExported = explicitlyExported;
-    }
 }

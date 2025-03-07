@@ -4,7 +4,6 @@ package com.openstreamingtools.MainServer.config;
 import com.openstreamingtools.MainServer.api.Settings;
 import org.springframework.context.ApplicationListener;
 import org.springframework.context.event.ContextRefreshedEvent;
-
 import org.springframework.stereotype.Component;
 
 import java.io.File;
