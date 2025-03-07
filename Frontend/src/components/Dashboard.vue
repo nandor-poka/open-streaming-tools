@@ -22,6 +22,13 @@ onMounted(() => {
       const settings = response.data
       settingsStore.showTrackDelay = settings.showTrackDelay
       settingsStore.volumeThreshold = settings.volumeThreshold
+      settingsStore.sdRed = settings.sdRed
+      settingsStore.sdGreen = settings.sdGreen
+      settingsStore.sdBlue = settings.sdBlue
+      settingsStore.faderRed = settings.faderRed
+      settingsStore.faderGreen = settings.faderGreen
+      settingsStore.faderBlue = settings.faderBlue
+
     })
     .catch(function (error) {
       // handle error

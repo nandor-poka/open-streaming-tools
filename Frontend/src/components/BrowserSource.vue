@@ -12,7 +12,10 @@ const settingsStore = SettingsStore()
     <div
       v-bind:style="{
         backgroundImage:
-          'linear-gradient(to right, var(--ost-deck-fill-color) ' +
+          'linear-gradient(to right, rgb( ' +
+            settingsStore.faderRed +',' +
+            settingsStore.faderGreen +',' +
+            settingsStore.faderBlue +') '  +
           unitStore.deck1VolumeData.volume +
           '% , var(--ost-deck-empty-color) ' +
           (unitStore.deck1VolumeData.volume > 50
