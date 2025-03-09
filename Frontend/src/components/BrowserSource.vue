@@ -2,8 +2,37 @@
 <script setup lang="ts">
 import { SettingsStore } from '@/stores/SettingsStore'
 import { UnitStore } from '@/stores/UnitStore'
+import type { Axios } from 'axios'
+import { onMounted, inject } from 'vue'
 const unitStore = UnitStore()
 const settingsStore = SettingsStore()
+const axios: Axios = inject('axios') as Axios
+onMounted(() => {
+  axios
+    .get('getSettings', {
+      method: 'get',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+    })
+    .then(function (response) {
+      const settings = response.data
+      settingsStore.showTrackDelay = settings.showTrackDelay
+      settingsStore.volumeThreshold = settings.volumeThreshold
+      settingsStore.sdRed = settings.sdRed
+      settingsStore.sdGreen = settings.sdGreen
+      settingsStore.sdBlue = settings.sdBlue
+      settingsStore.faderRed = settings.faderRed
+      settingsStore.faderGreen = settings.faderGreen
+      settingsStore.faderBlue = settings.faderBlue
+
+    })
+    .catch(function (error) {
+      // handle error
+      console.log(error)
+    })
+})
+
 </script>
 
 <template>
@@ -12,14 +41,11 @@ const settingsStore = SettingsStore()
     <div
       v-bind:style="{
         backgroundImage:
-          'linear-gradient(to right, rgb( ' +
-            settingsStore.faderRed +',' +
-            settingsStore.faderGreen +',' +
-            settingsStore.faderBlue +') '  +
+        'linear-gradient(to right, var(--ost-deck-fill-color) ' +
           unitStore.deck1VolumeData.volume +
           '% , var(--ost-deck-empty-color) ' +
           (unitStore.deck1VolumeData.volume > 50
-            ? 100 - unitStore.deck1VolumeData.volume
+            ? 100 - unitStore.deck3VolumeData.volume
             : unitStore.deck1VolumeData.volume) +
           '%)',
         color:
