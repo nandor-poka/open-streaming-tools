@@ -21,8 +21,7 @@ onMounted(() => {
                   },
                 })
                 .then(function (response) {
-                  const playlits = response.data
-                  playlistStore.playlists = playlits
+                  playlistStore.playlists = response.data
                 })
                 .catch(function (error) {
                   // handle error
@@ -40,8 +39,7 @@ onMounted(() => {
             },
           })
           .then(function (response) {
-            const tracks = response.data
-            trackStore.tracks = tracks
+            trackStore.tracks = response.data
           })
           .catch(function (error) {
             // handle error
