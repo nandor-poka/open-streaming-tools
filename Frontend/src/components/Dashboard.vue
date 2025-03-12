@@ -70,19 +70,4 @@ h3 {
     text-align: left;
   }
 }
-
-.box {
-  width: 300px;
-  height: 150px;
-  border: 1px solid black;
-  padding: 10px;
-  margin: 10px;
-}
-.right-aligned {
-  margin-left: auto;
-  margin-right: 0;
-}
-.parent {
-  display: flex;
-}
 </style>
