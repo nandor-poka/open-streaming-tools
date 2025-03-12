@@ -9,7 +9,6 @@ import type { Axios } from 'axios'
 const axios: Axios = inject('axios') as Axios
 const unitStore = UnitStore()
 const settingsStore = SettingsStore()
-
 onMounted(() => {
   axios
     .get('getSettings', {
