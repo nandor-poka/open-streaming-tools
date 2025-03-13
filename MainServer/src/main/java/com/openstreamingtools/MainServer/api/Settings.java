@@ -16,14 +16,5 @@ public class Settings {
     private int faderBlue = 128;
     private boolean twitchStatus = false;
     private OauthToken twitchToken;
-
-    public Settings(int showTrackDelay, int volumeThreshold) {
-        this.showTrackDelay = showTrackDelay;
-        this.volumeThreshold = volumeThreshold;
-    }
-
-    public Settings() {
-    }
-
 }
 

@@ -5,6 +5,7 @@ import com.openstreamingtools.MainServer.dj.stagelinq.ActingAs;
 import com.openstreamingtools.MainServer.utils.Utils;
 import lombok.Getter;
 import lombok.Setter;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestClient;
 
@@ -14,6 +15,7 @@ import java.io.IOException;
 import static com.openstreamingtools.MainServer.utils.Utils.objectMapper;
 
 @Component
+@Slf4j
 public class OSTConfiguration {
 
     // Public constatncs
@@ -33,6 +35,7 @@ public class OSTConfiguration {
     public static final String SETTINGS_FILE_PATH = "../settings/settings.json";
     public static final String TWITCH_API_GET_TOKEN_URL = "https://id.twitch.tv/oauth2/token";
     public static final String TWITCH_API_AUTHORIZE_URL = "https://id.twitch.tv/oauth2/authorize";
+    public static final String TWITCH_EVENTSUB_WEBSOCKET_ADDRESS = "wss://eventsub.wss.twitch.tv/ws";
 
     public static RestClient restClient = RestClient.create();
     public static Settings settings;
@@ -57,6 +60,7 @@ public class OSTConfiguration {
     public static void saveSettings() {
         try {
             objectMapper.writeValue(settingsFile, settings);
+            log.debug(objectMapper.writeValueAsString(settings));
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
