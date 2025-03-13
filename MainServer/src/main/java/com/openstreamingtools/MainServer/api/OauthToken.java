@@ -3,11 +3,13 @@ package com.openstreamingtools.MainServer.api;
 
 import lombok.Getter;
 import lombok.Setter;
+import lombok.ToString;
 
 import java.util.ArrayList;
 
 @Getter
 @Setter
+@ToString
 public class OauthToken {
     private String acces_token = "";
     private int expires_in = 0;
