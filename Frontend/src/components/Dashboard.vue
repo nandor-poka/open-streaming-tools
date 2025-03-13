@@ -43,6 +43,14 @@ onMounted(() => {
     <h1>Dashboard</h1>
   </div>
   <div>
+    <h2>Twitch connection live: {{ settingsStore.twitchStatus }}</h2>
+    <a href='https://id.twitch.tv/oauth2/authorize
+      ?client_id=n6breeyo2zy1nzlpfx43x91lgaobgo
+      ?response_type=code
+      ?redirect_uri=localhost:8080/twitch
+      ?scope=user%3Aread%3Achat%20user%3Awrite%3Achat'>Login to Twitch</a>
+  </div>
+  <div>
     <h2>Current Device / Software</h2>
     <h3>{{ unitStore.currentUnit.longName }} version {{ unitStore.currentUnit.version }}</h3>
   </div>

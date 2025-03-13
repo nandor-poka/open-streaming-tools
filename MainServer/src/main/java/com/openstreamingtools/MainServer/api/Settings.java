@@ -14,6 +14,8 @@ public class Settings {
     private int faderRed = 0;
     private int faderGreen = 255;
     private int faderBlue = 128;
+    private boolean twitchStatus = false;
+    private OauthToken twitchToken;
 
     public Settings(int showTrackDelay, int volumeThreshold) {
         this.showTrackDelay = showTrackDelay;

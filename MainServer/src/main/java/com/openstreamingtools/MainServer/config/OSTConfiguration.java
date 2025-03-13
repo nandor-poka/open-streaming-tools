@@ -3,14 +3,22 @@ package com.openstreamingtools.MainServer.config;
 import com.openstreamingtools.MainServer.api.Settings;
 import com.openstreamingtools.MainServer.dj.stagelinq.ActingAs;
 import com.openstreamingtools.MainServer.utils.Utils;
+import lombok.Getter;
+import lombok.Setter;
 import org.springframework.stereotype.Component;
+import org.springframework.web.client.RestClient;
 
 import java.io.File;
 import java.io.IOException;
 
+import static com.openstreamingtools.MainServer.utils.Utils.objectMapper;
+
 @Component
+@Getter
+@Setter
 public class OSTConfiguration {
 
+    // Public constatncs
     public static final String NAME = "Open Streaming Tools";
     public static final String VERSION = "0.0.1";
     public static final String SOURCE = "OST";
@@ -23,12 +31,16 @@ public class OSTConfiguration {
     public static final String FRONTEND_JAR_ORIGN = "http://localhost:8080";
     public static final int DIRECTORY_SERVICE_PORT = 60000;
     public static final int STATEMAP_SERVICE_PORT = 60001;
-    private static boolean frontEndRunning = false;
     public static final String SETTINGS_DIR_PATH = "../settings";
     public static final String SETTINGS_FILE_PATH = "../settings/settings.json";
+    public static final String TWITCH_API_GET_TOKEN_URL = "https://id.twitch.tv/oauth2/token";
+    public static final String TWITCH_API_AUTHORIZE_URL = "https://id.twitch.tv/oauth2/authorize";
 
-    private static File settingsFile;
+    public static RestClient restClient = RestClient.create();
     public static Settings settings;
+    private static boolean frontEndRunning = false;
+    private static File settingsFile;
+
 
      public static void init() {
         try {
@@ -37,19 +49,17 @@ public class OSTConfiguration {
             throw new RuntimeException(e);
         }
     }
-    public static boolean isFrontEndRunning() {
-        return frontEndRunning;
-    }
 
     public static void setFrontEndRunning(boolean frontEndRunning) {
         OSTConfiguration.frontEndRunning = frontEndRunning;
     }
 
-    public static File getSettingsFile() {
-        return settingsFile;
+    public static void saveSettings() {
+        try {
+            objectMapper.writeValue(settingsFile, settings);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
     }
 
-    public static void setSettingsFile(File file) {
-        settingsFile = file;
-    }
 }

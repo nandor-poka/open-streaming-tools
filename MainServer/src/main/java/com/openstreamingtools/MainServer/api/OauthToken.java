@@ -1,0 +1,17 @@
+package com.openstreamingtools.MainServer.api;
+
+
+import lombok.Getter;
+import lombok.Setter;
+
+import java.util.ArrayList;
+
+@Getter
+@Setter
+public class OauthToken {
+    private String acces_token = "";
+    private int expires_in = 0;
+    private String refresh_token = "";
+    private ArrayList<String> scopes = new ArrayList<String>();
+    private String token_type = "bearer";
+}
