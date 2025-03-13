@@ -14,8 +14,6 @@ import java.io.IOException;
 import static com.openstreamingtools.MainServer.utils.Utils.objectMapper;
 
 @Component
-@Getter
-@Setter
 public class OSTConfiguration {
 
     // Public constatncs
@@ -38,7 +36,9 @@ public class OSTConfiguration {
 
     public static RestClient restClient = RestClient.create();
     public static Settings settings;
+    @Getter
     private static boolean frontEndRunning = false;
+    @Setter
     private static File settingsFile;
 
 
