@@ -7,7 +7,6 @@ import lombok.Getter;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
-import org.springframework.web.client.RestClient;
 
 import java.io.File;
 import java.io.IOException;
@@ -33,11 +32,9 @@ public class OSTConfiguration {
     public static final int STATEMAP_SERVICE_PORT = 60001;
     public static final String SETTINGS_DIR_PATH = "../settings";
     public static final String SETTINGS_FILE_PATH = "../settings/settings.json";
-    public static final String TWITCH_API_GET_TOKEN_URL = "https://id.twitch.tv/oauth2/token";
-    public static final String TWITCH_API_AUTHORIZE_URL = "https://id.twitch.tv/oauth2/authorize";
-    public static final String TWITCH_EVENTSUB_WEBSOCKET_ADDRESS = "wss://eventsub.wss.twitch.tv/ws";
+    public static final String TWITCH_CLIEND_ID ="n6breeyo2zy1nzlpfx43x91lgaobgo";
+    public static final String TWITCH_CLIENT_SECRET = "y6gfc36ycbvt8z89rhxsaqk6hb649f";
 
-    public static RestClient restClient = RestClient.create();
     public static Settings settings;
     @Getter
     private static boolean frontEndRunning = false;

@@ -1,6 +1,7 @@
 package com.openstreamingtools.MainServer.websocket;
 
 
+import com.openstreamingtools.MainServer.config.OSTConfiguration;
 import org.springframework.messaging.simp.stomp.StompCommand;
 import org.springframework.messaging.simp.stomp.StompHeaders;
 import org.springframework.messaging.simp.stomp.StompSession;
@@ -12,6 +13,7 @@ public class OSTStompSessionHandler implements StompSessionHandler {
     private String websocketSessionID;
     @Override
     public void afterConnected(StompSession session, StompHeaders connectedHeaders) {
+        OSTConfiguration.settings.setTwitchStatus(true);
 
     }
 
