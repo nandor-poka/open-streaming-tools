@@ -1,6 +1,7 @@
 package com.openstreamingtools.MainServer.websocket;
 
 import com.openstreamingtools.MainServer.config.OSTConfiguration;
+import com.openstreamingtools.MainServer.utils.Utils;
 import org.springframework.messaging.converter.MappingJackson2MessageConverter;
 import org.springframework.messaging.simp.stomp.StompSessionHandler;
 import org.springframework.web.socket.client.WebSocketClient;
@@ -16,7 +17,7 @@ public class WeboscketClient {
 
     public static void connect(){
         stompClient.setMessageConverter(new MappingJackson2MessageConverter());
-        stompClient.connectAsync(OSTConfiguration.TWITCH_EVENTSUB_WEBSOCKET_ADDRESS, sessionHandler);
+        stompClient.connectAsync(Utils.TWITCH_EVENTSUB_WEBSOCKET_ADDRESS, sessionHandler);
     }
 
 }
