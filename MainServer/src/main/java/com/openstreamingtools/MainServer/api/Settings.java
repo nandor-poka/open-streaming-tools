@@ -1,5 +1,6 @@
 package com.openstreamingtools.MainServer.api;
 
+import com.openstreamingtools.MainServer.twitch.TwitchUser;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -16,5 +17,7 @@ public class Settings {
     private int faderBlue = 128;
     private boolean twitchStatus = false;
     private OauthToken twitchToken;
+    private TwitchUser twitchUser;
+    private TwitchUser botUser;
 }
 

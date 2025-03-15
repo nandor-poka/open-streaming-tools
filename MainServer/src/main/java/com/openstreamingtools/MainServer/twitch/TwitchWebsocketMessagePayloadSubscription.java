@@ -1,4 +1,4 @@
-package com.openstreamingtools.MainServer.websocket;
+package com.openstreamingtools.MainServer.twitch;
 
 import lombok.Getter;
 import lombok.Setter;

@@ -11,7 +11,7 @@ import java.util.ArrayList;
 @Setter
 @ToString
 public class OauthToken {
-    private String acces_token = "";
+    private String access_token = "";
     private int expires_in = 0;
     private String refresh_token = "";
     private ArrayList<String> scopes = new ArrayList<String>();

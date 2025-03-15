@@ -1,8 +1,12 @@
 package com.openstreamingtools.MainServer.utils;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.openstreamingtools.MainServer.api.OauthToken;
 import com.openstreamingtools.MainServer.config.OSTConfiguration;
+import com.openstreamingtools.MainServer.twitch.TwitchUser;
+import com.openstreamingtools.MainServer.twitch.TwitchUsers;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.MediaType;
 import org.springframework.util.LinkedMultiValueMap;
@@ -23,8 +27,11 @@ public class Utils {
     public static final ObjectMapper objectMapper = new ObjectMapper();
     public static final Timer timer = new Timer();
     public static final String TWITCH_API_GET_TOKEN_URL = "https://id.twitch.tv/oauth2/token";
-    public static final String TWITCH_API_AUTHORIZE_URL = "https://id.twitch.tv/oauth2/authorize";
+  //  public static final String TWITCH_API_AUTHORIZE_URL = "https://id.twitch.tv/oauth2/authorize";
     public static final String TWITCH_EVENTSUB_WEBSOCKET_ADDRESS = "wss://eventsub.wss.twitch.tv/ws";
+    public static final String TWITCC_GET_USER = "https://api.twitch.tv/helix/users";
+    public static final String TWITCH_SUBSCRIBE = "https://api.twitch.tv/helix/eventsub/subscriptions";
+    public static final String TWITCH_CHAT_MESSAGE = "https://api.twitch.tv/helix/chat/messages";
     public static RestClient restClient = RestClient.create();
 
     public static void getAuthTokenFromTwitch(String code){
@@ -35,8 +42,8 @@ public class Utils {
         params.add("code", code);
         params.add("redirect_uri", "http://localhost:8080/");
         log.debug(code);
-        OauthToken response = Utils.restClient.post()
-                .uri("https://id.twitch.tv/oauth2/token")
+        OauthToken response = restClient.post()
+                .uri(TWITCH_API_GET_TOKEN_URL)
                 .contentType(MediaType.APPLICATION_FORM_URLENCODED)
                 .accept(MediaType.APPLICATION_JSON)
                 .body(params)
@@ -55,8 +62,8 @@ public class Utils {
         params.add("refresh_token", URLEncoder.encode(token, StandardCharsets.UTF_8));
         params.add("redirect_uri", "http://localhost:8080/");
 
-        OauthToken response = Utils.restClient.post()
-                .uri("https://id.twitch.tv/oauth2/token")
+        OauthToken response = restClient.post()
+                .uri(TWITCH_API_GET_TOKEN_URL)
                 .contentType(MediaType.APPLICATION_FORM_URLENCODED)
                 .accept(MediaType.APPLICATION_JSON)
                 .body(params)
@@ -67,6 +74,53 @@ public class Utils {
         OSTConfiguration.saveSettings();
     }
 
+    public static void subscribeToTwitch() {
+        String response = null;
+        try {
+            response = restClient.post()
+                    .uri(TWITCH_SUBSCRIBE)
+                    .header("Authorization","Bearer "
+                            + OSTConfiguration.settings.getTwitchToken().getAccess_token())
+                    .header("Client-Id", OSTConfiguration.TWITCH_CLIEND_ID)
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .body(Utils.objectMapper.readValue(
+                            """
+        {
+        "type": "channel.chat.message",
+        "version": "1",
+        "condition": {
+            "broadcaster_user_id": """+OSTConfiguration.settings.getTwitchUser().getId()
+                            +"""
+            "user_id":"""+OSTConfiguration.settings.getBotUser().getId()+"""
+        },
+        "transport": {
+            "method": "webhook",
+            "callback": "https://example.com/webhooks/callback",
+            "secret": "s3cRe7"
+        }
+    }""",Object.class ))
+                    .retrieve()
+                    .body(String.class);
+        } catch (JsonProcessingException e) {
+            throw new RuntimeException(e);
+        }
+        log.debug(response);
+    }
+
+    public static TwitchUsers getIdforUser(String name) throws JsonProcessingException {
+        MultiValueMap<String, String> params = new LinkedMultiValueMap<>();
+        params.add("login", name);
+        String response = Utils.restClient.get()
+                .uri(TWITCC_GET_USER +"?login="+name)
+                .header("Authorization","Bearer "
+                        +OSTConfiguration.settings.getTwitchToken().getAccess_token())
+                .header("Client-Id", OSTConfiguration.TWITCH_CLIEND_ID)
+                .retrieve()
+                .body(String.class);
+        log.debug(response);
+
+        return Utils.objectMapper.readValue(response , TwitchUsers.class ) ;
+    }
 
     public static void putIntegerToByteArray(int i, byte[] array){
         array[0] = (byte)((i >> 24)& 0xFF);
