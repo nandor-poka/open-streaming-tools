@@ -5,8 +5,10 @@ import com.openstreamingtools.MainServer.api.Settings;
 import com.openstreamingtools.MainServer.utils.Utils;
 import com.openstreamingtools.MainServer.websocket.WeboscketClient;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.ApplicationListener;
 import org.springframework.context.event.ContextRefreshedEvent;
+import org.springframework.core.io.Resource;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Component;
 import org.springframework.util.LinkedMultiValueMap;
@@ -29,8 +31,6 @@ import static com.openstreamingtools.MainServer.utils.Utils.objectMapper;
 public class ApplicationStartupListener implements
         ApplicationListener<ContextRefreshedEvent> {
 
-    @Value("classpath:settings.json")
-    Resource settingsFileResource;
 
 
     // event listener to for the startup event
