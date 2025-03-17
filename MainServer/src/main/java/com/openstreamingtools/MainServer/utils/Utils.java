@@ -13,6 +13,7 @@ import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.RestClient;
 
+import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 import java.nio.ByteBuffer;
@@ -48,10 +49,18 @@ public class Utils {
                 .accept(MediaType.APPLICATION_JSON)
                 .body(params)
                 .retrieve()
+                .onStatus(status -> status.is4xxClientError() || status.is5xxServerError(),
+                        (request, resp) -> {
+                            log.error("Error getting token from Twitch token: " + resp.getStatusCode());
+                            log.error(resp.getStatusText());
+                        })
                 .body(OauthToken.class);
-        log.debug(response.toString());
-        OSTConfiguration.settings.setTwitchToken(response);
-        OSTConfiguration.saveSettings();
+        if (response != null){
+            log.debug(response.toString());
+            OSTConfiguration.settings.setTwitchToken(response);
+            OSTConfiguration.saveSettings();
+        }
+
     }
 
     public static void refreshAuthTokenFromTwitch(String token) throws UnsupportedEncodingException {
@@ -62,16 +71,30 @@ public class Utils {
         params.add("refresh_token", URLEncoder.encode(token, StandardCharsets.UTF_8));
         params.add("redirect_uri", "http://localhost:8080/");
 
-        OauthToken response = restClient.post()
-                .uri(TWITCH_API_GET_TOKEN_URL)
-                .contentType(MediaType.APPLICATION_FORM_URLENCODED)
-                .accept(MediaType.APPLICATION_JSON)
-                .body(params)
-                .retrieve()
-                .body(OauthToken.class);
-        log.debug(response.toString());
-        OSTConfiguration.settings.setTwitchToken(response);
-        OSTConfiguration.saveSettings();
+        try{
+            OauthToken response = restClient.post()
+                    .uri(TWITCH_API_GET_TOKEN_URL)
+                    .contentType(MediaType.APPLICATION_FORM_URLENCODED)
+                    .accept(MediaType.APPLICATION_JSON)
+                    .body(params)
+                    .retrieve()
+                    .onStatus(status -> status.is4xxClientError() || status.is5xxServerError(),
+                            (request, resp) -> {
+                                log.error("Error refreshing token: " + resp.getStatusCode());
+                                log.error(resp.getStatusText());
+                            })
+                    .body(OauthToken.class);
+            if (response != null) {
+                log.debug(response.toString());
+                OSTConfiguration.settings.setTwitchToken(response);
+                OSTConfiguration.saveSettings();
+
+            }
+        } catch (Exception e) {
+          log.error(e.getMessage());
+        }
+
+
     }
 
     public static void subscribeToTwitch() {

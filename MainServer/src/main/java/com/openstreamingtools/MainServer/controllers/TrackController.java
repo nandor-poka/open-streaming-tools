@@ -17,6 +17,7 @@ public class TrackController {
 
     @GetMapping(value = "/getTracksForPlaylist/{playlistID}", produces = "application/json")
     public List<Track> getTracksByPlaylist(@PathVariable int playlistID){
-        return  trackRepository.findAllByPlaylistID(playlistID);
+       List<Track> tracks = trackRepository.findAllByPlaylistID(playlistID);
+        return tracks;
     }
 }
