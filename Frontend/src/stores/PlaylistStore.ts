@@ -4,9 +4,10 @@ import type { Playlist } from '@/types/Playlist'
 export const PlaylistStore = defineStore('PlaylistStore', () => {
   const playlists = ref(Array<Playlist>())
   const activePlaylistId = ref(0)
-
+  const playlistDatabasePath = ref('../databases/enginedj.db')
   return {
     playlists,
     activePlaylistId,
+    playlistDatabasePath,
   }
 })

@@ -1,31 +1,23 @@
 package com.openstreamingtools.MainServer.api;
 
+import com.openstreamingtools.MainServer.twitch.TwitchUser;
+import lombok.Getter;
+import lombok.Setter;
+
+@Setter
+@Getter
 public class Settings {
     private int showTrackDelay = 5;
     private int volumeThreshold = 75;
-
-    public Settings(int showTrackDelay, int volumeThreshold) {
-        this.showTrackDelay = showTrackDelay;
-        this.volumeThreshold = volumeThreshold;
-    }
-
-    public Settings() {
-    }
-
-    public int getShowTrackDelay() {
-        return showTrackDelay;
-    }
-
-    public void setShowTrackDelay(int showTrackDelay) {
-        this.showTrackDelay = showTrackDelay;
-    }
-
-    public int getVolumeThreshold() {
-        return volumeThreshold;
-    }
-
-    public void setVolumeThreshold(int volumeThreshold) {
-        this.volumeThreshold = volumeThreshold;
-    }
+    private int sdRed = 0;
+    private int sdGreen = 128;
+    private int sdBlue = 255;
+    private int faderRed = 0;
+    private int faderGreen = 255;
+    private int faderBlue = 128;
+    private boolean twitchStatus = false;
+    private OauthToken twitchToken;
+    private TwitchUser twitchUser;
+    private TwitchUser botUser;
 }
 

@@ -1,4 +1,4 @@
-package com.openstreamingtools.MainServer.config;
+package com.openstreamingtools.MainServer.websocket;
 
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -10,11 +10,12 @@ import org.springframework.web.socket.config.annotation.EnableWebSocketMessageBr
 import org.springframework.web.socket.config.annotation.StompEndpointRegistry;
 import org.springframework.web.socket.config.annotation.WebSocketMessageBrokerConfigurer;
 
-import static com.openstreamingtools.MainServer.config.OSTConfiguration.*;
+import static com.openstreamingtools.MainServer.config.OSTConfiguration.WEBSOCKET_CONNECTION_PATH;
+import static com.openstreamingtools.MainServer.config.OSTConfiguration.WEBSOCKET_DATA_PATH;
 
 @Configuration
 @EnableWebSocketMessageBroker
-public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
+public class WebSocketServerConfig implements WebSocketMessageBrokerConfigurer {
 
 
 
@@ -33,9 +34,8 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
 
     @Override
     public void registerStompEndpoints(StompEndpointRegistry registry) {
-        registry.addEndpoint(WEBSOCKET_CONNECTION_PATH).setAllowedOrigins(FRONTEND_ORIGN);
-        registry.addEndpoint(WEBSOCKET_CONNECTION_PATH).setAllowedOrigins(FRONTEND_ORIGN).withSockJS();
-        registry.addEndpoint(WEBSOCKET_CONNECTION_PATH).setAllowedOrigins(FRONTEND_JAR_ORIGN);
-        registry.addEndpoint(WEBSOCKET_CONNECTION_PATH).setAllowedOrigins(FRONTEND_JAR_ORIGN).withSockJS();
+        registry.addEndpoint(WEBSOCKET_CONNECTION_PATH).setAllowedOrigins("*");
+        registry.addEndpoint(WEBSOCKET_CONNECTION_PATH).setAllowedOrigins("*").withSockJS();
+
     }
 }
