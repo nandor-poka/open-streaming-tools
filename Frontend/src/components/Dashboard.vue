@@ -3,11 +3,13 @@
 import Navbar from './Navbar.vue'
 import { UnitStore } from '@/stores/UnitStore'
 import { SettingsStore } from '@/stores/SettingsStore'
-import { inject, onMounted } from 'vue'
+import { onMounted } from 'vue'
+import { inject } from 'vue'
 import type { Axios } from 'axios'
+const axios: Axios = inject('axios') as Axios
 const unitStore = UnitStore()
 const settingsStore = SettingsStore()
-const axios = inject("axios") as Axios
+
 onMounted(() => {
   axios
     .get('getSettings', {
@@ -20,6 +22,13 @@ onMounted(() => {
       const settings = response.data
       settingsStore.showTrackDelay = settings.showTrackDelay
       settingsStore.volumeThreshold = settings.volumeThreshold
+      settingsStore.sdRed = settings.sdRed
+      settingsStore.sdGreen = settings.sdGreen
+      settingsStore.sdBlue = settings.sdBlue
+      settingsStore.faderRed = settings.faderRed
+      settingsStore.faderGreen = settings.faderGreen
+      settingsStore.faderBlue = settings.faderBlue
+
     })
     .catch(function (error) {
       // handle error
@@ -31,7 +40,11 @@ onMounted(() => {
 <template>
   <Navbar />
   <div class="greetings">
-    <h1 class="green">Dashboard</h1>
+    <h1>Dashboard</h1>
+  </div>
+  <div>
+    <h2>Twitch connection live: {{ settingsStore.twitchStatus }}</h2>
+    <a href='https://id.twitch.tv/oauth2/authorize?client_id=n6breeyo2zy1nzlpfx43x91lgaobgo&response_type=code&redirect_uri=http://localhost:8080/twitch&scope=user%3Aread%3Achat%20user%3Awrite%3Achat'>Login to Twitch</a>
   </div>
   <div>
     <h2>Current Device / Software</h2>

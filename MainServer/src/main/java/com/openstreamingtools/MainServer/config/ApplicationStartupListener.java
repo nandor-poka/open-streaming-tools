@@ -2,16 +2,23 @@ package com.openstreamingtools.MainServer.config;
 
 
 import com.openstreamingtools.MainServer.api.Settings;
+import com.openstreamingtools.MainServer.utils.Utils;
+import com.openstreamingtools.MainServer.websocket.WeboscketClient;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.ApplicationListener;
 import org.springframework.context.event.ContextRefreshedEvent;
-
+import org.springframework.http.MediaType;
 import org.springframework.stereotype.Component;
+import org.springframework.util.LinkedMultiValueMap;
+import org.springframework.util.MultiValueMap;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.UnsupportedEncodingException;
 
 import static com.openstreamingtools.MainServer.utils.Utils.objectMapper;
 
+@Slf4j
 @Component
 /**
  * Thic class listens for the Spring Boot Application startup event and
@@ -41,8 +48,16 @@ public class ApplicationStartupListener implements
                 throw new RuntimeException(e);
             }
         }
-
         OSTConfiguration.setSettingsFile(settingsFile);
         OSTConfiguration.init();
+        if (OSTConfiguration.settings.getTwitchToken() != null) {
+            try {
+                Utils.refreshAuthTokenFromTwitch(OSTConfiguration.settings.getTwitchToken().getRefresh_token());
+                WeboscketClient.connect();
+            } catch (UnsupportedEncodingException e) {
+                throw new RuntimeException(e);
+            }
+        }
+
     }
 }

@@ -2,8 +2,37 @@
 <script setup lang="ts">
 import { SettingsStore } from '@/stores/SettingsStore'
 import { UnitStore } from '@/stores/UnitStore'
+import type { Axios } from 'axios'
+import { onMounted, inject } from 'vue'
 const unitStore = UnitStore()
 const settingsStore = SettingsStore()
+const axios: Axios = inject('axios') as Axios
+onMounted(() => {
+  axios
+    .get('getSettings', {
+      method: 'get',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+    })
+    .then(function (response) {
+      const settings = response.data
+      settingsStore.showTrackDelay = settings.showTrackDelay
+      settingsStore.volumeThreshold = settings.volumeThreshold
+      settingsStore.sdRed = settings.sdRed
+      settingsStore.sdGreen = settings.sdGreen
+      settingsStore.sdBlue = settings.sdBlue
+      settingsStore.faderRed = settings.faderRed
+      settingsStore.faderGreen = settings.faderGreen
+      settingsStore.faderBlue = settings.faderBlue
+
+    })
+    .catch(function (error) {
+      // handle error
+      console.log(error)
+    })
+})
+
 </script>
 
 <template>
@@ -173,4 +202,56 @@ const settingsStore = SettingsStore()
   </div>
 </template>
 
-<style scoped></style>
+<style scoped>
+.box {
+  width: 450px;
+  height: 150px;
+  border: 1px solid black;
+  padding: 10px;
+  margin: 10px;
+  color: #81d9ff;
+}
+
+.solid {
+  background-color: rgb(0, 114, 4);
+}
+.right-aligned {
+  margin-left: auto;
+  margin-right: 0;
+}
+
+.songTitle {
+  font-size: xx-large;
+  font-family: 'Trebuchet MS', 'Lucida Sans Unicode', 'Lucida Grande', 'Lucida Sans', Arial,
+    sans-serif;
+}
+.parent {
+  display: flex;
+}
+
+.deckNumber {
+  font-size: x-large;
+}
+
+.textWrap {
+  p {
+    word-break: normal;
+    white-space: normal;
+    text-wrap-style: pretty;
+  }
+}
+
+.slide-fade-enter-active {
+  transition: all 0.5s ease-out;
+}
+
+.slide-fade-leave-active {
+  transition: all 2s cubic-bezier(1, 0.5, 0.8, 1);
+}
+
+.slide-fade-enter-from,
+.slide-fade-leave-to {
+  transform: translateX(50px);
+  opacity: 0;
+}
+</style>

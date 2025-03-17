@@ -2,12 +2,11 @@ package com.openstreamingtools.MainServer.controllers;
 
 import com.openstreamingtools.MainServer.api.Settings;
 import com.openstreamingtools.MainServer.config.OSTConfiguration;
-
 import org.springframework.web.bind.annotation.*;
 
-import static com.openstreamingtools.MainServer.utils.Utils.objectMapper;
-
 import java.io.IOException;
+
+import static com.openstreamingtools.MainServer.utils.Utils.objectMapper;
 
 @RestController
 public class SettingsController {
@@ -19,8 +18,7 @@ public class SettingsController {
 
     @PostMapping(value = "/saveSettings", consumes = "application/json")
     public void postSettings(@RequestBody String jsonString) throws IOException {
-        Settings tempSettings = objectMapper.readValue(jsonString, Settings.class);
-        objectMapper.writeValue(OSTConfiguration.getSettingsFile(), tempSettings);
-        OSTConfiguration.settings = objectMapper.readValue(OSTConfiguration.getSettingsFile(), Settings.class);
+        OSTConfiguration.settings = objectMapper.readValue(jsonString, Settings.class);
+        OSTConfiguration.saveSettings();
     }
 }
