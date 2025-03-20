@@ -16,7 +16,7 @@ onMounted(() => {
   if(saveSettingButton.value){
     saveSettingButton.value.onclick= function(){
       axios
-    .post('saveSettings', {
+    .post('api/saveSettings', {
       showTrackDelay:  settingsStore.showTrackDelay,
       volumeThreshold:  settingsStore.volumeThreshold ,
       sdRed: settingsStore.sdRed,

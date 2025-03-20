@@ -12,7 +12,7 @@ const settingsStore = SettingsStore()
 
 onMounted(() => {
   axios
-    .get('getSettings', {
+    .get('api/getSettings', {
       method: 'get',
       headers: {
         'Content-Type': 'application/json',

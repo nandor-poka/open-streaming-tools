@@ -21,7 +21,7 @@ public class SpringConfiguration {
         return new WebMvcConfigurer() {
             @Override
             public void addCorsMappings(CorsRegistry registry) {
-                registry.addMapping("/*").allowedOrigins(OSTConfiguration.FRONTEND_ORIGN, OSTConfiguration.FRONTEND_JAR_ORIGN);
+                registry.addMapping("/**").allowedOrigins(OSTConfiguration.FRONTEND_ORIGN, OSTConfiguration.FRONTEND_JAR_ORIGN);
             }
         };
     }

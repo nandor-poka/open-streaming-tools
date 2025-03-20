@@ -8,10 +8,10 @@ const axiosInstance = Axios.create()
 axiosInstance.defaults.baseURL = 'http://localhost:8080/'
 
 const unitStore = UnitStore()
-const client = new Client({
-  brokerURL: 'ws://localhost:8080/websocket',
+const ostClient = new Client({
+  brokerURL: 'ws://localhost:8080/api/websocket',
   onConnect: () => {
-    client.subscribe('/websocketData', (message) => {
+    ostClient.subscribe('/api/websocketData', (message) => {
       const msg = JSON.parse(message.body)
       unitStore.stagelinQmessages.push(message.body)
 
@@ -33,10 +33,10 @@ const client = new Client({
           break
       }
     })
-    client.publish({ destination: '/app/startup', body: 'Frontend running.' })
+    ostClient.publish({ destination: '/app/startup', body: 'Frontend running.' })
   },
 })
-client.activate()
+ostClient.activate()
 </script>
 
 <template>
