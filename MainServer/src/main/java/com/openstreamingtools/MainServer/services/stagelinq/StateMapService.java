@@ -7,6 +7,7 @@ import com.openstreamingtools.MainServer.messages.stagelinqmessages.ServiceType;
 import com.openstreamingtools.MainServer.messaging.SongDataUpdateTask;
 import com.openstreamingtools.MainServer.utils.Utils;
 
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -19,6 +20,8 @@ public class StateMapService extends Service {
     public static final int MAGIC_MARKER_JSON = 0x00000000;
     public static final Map<Integer, Map<SimpleState,Object>> deckStates = new HashMap<>();
     private boolean isDeviceService = false;
+    private static boolean firstTrack = false;
+    public  static Date firstTrackTime = null;
     public StateMapService() {
         super();
         this.type= ServiceType.STATEMAP;
@@ -45,6 +48,10 @@ public class StateMapService extends Service {
     }
 
     public static void updateDeckState(int deck, SimpleState state, Object value){
+        if(!firstTrack){
+            firstTrack = true;
+            firstTrackTime = new Date();
+        }
         deckStates.get(deck).put(state, value);
 
         if ((int)deckStates.get(deck).get(SimpleState.VOLUME) >= settings.getVolumeThreshold()){

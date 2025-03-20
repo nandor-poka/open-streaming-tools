@@ -2,6 +2,7 @@ package com.openstreamingtools.MainServer.controllers;
 
 import com.openstreamingtools.MainServer.db.entities.Track;
 import com.openstreamingtools.MainServer.db.repositories.TrackRepository;
+import com.openstreamingtools.MainServer.twitch.TwitchUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -17,14 +18,17 @@ public class RecommendationController {
     @Autowired
     private TrackRepository trackRepository;
 
-    @GetMapping(value = "/getInKeyRecommendation/{key}", produces = "application/json")
+    @GetMapping(value = "/api/getInKeyRecommendation/{key}", produces = "application/json")
     public List<Track> getInKeyRecommendation(@PathVariable int key){
         List<Track> tracks = trackRepository.findByKey(key);
         Collections.shuffle(tracks);
+        /*TwitchUtils.sendToChat("I recommend you to listen to these tracks in the key of " + key + ":" +
+                " "+tracks);*/
+
        return tracks.subList(0, 5);
     }
 
-    @GetMapping(value = "/getBroadInKeyRecommendation/{key}", produces = "application/json")
+    @GetMapping(value = "/api/getBroadInKeyRecommendation/{key}", produces = "application/json")
     public List<Track> getInBroadKeyRecommendation(@PathVariable int key){
         List<Track> inKeyTracks = trackRepository.findByKey(key);
         List<Track> inKeyBeforeTracks = trackRepository.findByKey(key-1);

@@ -16,7 +16,7 @@ public class TrackController {
     @Autowired
     private TrackRepository trackRepository;
 
-    @GetMapping(value = "/getTracksForPlaylist/{playlistID}", produces = "application/json")
+    @GetMapping(value = "/api/getTracksForPlaylist/{playlistID}", produces = "application/json")
     public List<Track> getTracksByPlaylist(@PathVariable int playlistID){
         return  trackRepository.findAllByPlaylistID(playlistID);
     }

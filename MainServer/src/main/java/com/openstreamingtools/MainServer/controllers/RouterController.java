@@ -6,8 +6,9 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 public class RouterController {
 
-    @RequestMapping("/{path:[^((?!websocket).)*$]*}")
-    public String forward() {
+    @RequestMapping("/{path:[^((?!api).)*$]*}")
+    public String forwardNotApi() {
         return "forward:/";
     }
+
 }

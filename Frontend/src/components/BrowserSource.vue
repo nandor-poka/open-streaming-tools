@@ -45,7 +45,7 @@ onMounted(() => {
           unitStore.deck1VolumeData.volume +
           '% , var(--ost-deck-empty-color) ' +
           (unitStore.deck1VolumeData.volume > 50
-            ? 100 - unitStore.deck3VolumeData.volume
+            ? 100 - unitStore.deck1VolumeData.volume
             : unitStore.deck1VolumeData.volume) +
           '%)',
         color:

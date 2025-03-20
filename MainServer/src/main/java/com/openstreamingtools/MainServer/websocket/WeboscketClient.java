@@ -1,7 +1,6 @@
 package com.openstreamingtools.MainServer.websocket;
 
-import com.openstreamingtools.MainServer.config.OSTConfiguration;
-import com.openstreamingtools.MainServer.utils.Utils;
+import com.openstreamingtools.MainServer.twitch.TwitchUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.messaging.converter.MappingJackson2MessageConverter;
 import org.springframework.messaging.simp.stomp.StompSessionHandler;
@@ -19,7 +18,7 @@ public class WeboscketClient {
     public static void connect(){
         log.debug("Starting weboscket.");
         stompClient.setMessageConverter(new MappingJackson2MessageConverter());
-        stompClient.connectAsync(Utils.TWITCH_EVENTSUB_WEBSOCKET_ADDRESS, sessionHandler);
+        stompClient.connectAsync(TwitchUtils.TWITCH_EVENTSUB_WEBSOCKET_ADDRESS, sessionHandler);
     }
 
 }

@@ -2,6 +2,7 @@ package com.openstreamingtools.MainServer.websocket;
 
 
 import com.openstreamingtools.MainServer.config.OSTConfiguration;
+import com.openstreamingtools.MainServer.twitch.TwitchUtils;
 import com.openstreamingtools.MainServer.twitch.TwitchWebsocketMessage;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.messaging.simp.stomp.StompCommand;
@@ -15,6 +16,7 @@ public class OSTStompSessionHandler implements StompSessionHandler {
     private String websocketSessionID;
     @Override
     public void afterConnected(StompSession session, StompHeaders connectedHeaders) {
+        TwitchUtils.subscribeToTwitch(websocketSessionID);
         OSTConfiguration.settings.setTwitchStatus(true);
         OSTConfiguration.saveSettings();
 
