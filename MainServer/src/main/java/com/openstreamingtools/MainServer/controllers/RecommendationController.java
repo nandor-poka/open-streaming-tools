@@ -19,13 +19,16 @@ public class RecommendationController {
     private TrackRepository trackRepository;
 
     @GetMapping(value = "/api/getInKeyRecommendation/{key}", produces = "application/json")
-    public List<Track> getInKeyRecommendation(@PathVariable int key){
+    public void getInKeyRecommendation(@PathVariable int key){
         List<Track> tracks = trackRepository.findByKey(key);
         Collections.shuffle(tracks);
-        /*TwitchUtils.sendToChat("I recommend you to listen to these tracks in the key of " + key + ":" +
-                " "+tracks);*/
+        StringBuilder twitchMessage = new StringBuilder("I recommend you to the following songs to request:");
+        for (Track track :  tracks.subList(0, 5)) {
+            twitchMessage.append(" ").append(track.getTitle()).append(" - ").append(track.getArtist()).append(",");
+        }
+        TwitchUtils.sendToChat(twitchMessage.toString());
 
-       return tracks.subList(0, 5);
+      // return tracks.subList(0, 5);
     }
 
     @GetMapping(value = "/api/getBroadInKeyRecommendation/{key}", produces = "application/json")

@@ -9,6 +9,7 @@ import org.springframework.web.socket.client.standard.StandardWebSocketClient;
 import org.springframework.web.socket.messaging.WebSocketStompClient;
 
 @Slf4j
+@Deprecated
 public class WeboscketClient {
     public static WebSocketClient client = new StandardWebSocketClient();
 

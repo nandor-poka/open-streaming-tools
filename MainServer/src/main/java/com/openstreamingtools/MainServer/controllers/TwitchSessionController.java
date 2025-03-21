@@ -7,15 +7,16 @@ import com.openstreamingtools.MainServer.twitch.TwitchUtils;
 import com.openstreamingtools.MainServer.websocket.WeboscketClient;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 
 @Slf4j
 @RestController
-public class TwitchLoginController {
+public class TwitchSessionController {
 
-    @GetMapping (value= "/twitch")
+    @GetMapping (value= "/api/twitch")
     public String twitchRedirect(@RequestParam String code,@RequestParam String scope){
         TwitchUtils.getAuthTokenFromTwitch(code);
         if(OSTConfiguration.settings.getTwitchUser() == null){
@@ -34,7 +35,10 @@ public class TwitchLoginController {
                 throw new RuntimeException(e);
             }
         }
-        WeboscketClient.connect();
         return "forward:/";
+    }
+    @PostMapping(value= "/api/subscribeToTwtitch", consumes = "application/json")
+    public void subscribeToEventSub(@RequestParam String websocketSessionId){
+        TwitchUtils.subscribeToTwitch(websocketSessionId);
     }
 }

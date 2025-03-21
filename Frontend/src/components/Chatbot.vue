@@ -1,16 +1,12 @@
+<!-- eslint-disable vue/multi-word-component-names -->
 <script setup lang="ts">
 import Navbar from './Navbar.vue'
 import { inject,useTemplateRef, onMounted } from 'vue'
 import type { Axios } from 'axios'
 const getRecButton = useTemplateRef("getRecommends")
 const axios: Axios = inject('axios') as Axios
-const twitchClient = new WebSocket('wss://eventsub.wss.twitch.tv/ws')
+
 onMounted(() => {
-
-  twitchClient.onopen = (evt)=> {
-    console.log("twitch open:"+evt)
-  }
-
 if(getRecButton.value){
   getRecButton.value.onclick= function(){
     axios

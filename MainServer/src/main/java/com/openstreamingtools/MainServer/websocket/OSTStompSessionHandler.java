@@ -12,6 +12,7 @@ import org.springframework.messaging.simp.stomp.StompSessionHandler;
 
 import java.lang.reflect.Type;
 @Slf4j
+@Deprecated
 public class OSTStompSessionHandler implements StompSessionHandler {
     private String websocketSessionID;
     @Override
