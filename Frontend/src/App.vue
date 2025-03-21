@@ -21,6 +21,7 @@ const ostClient = new Client({
             deckNum: msg.deckNumber,
             trackTitle: msg.trackTitle,
             artistName: msg.artistName,
+            key: msg.key
           }
           unitStore.updateSongData(songData)
           break
