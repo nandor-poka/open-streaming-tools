@@ -4,10 +4,12 @@ import { UnitStore } from '@/stores/UnitStore'
 import type { SongData } from '@/types/SongData'
 import type { ChannelVolumeData } from '@/types/ChannelVolumeData'
 import Axios from 'axios'
+import { TrackStore } from './stores/TrackStore'
 const axiosInstance = Axios.create()
 axiosInstance.defaults.baseURL = 'http://localhost:8080/'
 
 const unitStore = UnitStore()
+const trackStore = TrackStore()
 const ostClient = new Client({
   brokerURL: 'ws://localhost:8080/api/websocket',
   onConnect: () => {
@@ -21,9 +23,11 @@ const ostClient = new Client({
             deckNum: msg.deckNumber,
             trackTitle: msg.trackTitle,
             artistName: msg.artistName,
-            key: msg.key
           }
           unitStore.updateSongData(songData)
+          if (msg.key > 0){
+            trackStore.currentKey = msg.key
+          }
           break
         case 'CHANNEL_VOLUME_DATA':
           const volumeData: ChannelVolumeData = {

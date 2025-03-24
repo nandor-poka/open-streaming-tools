@@ -42,7 +42,7 @@ public class ApplicationStartupListener implements
         if (OSTConfiguration.settings.getTwitchToken() != null) {
             try {
                 TwitchUtils.refreshAuthTokenFromTwitch(OSTConfiguration.settings.getTwitchToken().getRefresh_token());
-                WeboscketClient.connect();
+               // WeboscketClient.connect();
             } catch (UnsupportedEncodingException e) {
                 throw new RuntimeException(e);
             }

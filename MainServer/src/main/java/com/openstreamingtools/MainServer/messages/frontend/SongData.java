@@ -15,12 +15,13 @@ public class SongData extends MessageToFrontend {
     private int key;
 
 
-    public SongData(int deckNumber, String trackTitle, String artistName) {
+    public SongData(int deckNumber, String trackTitle, String artistName, Integer key) {
         super();
         this.type =MessageType.SONG_DATA;
         this.deckNumber = deckNumber;
         this.trackTitle = trackTitle;
         this.artistName = artistName;
+        this.key = key;
 
     }
 }
