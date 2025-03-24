@@ -1,15 +1,20 @@
 package com.openstreamingtools.MainServer.controllers;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.openstreamingtools.MainServer.api.Settings;
+import com.openstreamingtools.MainServer.api.WebsocketSessionId;
 import com.openstreamingtools.MainServer.config.OSTConfiguration;
 
 import com.openstreamingtools.MainServer.twitch.TwitchUtils;
 import com.openstreamingtools.MainServer.websocket.WeboscketClient;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.http.MediaType;
+import org.springframework.web.bind.annotation.*;
+
+import java.awt.*;
+
+import static com.openstreamingtools.MainServer.utils.Utils.objectMapper;
 
 
 @Slf4j
@@ -38,7 +43,7 @@ public class TwitchSessionController {
         return "forward:/";
     }
     @PostMapping(value= "/api/subscribeToTwtitch", consumes = "application/json")
-    public void subscribeToEventSub(@RequestParam String websocketSessionId){
-        TwitchUtils.subscribeToTwitch(websocketSessionId);
+    public void subscribeToEventSub(@RequestBody WebsocketSessionId websocketSessionId) throws JsonProcessingException {
+        TwitchUtils.subscribeToTwitch(websocketSessionId.getSessionId());
     }
 }

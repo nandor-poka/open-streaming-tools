@@ -40,20 +40,23 @@ onMounted(() => {
 twitchClient.onopen = ()=> {
     console.log("Websocket to Twitch opened")
   }
-  twitchClient.onmessage = (twitchMessge) =>{
-    switch (twitchMessge.data.metadata.messageType) {
+  twitchClient.onmessage = (weboscketMessage) =>{
+    const twitchMessage = JSON.parse(weboscketMessage.data)
+    console.log(weboscketMessage)
+    console.log(twitchMessage)
+    switch (twitchMessage.metadata.message_type) {
       case "session_welcome":
         axios.post('api/subscribeToTwtitch',{
-          websocketSessionId: twitchMessge.data.payload.id
+          sessionId: twitchMessage.payload.session.id
         }).catch(function (error) {
           // handle error
           console.log(error)
         })
-        console.log(twitchMessge.data.payload.id)
+        console.log(twitchMessage.payload.session.id)
         break;
        case "notification":
-        console.log(twitchMessge)  
-        if (twitchMessge.data.event.message.text == "!recommend"){
+        console.log(weboscketMessage)
+        if (twitchMessage.payload.event.message.text == "!recommend"){
           axios
           .get('api/getInKeyRecommendation/'+trackStore.currentKey, {
             headers: {

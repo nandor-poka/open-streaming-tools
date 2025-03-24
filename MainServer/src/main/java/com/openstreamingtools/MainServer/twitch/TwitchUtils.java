@@ -72,33 +72,18 @@ public class TwitchUtils {
 
     public static void subscribeToTwitch(String sessionId) {
         String response = null;
-        try {
+        TwitchSubscribeMessage subscribeMessage = new TwitchSubscribeMessage(new TwitchSubscribeCondition(
+                OSTConfiguration.settings.getTwitchUser().getId(), OSTConfiguration.settings.getTwitchUser().getId()),
+                new TwitchSubscriptionTransport(sessionId));
             response = Utils.restClient.post()
                     .uri(TWITCH_SUBSCRIBE)
                     .header("Authorization","Bearer "
                             + OSTConfiguration.settings.getTwitchToken().getAccess_token())
                     .header("Client-Id", OSTConfiguration.TWITCH_CLIEND_ID)
                     .contentType(MediaType.APPLICATION_JSON)
-                    .body(Utils.objectMapper.readValue(
-                            """
-        {
-        "type": "channel.chat.message",
-        "version": "1",
-        "condition": {
-            "broadcaster_user_id": """+OSTConfiguration.settings.getTwitchUser().getId()
-                            +"""
-            "user_id":"""+OSTConfiguration.settings.getBotUser().getId()+"""
-        },
-        "transport": {
-            "method": "websocket",
-            "session_id": """+sessionId+"""
-        }
-    }""",Object.class ))
+                    .body(subscribeMessage)
                     .retrieve()
                     .body(String.class);
-        } catch (JsonProcessingException e) {
-            throw new RuntimeException(e);
-        }
         log.debug(response);
     }
 

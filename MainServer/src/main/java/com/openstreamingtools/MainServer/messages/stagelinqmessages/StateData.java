@@ -45,7 +45,11 @@ public class StateData {
                 || state.equals(PlayerState.EngineDeck1ExternalMixerVolume)
                 || state.equals(PlayerState.EngineDeck2ExternalMixerVolume)
                 || state.equals(PlayerState.EngineDeck3ExternalMixerVolume)
-                || state.equals(PlayerState.EngineDeck4ExternalMixerVolume)) {
+                || state.equals(PlayerState.EngineDeck4ExternalMixerVolume)
+                || state.equals(PlayerState.EngineDeck1TrackCurrentKeyIndex)
+                || state.equals(PlayerState.EngineDeck2TrackCurrentKeyIndex)
+                || state.equals(PlayerState.EngineDeck3TrackCurrentKeyIndex)
+                || state.equals(PlayerState.EngineDeck4TrackCurrentKeyIndex)) {
             decknum = Integer.parseInt(
                     state.getStateName().split("/Engine/Deck")[1].split("/")[0]);
             return new StateData(state, jsonString, decknum);

@@ -8,6 +8,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
@@ -20,11 +21,18 @@ public class RecommendationController {
 
     @GetMapping(value = "/api/getInKeyRecommendation/{key}", produces = "application/json")
     public void getInKeyRecommendation(@PathVariable int key){
-        List<Track> tracks = trackRepository.findByKey(key);
-        Collections.shuffle(tracks);
-        StringBuilder twitchMessage = new StringBuilder("I recommend you to the following songs to request:");
-        for (Track track :  tracks.subList(0, 5)) {
-            twitchMessage.append(" ").append(track.getTitle()).append(" - ").append(track.getArtist()).append(",");
+        List<Track> tracks = trackRepository.findAllByPlaylistID(17);
+        List<Track> tracksInKey = new ArrayList<>();
+        for (Track track : tracks){
+            if(track.getKey() == key){
+                tracksInKey.add(track);
+            }
+        }
+        Collections.shuffle(tracksInKey);
+        StringBuilder twitchMessage = new StringBuilder("I recommend the following songs to you to request:\n");
+        int i=1;
+        for (Track track :  tracksInKey.subList(0, 5)) {
+            twitchMessage.append(i++).append(". ").append(track.getTitle()).append(" - ").append(track.getArtist()).append(",\n");
         }
         TwitchUtils.sendToChat(twitchMessage.toString());
 
