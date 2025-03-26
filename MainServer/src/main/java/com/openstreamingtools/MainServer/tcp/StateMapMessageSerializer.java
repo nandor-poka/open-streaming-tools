@@ -111,9 +111,12 @@ public class StateMapMessageSerializer  implements Deserializer<byte[]>, Seriali
             int dataType = Utils.convertBytesToInt(Arrays.copyOfRange(messageBytes, 4,8));
             if (Utils.convertBytesToInt(Arrays.copyOfRange(messageBytes, 4,8) )==StateMapService.MAGIC_MARKER_JSON){
                 int nameLength = Utils.convertBytesToInt(Arrays.copyOfRange(messageBytes, 8,12) );
-                String stateDataName = new String(Arrays.copyOfRange(messageBytes, 12, 12+nameLength),StandardCharsets.UTF_16BE);
-                String jsonString = new String(Arrays.copyOfRange(messageBytes, 12+nameLength+4, messageBytes.length),StandardCharsets.UTF_16BE);
+                //String stateDataName = new String(Arrays.copyOfRange(messageBytes, 12, 12+nameLength),StandardCharsets.UTF_16BE);
+                //String jsonString = new String(Arrays.copyOfRange(messageBytes, 12+nameLength+4, messageBytes.length),StandardCharsets.UTF_16BE);
                 StateData stateData = StateData.parseStateData(messageBytes);
+                if (stateData == null){
+                    return new byte[0];
+                }
                 State state = stateData.getState();
                 ///Engine/Deck2/Track/ArtistName, type 0, jsonString: {"string":"Ekko & Sidetrack","type":8}
                 if (state.equals(PlayerState.EngineDeck1TrackArtistName)
@@ -122,7 +125,6 @@ public class StateMapMessageSerializer  implements Deserializer<byte[]>, Seriali
                         || state.equals(PlayerState.EngineDeck4TrackArtistName)) {
                     //jsonString: {"string":"Ekko & Sidetrack","type":8}
                     String[] artistNamePrep = stateData.getJsonString().split(":")[1].split(",")[0].split("\"");
-
                     if (artistNamePrep.length>0){
                         StateMapService.deckStates.get(stateData.getDeckNum()).put(SimpleState.ARTIST_NAME, artistNamePrep[1]);
                     }
@@ -132,13 +134,10 @@ public class StateMapMessageSerializer  implements Deserializer<byte[]>, Seriali
                         || state.equals(PlayerState.EngineDeck2TrackCurrentKeyIndex)
                         || state.equals(PlayerState.EngineDeck3TrackCurrentKeyIndex)
                         || state.equals(PlayerState.EngineDeck4TrackCurrentKeyIndex)){
-                    //{"type":10,"value":23}
-                    Integer key = Integer.parseInt(stateData.getJsonString().split(":")[2].split("}")[0]);
-                    logger.debug("Deck {},current key is:",stateData.getDeckNum(),key);
-                    if (key > 0){
+                    int key = Integer.parseInt(stateData.getJsonString().split(":")[2].split("}")[0]);
+                    if (key > -1){
                         StateMapService.deckStates.get(stateData.getDeckNum()).put(SimpleState.KEY, StateMapService.keyIndexToKeyMapping.get(key));
                     }
-                    logger.debug("checking saved key data for {}, key is {}",stateData.getDeckNum(), StateMapService.deckStates.get(stateData.getDeckNum()).get(key));
                 }
                 //SateMap name /Engine/Deck2/Track/SongName, type 0, jsonString: {"string":"Synchronise","type":8}
                 if (state.equals(PlayerState.EngineDeck1TrackSongName)
@@ -165,7 +164,7 @@ public class StateMapMessageSerializer  implements Deserializer<byte[]>, Seriali
                     MessageSender.sendMessage(new ChannelVolumeData(stateData.getDeckNum(), volume));
                     StateMapService.updateDeckState(stateData.getDeckNum(), SimpleState.VOLUME, volume);
                 }
-                logger.debug("SateMap name {}, type {}, jsonString: {}", stateDataName,dataType, jsonString);
+                logger.debug("SateMap name {}, type {}, jsonString: {}", stateData.getState().getStateName(),dataType, stateData.getJsonString());
             }
             return messageBytes;
         }

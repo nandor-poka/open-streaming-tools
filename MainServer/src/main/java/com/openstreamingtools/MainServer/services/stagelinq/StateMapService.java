@@ -46,6 +46,10 @@ public class StateMapService extends Service {
         deckStates.get(2).put(SimpleState.ARTIST_NAME, " ");
         deckStates.get(3).put(SimpleState.ARTIST_NAME, " ");
         deckStates.get(4).put(SimpleState.ARTIST_NAME, " ");
+        deckStates.get(1).put(SimpleState.KEY, -1);
+        deckStates.get(2).put(SimpleState.KEY, -1);
+        deckStates.get(3).put(SimpleState.KEY, -1);
+        deckStates.get(4).put(SimpleState.KEY, -1);
         keyIndexToKeyMapping.put(21, 1);
         keyIndexToKeyMapping.put(7, 2);
         keyIndexToKeyMapping.put(16, 3);
