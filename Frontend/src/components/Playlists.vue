@@ -11,7 +11,7 @@ const trackStore = TrackStore()
 const playlistSelector = useTemplateRef('playlistSelector')
 onMounted(() => {
   axios
-    .get('getPlaylists', {
+    .get('api/getPlaylists', {
       method: 'get',
       headers: {
         'Content-Type': 'application/json',
@@ -29,7 +29,7 @@ onMounted(() => {
     playlistSelector.value.oninput = function () {
       if (playlistSelector.value)
         axios
-          .get('getTracksForPlaylist/' + playlistSelector.value.value, {
+          .get('api/getTracksForPlaylist/' + playlistSelector.value.value, {
             method: 'get',
             headers: {
               'Content-Type': 'application/json',

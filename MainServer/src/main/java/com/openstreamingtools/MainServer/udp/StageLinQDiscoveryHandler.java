@@ -24,6 +24,7 @@ import java.net.*;
 
 import static com.openstreamingtools.MainServer.config.OSTConfiguration.STAGELINQ_BORADCAST_IP;
 import static com.openstreamingtools.MainServer.config.OSTConfiguration.STAGELINQ_BROADCAST_PORT;
+import static com.openstreamingtools.MainServer.utils.Utils.objectMapper;
 
 
 @Service
@@ -33,7 +34,6 @@ public class StageLinQDiscoveryHandler {
     Logger logger = LoggerFactory.getLogger(StageLinQDiscoveryHandler.class);
 
     public static final String StageLinQChannelID = "StangelinQ Broadcast Discovery";
-    private final ObjectMapper objectMapper = new ObjectMapper();
     DatagramSocket broadcastSocket = new DatagramSocket(STAGELINQ_BROADCAST_PORT, InetAddress.getLocalHost());
 
 

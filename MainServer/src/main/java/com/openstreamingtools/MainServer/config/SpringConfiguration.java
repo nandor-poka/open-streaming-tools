@@ -4,6 +4,7 @@ import com.openstreamingtools.MainServer.udp.StageLinQDiscoveryHandler;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.integration.ip.udp.MulticastReceivingChannelAdapter;
+import org.springframework.lang.NonNull;
 import org.springframework.web.servlet.config.annotation.CorsRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
@@ -20,8 +21,8 @@ public class SpringConfiguration {
     public WebMvcConfigurer corsConfigurer() {
         return new WebMvcConfigurer() {
             @Override
-            public void addCorsMappings(CorsRegistry registry) {
-                registry.addMapping("/*").allowedOrigins(OSTConfiguration.FRONTEND_ORIGN, OSTConfiguration.FRONTEND_JAR_ORIGN);
+            public void addCorsMappings(@NonNull CorsRegistry registry) {
+                registry.addMapping("/*/**").allowedOrigins(OSTConfiguration.FRONTEND_ORIGN, OSTConfiguration.FRONTEND_JAR_ORIGN);
             }
         };
     }
