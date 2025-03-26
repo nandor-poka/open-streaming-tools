@@ -1,30 +1,23 @@
 package com.openstreamingtools.MainServer.controllers;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.openstreamingtools.MainServer.api.OauthToken;
+import com.openstreamingtools.MainServer.api.WebsocketSessionId;
 import com.openstreamingtools.MainServer.config.OSTConfiguration;
-
-import com.openstreamingtools.MainServer.utils.Utils;
-import com.openstreamingtools.MainServer.websocket.WeboscketClient;
+import com.openstreamingtools.MainServer.twitch.TwitchUtils;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.http.MediaType;
-import org.springframework.util.LinkedMultiValueMap;
-import org.springframework.util.MultiValueMap;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 
 @Slf4j
 @RestController
-public class TwitchLoginController {
+public class TwitchSessionController {
 
-    @GetMapping (value= "/twitch")
+    @GetMapping (value= "/api/twitch")
     public String twitchRedirect(@RequestParam String code,@RequestParam String scope){
-        Utils.getAuthTokenFromTwitch(code);
+        TwitchUtils.getAuthTokenFromTwitch(code);
         if(OSTConfiguration.settings.getTwitchUser() == null){
             try {
-                OSTConfiguration.settings.setTwitchUser(Utils.getIdforUser("NAND_OR_DNB").getData()[0]);
+                OSTConfiguration.settings.setTwitchUser(TwitchUtils.getIdforUser("NAND_OR_DNB").getData()[0]);
                 OSTConfiguration.saveSettings();
             } catch (JsonProcessingException e) {
                 throw new RuntimeException(e);
@@ -32,13 +25,16 @@ public class TwitchLoginController {
         }
         if(OSTConfiguration.settings.getBotUser() == null){
             try {
-                OSTConfiguration.settings.setBotUser(Utils.getIdforUser("OSTBot").getData()[0]);
+                OSTConfiguration.settings.setBotUser(TwitchUtils.getIdforUser("OSTBot").getData()[0]);
                 OSTConfiguration.saveSettings();
             } catch (JsonProcessingException e) {
                 throw new RuntimeException(e);
             }
         }
-        WeboscketClient.connect();
         return "forward:/";
+    }
+    @PostMapping(value= "/api/subscribeToTwtitch", consumes = "application/json")
+    public void subscribeToEventSub(@RequestBody WebsocketSessionId websocketSessionId)  {
+        TwitchUtils.subscribeToTwitch(websocketSessionId.getSessionId());
     }
 }

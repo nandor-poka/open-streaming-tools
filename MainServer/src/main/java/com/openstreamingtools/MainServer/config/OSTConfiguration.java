@@ -24,8 +24,8 @@ public class OSTConfiguration {
     public static final ActingAs STAGELINQ_ACTING_AS = ActingAs.LISTEN;
     public static final int STAGELINQ_BROADCAST_PORT = 51337;
     public static final String STAGELINQ_BORADCAST_IP = "192.168.178.255";
-    public static final String WEBSOCKET_CONNECTION_PATH = "/websocket";
-    public static final String WEBSOCKET_DATA_PATH = "/websocketData";
+    public static final String WEBSOCKET_CONNECTION_PATH = "/api/websocket";
+    public static final String WEBSOCKET_DATA_PATH = "/api/websocketData";
     public static final String FRONTEND_ORIGN = "http://localhost:5173";
     public static final String FRONTEND_JAR_ORIGN = "http://localhost:8080";
     public static final int DIRECTORY_SERVICE_PORT = 60000;

@@ -2,17 +2,11 @@ package com.openstreamingtools.MainServer.config;
 
 
 import com.openstreamingtools.MainServer.api.Settings;
-import com.openstreamingtools.MainServer.utils.Utils;
-import com.openstreamingtools.MainServer.websocket.WeboscketClient;
+import com.openstreamingtools.MainServer.twitch.TwitchUtils;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.ApplicationListener;
 import org.springframework.context.event.ContextRefreshedEvent;
-import org.springframework.core.io.Resource;
-import org.springframework.http.MediaType;
 import org.springframework.stereotype.Component;
-import org.springframework.util.LinkedMultiValueMap;
-import org.springframework.util.MultiValueMap;
 
 import java.io.File;
 import java.io.IOException;
@@ -37,13 +31,20 @@ public class ApplicationStartupListener implements
     @Override public void onApplicationEvent(ContextRefreshedEvent event) {
         File settingsFileDir = new File(OSTConfiguration.SETTINGS_DIR_PATH);
         if (!settingsFileDir.exists()) {
-            settingsFileDir.mkdirs();
+           if (!settingsFileDir.mkdirs()){
+               log.error("Could not create directory: " + settingsFileDir.getAbsolutePath());
+               return;
+           }
         }
         File settingsFile = new File(OSTConfiguration.SETTINGS_FILE_PATH);
         if (!settingsFile.exists()) {
             try {
-                settingsFile.createNewFile();
-                objectMapper.writeValue(settingsFile, new Settings());
+                if (settingsFile.createNewFile()){
+                    objectMapper.writeValue(settingsFile, new Settings());
+                }else{
+                    log.error("Could not create file: " + settingsFile.getAbsolutePath());
+                }
+
             } catch (IOException e) {
                 throw new RuntimeException(e);
             }
@@ -52,8 +53,7 @@ public class ApplicationStartupListener implements
         OSTConfiguration.init();
         if (OSTConfiguration.settings.getTwitchToken() != null) {
             try {
-                Utils.refreshAuthTokenFromTwitch(OSTConfiguration.settings.getTwitchToken().getRefresh_token());
-                WeboscketClient.connect();
+                TwitchUtils.refreshAuthTokenFromTwitch(OSTConfiguration.settings.getTwitchToken().getRefresh_token());
             } catch (UnsupportedEncodingException e) {
                 throw new RuntimeException(e);
             }

@@ -26,6 +26,7 @@ public class SongDataSONSerializer extends JsonSerializer<SongData> {
         jgen.writeObjectField("deckNumber", deckState.getDeckNumber());
         jgen.writeObjectField("trackTitle", deckState.getTrackTitle());
         jgen.writeObjectField("artistName", deckState.getArtistName());
+        jgen.writeObjectField("key", deckState.getKey());
         jgen.writeEndObject();
         jgen.writeEndObject();
     }

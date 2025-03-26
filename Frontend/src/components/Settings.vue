@@ -4,19 +4,15 @@ import Navbar from './Navbar.vue'
 import { SettingsStore } from '@/stores/SettingsStore'
 import type { Axios } from 'axios'
 import { inject, onMounted, useTemplateRef } from 'vue'
-/* const volSlider = useTemplateRef('volSliderRef')
-const songDataRed = useTemplateRef('sdRed')
-const songDataGreen = useTemplateRef('sdGreen')
-const songDataBlue = useTemplateRef('sdBlue') */
+
 const settingsStore = SettingsStore()
 const saveSettingButton = useTemplateRef("saveSettings")
 const axios = inject("axios") as Axios
 onMounted(() => {
-
   if(saveSettingButton.value){
     saveSettingButton.value.onclick= function(){
       axios
-    .post('saveSettings', {
+    .post('api/saveSettings', {
       showTrackDelay:  settingsStore.showTrackDelay,
       volumeThreshold:  settingsStore.volumeThreshold ,
       sdRed: settingsStore.sdRed,
@@ -33,35 +29,7 @@ onMounted(() => {
     })
     }
   }
-/* 
-  if (volSlider.value) {
-    volSlider.value.oninput = function () {
-      if (volSlider.value) {
-        settingsStore.volumeSliderValue = parseInt(volSlider.value.value)
-      }
-    }
-  }
-  if (songDataRed.value) {
-    songDataRed.value.oninput = function () {
-      if (songDataRed.value) {
-        settingsStore.sdRed = parseInt(songDataRed.value.value)
-      }
-    }
-  }
-  if (songDataGreen.value) {
-    songDataGreen.value.oninput = function () {
-      if (songDataGreen.value) {
-        settingsStore.sdGreen = parseInt(songDataGreen.value.value)
-      }
-    }
-  }
-  if (songDataBlue.value) {
-    songDataBlue.value.oninput = function () {
-      if (songDataBlue.value) {
-        settingsStore.sdBlue = parseInt(songDataBlue.value.value)
-      }
-    }
-  } */
+
 })
 </script>
 
