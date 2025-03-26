@@ -14,7 +14,7 @@ public class PlaylistController {
     @Autowired
     private PlaylistRepository playlistRepository;
 
-    @GetMapping(value= "/getPlaylists", produces = "application/json")
+    @GetMapping(value= "/api/getPlaylists", produces = "application/json")
     public List<Playlist> getPlaylists(){
         return playlistRepository.findAll();
     }

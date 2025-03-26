@@ -20,13 +20,5 @@ public class PlaylistEntity {
     public PlaylistEntity() {
     }
 
-    public PlaylistEntity(int id, int listId, int trackId, String databaseUuid, int nextEntityId, int membershipReference) {
-        this.id = id;
-        this.listId = listId;
-        this.trackId = trackId;
-        this.databaseUuid = databaseUuid;
-        this.nextEntityId = nextEntityId;
-        this.membershipReference = membershipReference;
-    }
 
 }

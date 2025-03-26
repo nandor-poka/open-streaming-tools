@@ -6,13 +6,11 @@ import com.openstreamingtools.MainServer.dj.stagelinq.PlayerState;
 import com.openstreamingtools.MainServer.dj.stagelinq.State;
 import com.openstreamingtools.MainServer.messages.stagelinqmessages.ServiceAnnouncement;
 import com.openstreamingtools.MainServer.messages.stagelinqmessages.ServiceType;
-import com.openstreamingtools.MainServer.messages.stagelinqmessages.StateData;
 import com.openstreamingtools.MainServer.messages.stagelinqmessages.StateMapSubscribeMessage;
 import com.openstreamingtools.MainServer.services.stagelinq.DirectoryService;
 import com.openstreamingtools.MainServer.services.stagelinq.StateMapService;
 import com.openstreamingtools.MainServer.utils.Utils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.integration.annotation.MessageEndpoint;
 import org.springframework.integration.annotation.ServiceActivator;
 import org.springframework.integration.ip.IpHeaders;
@@ -24,9 +22,8 @@ import java.util.Vector;
 
 @Component
 @MessageEndpoint
+@Slf4j
 public class StateMapMessageHandler {
-
-    private static final Logger logger = LoggerFactory.getLogger(StateMapMessageHandler.class);
 
     @ServiceActivator(inputChannel = "toStateMap")
     public byte[] handleStateMapMessage(Message message) throws JsonProcessingException {
@@ -43,14 +40,14 @@ public class StateMapMessageHandler {
                     if (sa.hasService(ServiceType.STATEMAP)) {
                         Vector<Byte> buffer = new Vector<Byte>();
                         for (State state : PlayerState.values()) {
-                            logger.debug("Subscribing to state {}", state);
+                            //logger.debug("Subscribing to state {}", state);
                             for (byte b : new StateMapSubscribeMessage(state).getBytes()) {
                                 buffer.add(b);
                             }
 
                         }
                         for (State state : MixerState.values()) {
-                           logger.debug("Subscribing to state {}", state);
+                        //   logger.debug("Subscribing to state {}", state);
                             for (byte b : new StateMapSubscribeMessage(state).getBytes()) {
                                 buffer.add(b);
                             }
@@ -61,11 +58,12 @@ public class StateMapMessageHandler {
                         }
                         DirectoryService.getUnit(sa.getDeviceId()).addService(
                                 new StateMapService(ServiceType.STATEMAP, sa.getService(ServiceType.STATEMAP).getUnitPort()));
+                        log.debug("Subscribed to services.");
                         return response;
 
                     }
                 }
-                // handle array of messages that
+/*                // handle array of messages that
                 int pos = 0;
                 while (pos <= msg.length) {
                     int stateDataLength = Utils.convertBytesToInt(Arrays.copyOfRange(msg, pos, 4));
@@ -93,7 +91,7 @@ public class StateMapMessageHandler {
                         //MessageSender.sendMessage(new ChannelVolumeData(stateData.getDeckNum(), volume));
                     }
 
-                }
+                }*/
 
                 return new byte[0];
 

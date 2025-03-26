@@ -1,16 +1,20 @@
 package com.openstreamingtools.MainServer.utils;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.web.client.RestClient;
 
 import java.nio.ByteBuffer;
 import java.nio.charset.Charset;
 import java.util.Timer;
 import java.util.UUID;
 
+@Slf4j
 public class Utils {
 
     public static final ObjectMapper objectMapper = new ObjectMapper();
     public static final Timer timer = new Timer();
+    public static RestClient restClient = RestClient.create();
 
     public static void putIntegerToByteArray(int i, byte[] array){
         array[0] = (byte)((i >> 24)& 0xFF);

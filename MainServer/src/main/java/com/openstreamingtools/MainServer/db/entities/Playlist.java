@@ -30,15 +30,6 @@ public class Playlist {
     public Playlist() {
     }
 
-    public Playlist(int id, String title, int parentListId, boolean isPersisted, int nextListId, Date lastEditTime, boolean isExplicitlyExported) {
-        this.id = id;
-        this.title = title;
-        this.parentListId = parentListId;
-        this.isPersisted = isPersisted;
-        this.nextListId = nextListId;
-        this.lastEditTime = lastEditTime;
-        this.isExplicitlyExported = isExplicitlyExported;
-    }
 
 
 }

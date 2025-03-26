@@ -1,5 +1,6 @@
 package com.openstreamingtools.MainServer.api;
 
+import com.openstreamingtools.MainServer.twitch.TwitchUser;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -14,14 +15,9 @@ public class Settings {
     private int faderRed = 0;
     private int faderGreen = 255;
     private int faderBlue = 128;
-
-    public Settings(int showTrackDelay, int volumeThreshold) {
-        this.showTrackDelay = showTrackDelay;
-        this.volumeThreshold = volumeThreshold;
-    }
-
-    public Settings() {
-    }
-
+    private boolean twitchStatus = false;
+    private OauthToken twitchToken;
+    private TwitchUser twitchUser;
+    private TwitchUser botUser;
 }
 

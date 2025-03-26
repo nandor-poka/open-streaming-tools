@@ -1,4 +1,4 @@
-package com.openstreamingtools.MainServer.config;
+package com.openstreamingtools.MainServer.websocket;
 
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,7 +15,7 @@ import static com.openstreamingtools.MainServer.config.OSTConfiguration.WEBSOCKE
 
 @Configuration
 @EnableWebSocketMessageBroker
-public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
+public class WebSocketServerConfig implements WebSocketMessageBrokerConfigurer {
 
 
 

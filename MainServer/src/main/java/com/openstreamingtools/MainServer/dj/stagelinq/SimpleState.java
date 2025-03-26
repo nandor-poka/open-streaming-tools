@@ -7,5 +7,6 @@ public enum SimpleState {
     ARTIST_NAME,
     SONG_NAME,
     VOLUME,
-    IS_SHOWING
+    IS_SHOWING,
+    KEY
 }
