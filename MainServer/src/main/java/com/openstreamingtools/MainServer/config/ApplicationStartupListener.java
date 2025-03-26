@@ -3,7 +3,6 @@ package com.openstreamingtools.MainServer.config;
 
 import com.openstreamingtools.MainServer.api.Settings;
 import com.openstreamingtools.MainServer.twitch.TwitchUtils;
-import com.openstreamingtools.MainServer.websocket.WeboscketClient;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.ApplicationListener;
 import org.springframework.context.event.ContextRefreshedEvent;

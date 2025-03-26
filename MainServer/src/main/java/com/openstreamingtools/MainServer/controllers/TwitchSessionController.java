@@ -1,20 +1,11 @@
 package com.openstreamingtools.MainServer.controllers;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.openstreamingtools.MainServer.api.Settings;
 import com.openstreamingtools.MainServer.api.WebsocketSessionId;
 import com.openstreamingtools.MainServer.config.OSTConfiguration;
-
 import com.openstreamingtools.MainServer.twitch.TwitchUtils;
-import com.openstreamingtools.MainServer.websocket.WeboscketClient;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
-
-import java.awt.*;
-
-import static com.openstreamingtools.MainServer.utils.Utils.objectMapper;
 
 
 @Slf4j

@@ -1,6 +1,5 @@
 package com.openstreamingtools.MainServer.db.entities;
 
-import com.fasterxml.jackson.annotation.JsonAnyGetter;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
 import lombok.Getter;
