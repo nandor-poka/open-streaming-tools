@@ -1,7 +1,6 @@
 package com.openstreamingtools.MainServer.controllers;
 
 import com.openstreamingtools.MainServer.db.entities.Track;
-import com.openstreamingtools.MainServer.db.repositories.PlaylistRepository;
 import com.openstreamingtools.MainServer.db.repositories.TrackRepository;
 import com.openstreamingtools.MainServer.twitch.TwitchUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -44,6 +43,7 @@ public class RecommendationController {
         for (Track track : getInKeyTracks(key-1).subList(0, 2)) {
             twitchMessage.append(i++).append(". ").append(track.getTitle()).append(" - ").append(track.getArtist()).append(",\n");
         }
+        TwitchUtils.sendToChat(twitchMessage.toString());
 
     }
 
