@@ -1,7 +1,6 @@
 package com.openstreamingtools.MainServer.twitch;
 
 
-import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.Setter;
 
