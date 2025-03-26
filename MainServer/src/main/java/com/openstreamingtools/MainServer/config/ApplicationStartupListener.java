@@ -6,7 +6,6 @@ import com.openstreamingtools.MainServer.twitch.TwitchUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.ApplicationListener;
 import org.springframework.context.event.ContextRefreshedEvent;
-import org.springframework.lang.NonNullApi;
 import org.springframework.stereotype.Component;
 
 import java.io.File;
@@ -29,7 +28,7 @@ public class ApplicationStartupListener implements
            if (!settingsFileDir.mkdirs()){
                log.error("Could not create directory: " + settingsFileDir.getAbsolutePath());
                return;
-           };
+           }
         }
         File settingsFile = new File(OSTConfiguration.SETTINGS_FILE_PATH);
         if (!settingsFile.exists()) {
