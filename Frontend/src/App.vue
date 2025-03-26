@@ -3,6 +3,7 @@ import { Client } from '@stomp/stompjs'
 import { UnitStore } from '@/stores/UnitStore'
 import type { SongData } from '@/types/SongData'
 import type { ChannelVolumeData } from '@/types/ChannelVolumeData'
+import type { Unit } from './types/Unit'
 import Axios from 'axios'
 import { TrackStore } from './stores/TrackStore'
 const axiosInstance = Axios.create()
@@ -35,6 +36,15 @@ const ostClient = new Client({
             volume: msg.volume,
           }
           unitStore.updateVolumeData(volumeData)
+          break
+        case "STAGELINQ_DISCOVERY_MESSAGE":
+          const unit: Unit = {
+            type: msg.UnitType,
+            longName: msg.modelType,
+            version: msg.softwareVersion,
+            deckCount: 4
+          }
+          unitStore.updateUnit(unit)
           break
       }
     })
