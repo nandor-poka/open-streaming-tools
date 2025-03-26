@@ -9,37 +9,35 @@ const axios: Axios = inject('axios') as Axios
 const playlistStore = PlaylistStore()
 const trackStore = TrackStore()
 const playlistSelector = useTemplateRef('playlistSelector')
-//const dbSelector = useTemplateRef('dbSelector')
-//const updteDb = useTemplateRef('updateDB')
-
 onMounted(() => {
   axios
-    .get('getPlaylists', {
+    .get('api/getPlaylists', {
       method: 'get',
-                  headers: {
-                    'Content-Type': 'application/json',
-                  },
-                })
-                .then(function (response) {
-                  playlistStore.playlists = response.data
-                })
-                .catch(function (error) {
-                  // handle error
-                  console.log(error)
-                })
-
+      headers: {
+        'Content-Type': 'application/json',
+      },
+    })
+    .then(function (response) {
+      const playlits = response.data
+      playlistStore.playlists = playlits
+    })
+    .catch(function (error) {
+      // handle error
+      console.log(error)
+    })
   if (playlistSelector.value) {
     playlistSelector.value.oninput = function () {
       if (playlistSelector.value)
         axios
-          .get('getTracksForPlaylist/' + playlistSelector.value.value, {
+          .get('api/getTracksForPlaylist/' + playlistSelector.value.value, {
             method: 'get',
             headers: {
               'Content-Type': 'application/json',
             },
           })
           .then(function (response) {
-            trackStore.tracks = response.data
+            const tracks = response.data
+            trackStore.tracks = tracks
           })
           .catch(function (error) {
             // handle error
@@ -53,14 +51,8 @@ onMounted(() => {
   <Navbar />
   <h1>Playlists</h1>
   <div>
-    
-    <label for="playlistSelector"
-      >Available playlists:</label>
-    <select
-      ref="playlistSelector"
-      name="playlistSelector"
-      id="playlistSelector"
-    >
+    <label for="playlistSelector">Available playlists:</label>
+    <select ref="playlistSelector" name="playlistSelector" id="playlistSelector">
       <option disabled value="">Select playlist</option>
       <option
         v-for="playlist in playlistStore.playlists"

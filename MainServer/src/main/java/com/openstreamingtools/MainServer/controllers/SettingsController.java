@@ -11,15 +11,14 @@ import static com.openstreamingtools.MainServer.utils.Utils.objectMapper;
 @RestController
 public class SettingsController {
 
-    @GetMapping(value = "/getSettings", produces = "application/json")
+    @GetMapping(value = "/api/getSettings", produces = "application/json")
     public @ResponseBody Settings getSettings() throws IOException {
         return OSTConfiguration.settings;
     }
 
-    @PostMapping(value = "/saveSettings", consumes = "application/json")
+    @PostMapping(value = "/api/saveSettings", consumes = "application/json")
     public void postSettings(@RequestBody String jsonString) throws IOException {
-        Settings tempSettings = objectMapper.readValue(jsonString, Settings.class);
-        objectMapper.writeValue(OSTConfiguration.getSettingsFile(), tempSettings);
-        OSTConfiguration.settings = objectMapper.readValue(OSTConfiguration.getSettingsFile(), Settings.class);
+        OSTConfiguration.settings = objectMapper.readValue(jsonString, Settings.class);
+        OSTConfiguration.saveSettings();
     }
 }
