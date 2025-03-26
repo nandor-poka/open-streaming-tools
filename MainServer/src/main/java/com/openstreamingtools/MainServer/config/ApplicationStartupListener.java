@@ -6,6 +6,7 @@ import com.openstreamingtools.MainServer.twitch.TwitchUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.ApplicationListener;
 import org.springframework.context.event.ContextRefreshedEvent;
+import org.springframework.lang.NonNullApi;
 import org.springframework.stereotype.Component;
 
 import java.io.File;
@@ -25,13 +26,20 @@ public class ApplicationStartupListener implements
     @Override public void onApplicationEvent(ContextRefreshedEvent event) {
         File settingsFileDir = new File(OSTConfiguration.SETTINGS_DIR_PATH);
         if (!settingsFileDir.exists()) {
-            settingsFileDir.mkdirs();
+           if (!settingsFileDir.mkdirs()){
+               log.error("Could not create directory: " + settingsFileDir.getAbsolutePath());
+               return;
+           };
         }
         File settingsFile = new File(OSTConfiguration.SETTINGS_FILE_PATH);
         if (!settingsFile.exists()) {
             try {
-                settingsFile.createNewFile();
-                objectMapper.writeValue(settingsFile, new Settings());
+                if (settingsFile.createNewFile()){
+                    objectMapper.writeValue(settingsFile, new Settings());
+                }else{
+                    log.error("Could not create file: " + settingsFile.getAbsolutePath());
+                }
+
             } catch (IOException e) {
                 throw new RuntimeException(e);
             }
@@ -41,7 +49,6 @@ public class ApplicationStartupListener implements
         if (OSTConfiguration.settings.getTwitchToken() != null) {
             try {
                 TwitchUtils.refreshAuthTokenFromTwitch(OSTConfiguration.settings.getTwitchToken().getRefresh_token());
-               // WeboscketClient.connect();
             } catch (UnsupportedEncodingException e) {
                 throw new RuntimeException(e);
             }
