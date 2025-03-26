@@ -6,7 +6,7 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 public class RouterController {
 
-    @RequestMapping("/{path:[^((?!api).)*$]*}")
+    @RequestMapping("/^(?!api).*$")
     public String forwardNotApi() {
         return "forward:/";
     }

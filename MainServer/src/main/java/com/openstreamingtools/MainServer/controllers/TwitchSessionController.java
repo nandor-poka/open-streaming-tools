@@ -34,7 +34,7 @@ public class TwitchSessionController {
         return "forward:/";
     }
     @PostMapping(value= "/api/subscribeToTwtitch", consumes = "application/json")
-    public void subscribeToEventSub(@RequestBody WebsocketSessionId websocketSessionId) throws JsonProcessingException {
+    public void subscribeToEventSub(@RequestBody WebsocketSessionId websocketSessionId)  {
         TwitchUtils.subscribeToTwitch(websocketSessionId.getSessionId());
     }
 }
