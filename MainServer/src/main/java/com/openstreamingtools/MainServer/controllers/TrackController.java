@@ -12,12 +12,12 @@ import java.util.List;
 @RestController
 public class TrackController {
 
-
     @Autowired
     private TrackRepository trackRepository;
 
     @GetMapping(value = "/api/getTracksForPlaylist/{playlistID}", produces = "application/json")
     public List<Track> getTracksByPlaylist(@PathVariable int playlistID){
-        return  trackRepository.findAllByPlaylistID(playlistID);
+       List<Track> tracks = trackRepository.findAllByPlaylistID(playlistID);
+        return tracks;
     }
 }

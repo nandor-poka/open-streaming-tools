@@ -14,6 +14,7 @@ public interface TrackRepository extends JpaRepository<Track, Integer> {
 
     List<Track> findByKey(Integer key);
 
+    List<Track> findByKeyBetween(Integer keyAfter, Integer keyBefore);
 
 
 

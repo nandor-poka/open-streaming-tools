@@ -1,6 +1,8 @@
 package com.openstreamingtools.MainServer.dj.stagelinq;
 
-
+/**
+ * Enum for storing action found in StageLinQ messages
+ */
 public enum StageLinQAction {
     HOWDY("DISCOVERER_HOWDY_"),EXIT("DISCOVERER_EXIT_"), UNKNOWN("UNKNOWN");
     public final String action;

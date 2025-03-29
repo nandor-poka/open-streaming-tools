@@ -6,8 +6,10 @@ import type { ChannelVolumeData } from '@/types/ChannelVolumeData'
 import type { Unit } from './types/Unit'
 import Axios from 'axios'
 import { TrackStore } from './stores/TrackStore'
+import { version } from 'vue'
 const axiosInstance = Axios.create()
 axiosInstance.defaults.baseURL = 'http://localhost:8080/'
+//const twitchClient = new WebSocket('wss://eventsub.wss.twitch.tv/ws')
 
 const unitStore = UnitStore()
 const trackStore = TrackStore()
@@ -38,11 +40,14 @@ const ostClient = new Client({
           unitStore.updateVolumeData(volumeData)
           break
         case "STAGELINQ_DISCOVERY_MESSAGE":
-          const unit: Unit = {
-            type: msg.UnitType,
-            longName: msg.modelType,
-            version: msg.softwareVersion,
-            deckCount: 4
+          ostClient.publish({destination:'/app/getUnit', body: JSON.stringify(msg.deviceID)})
+          break
+        case "UNIT_DATA":
+          const unit : Unit = {
+              type: msg.unit.type,
+              longName: msg.unit.longName,
+              version: msg.unit.version,
+              deckCount: msg.unit.deckCount
           }
           unitStore.updateUnit(unit)
           break
@@ -52,6 +57,9 @@ const ostClient = new Client({
   },
 })
 ostClient.activate()
+
+
+
 </script>
 
 <template>

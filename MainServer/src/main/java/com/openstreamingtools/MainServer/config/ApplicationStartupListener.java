@@ -16,12 +16,18 @@ import static com.openstreamingtools.MainServer.utils.Utils.objectMapper;
 
 @Slf4j
 @Component
+/**
+ * Thic class listens for the Spring Boot Application startup event and
+ * initializes the settings file resource object so that the settings
+ * can be read and saved.
+ */
+//@Component
 public class ApplicationStartupListener implements
         ApplicationListener<ContextRefreshedEvent> {
 
 
 
-
+    // event listener to for the startup event
     @Override public void onApplicationEvent(ContextRefreshedEvent event) {
         File settingsFileDir = new File(OSTConfiguration.SETTINGS_DIR_PATH);
         if (!settingsFileDir.exists()) {
