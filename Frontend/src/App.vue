@@ -6,6 +6,7 @@ import type { ChannelVolumeData } from '@/types/ChannelVolumeData'
 import type { Unit } from './types/Unit'
 import Axios from 'axios'
 import { TrackStore } from './stores/TrackStore'
+import { version } from 'vue'
 const axiosInstance = Axios.create()
 axiosInstance.defaults.baseURL = 'http://localhost:8080/'
 //const twitchClient = new WebSocket('wss://eventsub.wss.twitch.tv/ws')
