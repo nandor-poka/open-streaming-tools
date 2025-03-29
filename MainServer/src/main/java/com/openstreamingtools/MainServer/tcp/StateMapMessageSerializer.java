@@ -134,9 +134,15 @@ public class StateMapMessageSerializer  implements Deserializer<byte[]>, Seriali
                         || state.equals(PlayerState.EngineDeck2TrackCurrentKeyIndex)
                         || state.equals(PlayerState.EngineDeck3TrackCurrentKeyIndex)
                         || state.equals(PlayerState.EngineDeck4TrackCurrentKeyIndex)){
-                    int key = Integer.parseInt(stateData.getJsonString().split(":")[2].split("}")[0]);
+                    String keyIndex = stateData.getJsonString().split(":")[2].split("}")[0];
+                    int key = -1;
+                    if (keyIndex != null){
+                        key = Integer.parseInt(keyIndex);
+                    }
                     if (key > -1){
                         StateMapService.deckStates.get(stateData.getDeckNum()).put(SimpleState.KEY, StateMapService.keyIndexToKeyMapping.get(key));
+                    }else {
+                        StateMapService.deckStates.get(stateData.getDeckNum()).put(SimpleState.KEY, key);
                     }
                 }
                 //SateMap name /Engine/Deck2/Track/SongName, type 0, jsonString: {"string":"Synchronise","type":8}
