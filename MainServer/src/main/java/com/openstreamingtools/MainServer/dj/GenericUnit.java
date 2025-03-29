@@ -14,7 +14,7 @@ import org.springframework.boot.jackson.JsonComponent;
 public class GenericUnit {
     public UnitType type ;
     public ModelType modelType;
-    public String LongName;
+    public String longName;
     public String version;
     public int deckCount;
     public boolean acknowledged = false;
