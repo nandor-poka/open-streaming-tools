@@ -34,5 +34,10 @@ build/
 
 ### Text files
 **/**/*.txt
+
+### Databases
+**/**/*.db
+*.db
+
 /enginedj.db
 /settings/settings.json

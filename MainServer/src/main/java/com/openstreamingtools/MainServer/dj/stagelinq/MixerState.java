@@ -1,5 +1,9 @@
 package com.openstreamingtools.MainServer.dj.stagelinq;
 
+/**
+ * Enum class representing available states in a DENON DJ / StagelinQ compatible mixer
+ * to which the StateMap service can subscribe.
+ */
 public enum MixerState implements State{
     MixerCH1faderPosition("/Mixer/CH1faderPosition"),
     MixerCH2faderPosition("/Mixer/CH2faderPosition"),

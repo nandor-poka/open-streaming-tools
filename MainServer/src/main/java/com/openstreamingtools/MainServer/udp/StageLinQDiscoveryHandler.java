@@ -66,7 +66,11 @@ public class StageLinQDiscoveryHandler {
         unit.setIpString((String) message.getHeaders().get(IpHeaders.IP_ADDRESS));
         if(!DirectoryService.hasUnit(unit.getDeviceID())){
             DirectoryService.addUnit(unit);
+        }
+        if (DirectoryService.hasUnit(unit.getDeviceID() )
+                && !DirectoryService.getUnit(unit.getDeviceID()).acknowledged ){
             MessageSender.sendMessage(objectMapper.writeValueAsString(disMessage));
+
         }
 
         ServerDiscoveryMessage broadcastMessage = new ServerDiscoveryMessage();
