@@ -19,7 +19,7 @@ public class DenonUnit extends GenericUnit {
         super();
         this.type = type;
         this.modelType = modelType;
-        this.LongName = longName;
+        this.longName = longName;
         this.deckCount = deckCount;
 
     }
@@ -47,7 +47,7 @@ public class DenonUnit extends GenericUnit {
                 ", ipString='" + ipString + '\'' +
                 ", type=" + type +
                 ", modelType=" + modelType +
-                ", LongName='" + LongName + '\'' +
+                ", LongName='" + longName + '\'' +
                 ", version='" + version + '\'' +
                 ", deckCount=" + deckCount +
                 '}';
