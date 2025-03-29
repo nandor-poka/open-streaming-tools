@@ -11,7 +11,7 @@ const axios: Axios = inject('axios') as Axios
 const unitStore = UnitStore()
 const settingsStore = SettingsStore()
 const twitchClient = new WebSocket('wss://eventsub.wss.twitch.tv/ws')
-
+const trackStore = TrackStore()
 onMounted(() => {
   axios
     .get('api/getSettings', {
@@ -37,7 +37,6 @@ onMounted(() => {
       console.log(error)
     })
 })
-
 
 twitchClient.onopen = ()=> {
     console.log("Websocket to Twitch opened")

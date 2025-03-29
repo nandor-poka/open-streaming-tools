@@ -5,6 +5,7 @@ import com.openstreamingtools.MainServer.api.OauthToken;
 import com.openstreamingtools.MainServer.config.OSTConfiguration;
 import com.openstreamingtools.MainServer.utils.Utils;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.HttpStatusCode;
 import org.springframework.http.MediaType;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
@@ -36,6 +37,10 @@ public class TwitchUtils {
                 .accept(MediaType.APPLICATION_JSON)
                 .body(params)
                 .retrieve()
+                .onStatus(HttpStatusCode::is4xxClientError
+                        , (request, resp) -> {
+                            log.error(resp.getStatusText());
+                        })
                 .body(OauthToken.class);
         log.debug(response.toString());
         OSTConfiguration.settings.setTwitchToken(response);
@@ -57,6 +62,10 @@ public class TwitchUtils {
                     .accept(MediaType.APPLICATION_JSON)
                     .body(params)
                     .retrieve()
+                     .onStatus(HttpStatusCode::is4xxClientError
+                             , (request, resp) -> {
+                                 log.error(resp.getStatusText());
+                             })
                     .body(OauthToken.class);
         } catch (Exception e) {
             log.error(e.getMessage());
@@ -82,6 +91,10 @@ public class TwitchUtils {
                     .contentType(MediaType.APPLICATION_JSON)
                     .body(subscribeMessage)
                     .retrieve()
+                    .onStatus(HttpStatusCode::is4xxClientError
+                            , (request, resp) -> {
+                        log.error(resp.getStatusText());
+                    })
                     .body(String.class);
         log.debug(response);
     }
@@ -95,6 +108,10 @@ public class TwitchUtils {
                         +OSTConfiguration.settings.getTwitchToken().getAccess_token())
                 .header("Client-Id", OSTConfiguration.TWITCH_CLIEND_ID)
                 .retrieve()
+                .onStatus(HttpStatusCode::is4xxClientError
+                        , (request, resp) -> {
+                            log.error(resp.getStatusText());
+                        })
                 .body(String.class);
         log.debug(response);
 
@@ -114,6 +131,10 @@ public class TwitchUtils {
                     .header("Client-Id", OSTConfiguration.TWITCH_CLIEND_ID)
                     .body(Utils.objectMapper.writeValueAsString(chatMessage))
                     .retrieve()
+                    .onStatus(HttpStatusCode::is4xxClientError
+                            , (request, resp) -> {
+                                log.error(resp.getStatusText());
+                            })
                     .body(String.class);
         } catch (JsonProcessingException e) {
             throw new RuntimeException(e);
