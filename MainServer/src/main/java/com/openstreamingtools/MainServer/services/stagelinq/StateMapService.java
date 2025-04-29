@@ -22,7 +22,7 @@ public class StateMapService extends Service {
     public static final Map<Integer, Integer> keyIndexToKeyMapping = new HashMap<>();
     private boolean isDeviceService = false;
     private static boolean firstTrack = false;
-    public  static Date firstTrackTime = null;
+    public static long firstTrackTime = -1;
     public StateMapService() {
         super();
         this.type= ServiceType.STATEMAP;
@@ -78,7 +78,7 @@ public class StateMapService extends Service {
     public static void updateDeckState(int deck, SimpleState state, Object value){
         if(!firstTrack){
             firstTrack = true;
-            firstTrackTime = new Date();
+            firstTrackTime = System.currentTimeMillis();
         }
         deckStates.get(deck).put(state, value);
 
