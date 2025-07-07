@@ -9,7 +9,7 @@ import java.util.TimerTask;
 public class SongDataUpdateTask extends TimerTask {
      private SongData songData;
 
-     public SongDataUpdateTask(SongData songData) {
+    public SongDataUpdateTask(SongData songData) {
          this.songData = songData;
      }
     @Override
@@ -17,12 +17,6 @@ public class SongDataUpdateTask extends TimerTask {
         try {
             MessageSender.sendMessage(songData);
             SongDataLogger.logSongData(songData);
-            /*if (songData.getArtistName().equals(" ") && songData.getTrackTitle().equals(" ")){
-                StateMapService.deckStates.get(songData.getDeckNumber()).put(SimpleState.IS_SHOWING, false);
-            }else {
-                StateMapService.deckStates.get(songData.getDeckNumber()).put(SimpleState.IS_SHOWING, true);
-            }*/
-
         } catch (JsonProcessingException e) {
             throw new RuntimeException(e);
         }
