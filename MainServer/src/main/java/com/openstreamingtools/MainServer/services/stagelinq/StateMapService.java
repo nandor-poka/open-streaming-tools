@@ -73,6 +73,7 @@ public class StateMapService extends Service {
         keyIndexToKeyMapping.put(19, 21);
         keyIndexToKeyMapping.put(5, 22);
         keyIndexToKeyMapping.put(14, 23);
+        keyIndexToKeyMapping.put(18, 24);
     }
 
     public static void updateDeckState(int deck, SimpleState state, Object value){
@@ -91,6 +92,7 @@ public class StateMapService extends Service {
                                 (String) deckStates.get(deck).get(SimpleState.ARTIST_NAME),
                                 (Integer) deckStates.get(deck).get(SimpleState.KEY))),
                         settings.getShowTrackDelay() * 1000L);
+
             }
         }
         if ((int)deckStates.get(deck).get(SimpleState.VOLUME) == 0){
