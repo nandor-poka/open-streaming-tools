@@ -34,7 +34,6 @@ public class Utils {
         bytes[1] = (byte)((i >> 16)& 0xFF);
         bytes[2] = (byte)((i >> 8)& 0xFF);
         bytes[3] = (byte)(i & 0xFF);
-        ByteBuffer bb = ByteBuffer.wrap(bytes);
         return bytes;
     }
     public static byte[] convertShortToByteArray(int i){

@@ -8,7 +8,7 @@ import java.util.Objects;
 import java.util.TimerTask;
 
 public class SongDataUpdateTask extends TimerTask {
-     private SongData songData;
+     private final SongData songData;
 
     public SongDataUpdateTask(SongData songData) {
          this.songData = songData;

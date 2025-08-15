@@ -46,7 +46,7 @@ public class OSTConfiguration {
      public static void init() {
         try {
             settings = Utils.objectMapper.readValue(settingsFile , Settings.class);
-            Utils.UIUpdateSchedulerThread.run();
+            Utils.UIUpdateSchedulerThread.start();
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
