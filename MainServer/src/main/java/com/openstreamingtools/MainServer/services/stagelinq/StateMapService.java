@@ -8,9 +8,8 @@ import com.openstreamingtools.MainServer.messaging.SongDataUpdateTask;
 import com.openstreamingtools.MainServer.utils.Utils;
 
 import java.time.Instant;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
+import java.util.concurrent.ArrayBlockingQueue;
 
 import static com.openstreamingtools.MainServer.config.OSTConfiguration.settings;
 
@@ -24,6 +23,7 @@ public class StateMapService extends Service {
     private boolean isDeviceService = false;
     private static boolean firstTrack = false;
     public static Instant firstTrackTime;
+
     public StateMapService() {
         super();
         this.type= ServiceType.STATEMAP;
@@ -83,32 +83,45 @@ public class StateMapService extends Service {
             firstTrackTime = Instant.now();
         }
         deckStates.get(deck).put(state, value);
-
+        SongDataUpdateTask updateTask = new SongDataUpdateTask(new SongData(
+                deck, (String) deckStates.get(deck).get(SimpleState.SONG_NAME),
+                (String) deckStates.get(deck).get(SimpleState.ARTIST_NAME),
+                (Integer) deckStates.get(deck).get(SimpleState.KEY)));
+        SongDataUpdateTask emptySongDataTask = new SongDataUpdateTask(new SongData(
+                deck, " ",
+                " ", -1));
         if ((int)deckStates.get(deck).get(SimpleState.VOLUME) >= settings.getVolumeThreshold()){
        //     && (long)deckStates.get(deck).get(SimpleState.LAST_UPDATE) < System.currentTimeMillis()-5000){
-            if(!((boolean) deckStates.get(deck).get(SimpleState.IS_SHOWING))) {
-                StateMapService.deckStates.get(deck).put(SimpleState.IS_SHOWING, true);
-                Utils.timer.schedule(new SongDataUpdateTask(new SongData(
-                                deck, (String) deckStates.get(deck).get(SimpleState.SONG_NAME),
-                                (String) deckStates.get(deck).get(SimpleState.ARTIST_NAME),
-                                (Integer) deckStates.get(deck).get(SimpleState.KEY))),
-                        settings.getShowTrackDelay() * 1000L);
+          //  if(!((boolean) deckStates.get(deck).get(SimpleState.IS_SHOWING))) {
+          //      StateMapService.deckStates.get(deck).put(SimpleState.IS_SHOWING, true);
 
+            if (!Utils.taskQueue.contains(updateTask)){
+                Utils.taskQueue.offer(updateTask);
             }
+            Optional<SongDataUpdateTask> task = Utils.taskQueue.stream().filter(e -> e.equals(emptySongDataTask)).findFirst();
+            task.ifPresent(TimerTask::cancel);
+            Utils.taskQueue.remove(emptySongDataTask);
+            //}
         }
         if ((int)deckStates.get(deck).get(SimpleState.VOLUME) == 0){
       //  && (long)deckStates.get(deck).get(SimpleState.LAST_UPDATE) < System.currentTimeMillis()-5000){
-            if( (boolean)deckStates.get(deck).get(SimpleState.IS_SHOWING)){
-                StateMapService.deckStates.get(deck).put(SimpleState.IS_SHOWING, false);
-                Utils.timer.schedule(new SongDataUpdateTask(new SongData(
-                        deck, " ",
-                        " ", -1)), 5000L);
+           // if( (boolean)deckStates.get(deck).get(SimpleState.IS_SHOWING)){
+             //   StateMapService.deckStates.get(deck).put(SimpleState.IS_SHOWING, false);
+
+            if (!Utils.taskQueue.contains(emptySongDataTask)){
+                Utils.taskQueue.offer(emptySongDataTask);
             }
+            Optional<SongDataUpdateTask> task = Utils.taskQueue.stream().filter(e -> e.equals(updateTask)).findFirst();
+            task.ifPresent(TimerTask::cancel);
+            Utils.taskQueue.remove(updateTask);
+
+            //}
         }
 
 
 
     }
+
     public StateMapService(ServiceType serviceType, int port) {
         super();
         this.type = serviceType;

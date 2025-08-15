@@ -5,6 +5,8 @@ import com.openstreamingtools.MainServer.messages.MessageType;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.util.Objects;
+
 @Getter
 @Setter
 public class SongData extends MessageToFrontend {
@@ -23,5 +25,16 @@ public class SongData extends MessageToFrontend {
         this.artistName = artistName;
         this.key = key;
 
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (!(o instanceof SongData songData)) return false;
+        return deckNumber == songData.deckNumber && key == songData.key && Objects.equals(trackTitle, songData.trackTitle) && Objects.equals(artistName, songData.artistName);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(deckNumber, trackTitle, artistName, key);
     }
 }
