@@ -35,7 +35,7 @@ public class SongDataLogger {
             }
             if (!songData.getArtistName().equals(" ") || !songData.getTrackTitle().equals(" ")){
                 FileWriter songDataFileFriter = new FileWriter(detailedSongLog, true);
-                long durationSeconds = Duration.between(Instant.now(), StateMapService.firstTrackTime).getSeconds();
+                long durationSeconds = Duration.between(StateMapService.firstTrackTime, Instant.now()).getSeconds();
 
                 songDataFileFriter.write(  String.format("%d:%02d:%02d", durationSeconds / 3600, (durationSeconds % 3600) / 60, (durationSeconds % 60))+" on deck "
                         +songData.getDeckNumber() + " " + songData.getTrackTitle() + " - " + songData.getArtistName() + "\n");
