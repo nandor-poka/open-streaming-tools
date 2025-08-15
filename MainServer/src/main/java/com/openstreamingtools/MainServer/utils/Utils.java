@@ -8,7 +8,6 @@ import org.springframework.web.client.RestClient;
 import java.nio.ByteBuffer;
 import java.nio.charset.Charset;
 import java.util.Timer;
-import java.util.TimerTask;
 import java.util.UUID;
 import java.util.concurrent.ArrayBlockingQueue;
 
@@ -19,7 +18,7 @@ public class Utils {
     public static final Timer timer = new Timer();
     public static RestClient restClient = RestClient.create();
     public static final ArrayBlockingQueue<SongDataUpdateTask> taskQueue = new ArrayBlockingQueue<>(32, true);
-
+    public static final Thread UIUpdateSchedulerThread = new Thread(new UIUpdateScheduler());
 
 
     public static void putIntegerToByteArray(int i, byte[] array){

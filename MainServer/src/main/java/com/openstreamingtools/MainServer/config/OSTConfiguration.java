@@ -3,6 +3,7 @@ package com.openstreamingtools.MainServer.config;
 import com.openstreamingtools.MainServer.api.Settings;
 import com.openstreamingtools.MainServer.dj.stagelinq.ActingAs;
 import com.openstreamingtools.MainServer.utils.Utils;
+import jakarta.annotation.PreDestroy;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
@@ -45,6 +46,7 @@ public class OSTConfiguration {
      public static void init() {
         try {
             settings = Utils.objectMapper.readValue(settingsFile , Settings.class);
+            Utils.UIUpdateSchedulerThread.run();
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
@@ -63,4 +65,16 @@ public class OSTConfiguration {
         }
     }
 
+    @PreDestroy
+    public void shutdown(){
+         Utils.taskQueue.clear();
+         Utils.timer.purge();
+         Utils.timer.cancel();
+         Utils.UIUpdateSchedulerThread.interrupt();
+        try {
+            Utils.UIUpdateSchedulerThread.join(1000);
+        } catch (InterruptedException e) {
+            throw new RuntimeException(e);
+        }
+    }
 }
