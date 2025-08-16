@@ -73,13 +73,18 @@ public class TwitchUtils {
         if (response != null){
             log.debug(response.toString());
             OSTConfiguration.settings.setTwitchToken(response);
+            OSTConfiguration.settings.setTwitchStatus(true);
             OSTConfiguration.saveSettings();
         }
 
     }
 
-    public static void subscribeToTwitch(String sessionId) {
+    public static String subscribeToTwitch(String sessionId) {
         String response = null;
+        if (OSTConfiguration.settings.getTwitchUser() == null){
+            log.debug("Twitch user in settings is empty. Login first.");
+            return "Twitch user in settings is empty. Login first.";
+        }
         TwitchSubscribeMessage subscribeMessage = new TwitchSubscribeMessage(new TwitchSubscribeCondition(
                 OSTConfiguration.settings.getTwitchUser().getId(), OSTConfiguration.settings.getTwitchUser().getId()),
                 new TwitchSubscriptionTransport(sessionId));
@@ -97,6 +102,7 @@ public class TwitchUtils {
                     })
                     .body(String.class);
         log.debug(response);
+        return "logged in.";
     }
 
     public static TwitchUsers getIdforUser(String name) throws JsonProcessingException {
