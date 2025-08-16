@@ -34,7 +34,7 @@ public class OSTConfiguration {
     public static final String SETTINGS_DIR_PATH = "../settings";
     public static final String SETTINGS_FILE_PATH = "../settings/settings.json";
     public static final String TWITCH_CLIEND_ID ="n6breeyo2zy1nzlpfx43x91lgaobgo";
-    public static final String TWITCH_CLIENT_SECRET = "y6gfc36ycbvt8z89rhxsaqk6hb649f";
+    public static final String TWITCH_CLIENT_SECRET = "796km3f71jdpqreh7mkkk8bww4ruvd";
 
     public static Settings settings;
     @Getter

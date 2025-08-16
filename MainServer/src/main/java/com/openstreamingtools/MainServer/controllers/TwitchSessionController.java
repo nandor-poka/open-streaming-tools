@@ -31,10 +31,10 @@ public class TwitchSessionController {
                 throw new RuntimeException(e);
             }
         }
-        return "forward:/";
+        return "redirect:localhost:8080/";
     }
     @PostMapping(value= "/api/subscribeToTwtitch", consumes = "application/json")
-    public void subscribeToEventSub(@RequestBody WebsocketSessionId websocketSessionId)  {
-        TwitchUtils.subscribeToTwitch(websocketSessionId.getSessionId());
+    public String subscribeToEventSub(@RequestBody WebsocketSessionId websocketSessionId)  {
+       return TwitchUtils.subscribeToTwitch(websocketSessionId.getSessionId());
     }
 }

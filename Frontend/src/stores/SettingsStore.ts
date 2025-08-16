@@ -11,6 +11,10 @@ export const SettingsStore = defineStore('SettingsStore', () => {
   const faderGreen = ref(0)
   const faderBlue = ref(0)
   const twitchStatus = ref(false)
+  const twitchResponse = ref("checking...")
+  function updateTwitchStatus(newStatus:boolean){
+    twitchStatus.value = newStatus
+  }
   return {
     showTrackDelay,
     volumeThreshold,
@@ -21,6 +25,8 @@ export const SettingsStore = defineStore('SettingsStore', () => {
     faderRed,
     faderGreen,
     faderBlue,
-    twitchStatus
+    twitchStatus,
+    twitchResponse,
+    updateTwitchStatus
   }
 })
