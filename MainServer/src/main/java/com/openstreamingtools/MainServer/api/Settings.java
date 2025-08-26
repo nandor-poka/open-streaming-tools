@@ -18,6 +18,6 @@ public class Settings {
     private boolean twitchStatus = false;
     private OauthToken twitchToken;
     private TwitchUser twitchUser;
-    private TwitchUser botUser;
+   // private TwitchUser botUser;
 }
 

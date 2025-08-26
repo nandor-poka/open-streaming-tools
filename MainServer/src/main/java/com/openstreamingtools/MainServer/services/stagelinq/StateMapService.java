@@ -6,15 +6,13 @@ import com.openstreamingtools.MainServer.messages.stagelinqmessages.Service;
 import com.openstreamingtools.MainServer.messages.stagelinqmessages.ServiceType;
 import com.openstreamingtools.MainServer.messaging.SongDataUpdateTask;
 import com.openstreamingtools.MainServer.utils.Utils;
+import lombok.extern.slf4j.Slf4j;
 
 import java.time.Instant;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Optional;
-import java.util.TimerTask;
+import java.util.*;
 
 import static com.openstreamingtools.MainServer.config.OSTConfiguration.settings;
-
+@Slf4j
 public class StateMapService extends Service {
 
     public static final String MAGIC_MARKER = "smaa";
@@ -37,10 +35,14 @@ public class StateMapService extends Service {
         deckStates.put(3, new HashMap<>());
         deckStates.put(4, new HashMap<>());
         deckStates.put(1, new HashMap<>());
-        deckStates.get(1).put(SimpleState.IS_SHOWING, false);
-        deckStates.get(2).put(SimpleState.IS_SHOWING, false);
-        deckStates.get(3).put(SimpleState.IS_SHOWING, false);
-        deckStates.get(4).put(SimpleState.IS_SHOWING, false);
+     //   deckStates.get(1).put(SimpleState.IS_SHOWING, false);
+     //   deckStates.get(2).put(SimpleState.IS_SHOWING, false);
+     //   deckStates.get(3).put(SimpleState.IS_SHOWING, false);
+     //   deckStates.get(4).put(SimpleState.IS_SHOWING, false);
+        deckStates.get(1).put(SimpleState.LAST_UPDATE, (long)0);
+        deckStates.get(2).put(SimpleState.LAST_UPDATE, (long)0);
+        deckStates.get(3).put(SimpleState.LAST_UPDATE, (long)0);
+        deckStates.get(4).put(SimpleState.LAST_UPDATE, (long)0);
         deckStates.get(1).put(SimpleState.SONG_NAME, " ");
         deckStates.get(2).put(SimpleState.SONG_NAME, " ");
         deckStates.get(3).put(SimpleState.SONG_NAME, " ");
@@ -97,12 +99,19 @@ public class StateMapService extends Service {
           //  if(!((boolean) deckStates.get(deck).get(SimpleState.IS_SHOWING))) {
           //      StateMapService.deckStates.get(deck).put(SimpleState.IS_SHOWING, true);
 
-            if (!Utils.taskQueue.contains(updateTask)){
+            if (!Utils.isCurrentlyScheduled(updateTask)){
                 Utils.taskQueue.offer(updateTask);
             }
-            Optional<SongDataUpdateTask> task = Utils.taskQueue.stream().filter(e -> e.equals(emptySongDataTask)).findFirst();
-            task.ifPresent(TimerTask::cancel);
-            Utils.taskQueue.remove(emptySongDataTask);
+
+            if ( (long)deckStates.get(deck).get(SimpleState.LAST_UPDATE)  > (System.currentTimeMillis()-5000)){
+                log.debug("Last update for {}, has been less than 5 seconds, checking for empty songdata in quue",deck);
+                Optional<SongDataUpdateTask> task = Utils.getScheduledTask(emptySongDataTask);
+                task.ifPresent(TimerTask::cancel);
+                if(Utils.removeScheduledTask(emptySongDataTask)){
+                    log.debug("Removed {} from scheduled tasks",emptySongDataTask );
+                }
+            }
+
             //}
         }
         if ((int)deckStates.get(deck).get(SimpleState.VOLUME) == 0){
@@ -110,12 +119,19 @@ public class StateMapService extends Service {
            // if( (boolean)deckStates.get(deck).get(SimpleState.IS_SHOWING)){
              //   StateMapService.deckStates.get(deck).put(SimpleState.IS_SHOWING, false);
 
-            if (!Utils.taskQueue.contains(emptySongDataTask)){
+            if (!Utils.isCurrentlyScheduled(emptySongDataTask)){
                 Utils.taskQueue.offer(emptySongDataTask);
             }
-            Optional<SongDataUpdateTask> task = Utils.taskQueue.stream().filter(e -> e.equals(updateTask)).findFirst();
-            task.ifPresent(TimerTask::cancel);
-            Utils.taskQueue.remove(updateTask);
+
+            if ( (long)deckStates.get(deck).get(SimpleState.LAST_UPDATE) > System.currentTimeMillis()-5000){
+                log.debug("Last update for {}, has been less than 5 seconds, checking for actual songdata in quue",deck);
+                Optional<SongDataUpdateTask> task = Utils.getScheduledTask(updateTask);
+                task.ifPresent(TimerTask::cancel);
+                if(Utils.removeScheduledTask(updateTask)){
+                  log.debug("Removed {} from scheduled tasks",updateTask );
+                }
+
+            }
 
             //}
         }

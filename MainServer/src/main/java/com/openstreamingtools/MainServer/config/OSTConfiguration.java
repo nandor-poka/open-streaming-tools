@@ -44,7 +44,9 @@ public class OSTConfiguration {
 
 
      public static void init() {
+        log.debug("reading settings from: "+ settingsFile.getAbsolutePath());
         try {
+
             settings = Utils.objectMapper.readValue(settingsFile , Settings.class);
             Utils.UIUpdateSchedulerThread.start();
         } catch (IOException e) {

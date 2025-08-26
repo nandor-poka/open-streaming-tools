@@ -1,5 +1,6 @@
 package com.openstreamingtools.MainServer.utils;
 
+import com.openstreamingtools.MainServer.messaging.SongDataUpdateTask;
 import lombok.extern.slf4j.Slf4j;
 
 import static com.openstreamingtools.MainServer.config.OSTConfiguration.settings;
@@ -11,7 +12,9 @@ public class UIUpdateScheduler implements Runnable{
     public void run() {
         while(!Thread.currentThread().isInterrupted()){
             try {
-                Utils.timer.schedule(Utils.taskQueue.take(),settings.getShowTrackDelay() * 1000L );
+                SongDataUpdateTask task = Utils.taskQueue.take();
+                Utils.timer.schedule(task,settings.getShowTrackDelay() * 1000L );
+                Utils.addToScheduledTasks(task);
             } catch (InterruptedException e) {
                 Thread.currentThread().interrupt();
             }

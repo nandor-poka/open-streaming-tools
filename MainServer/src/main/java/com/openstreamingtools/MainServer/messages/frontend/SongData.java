@@ -29,12 +29,31 @@ public class SongData extends MessageToFrontend {
 
     @Override
     public boolean equals(Object o) {
-        if (!(o instanceof SongData songData)) return false;
-        return deckNumber == songData.deckNumber && key == songData.key && Objects.equals(trackTitle, songData.trackTitle) && Objects.equals(artistName, songData.artistName);
+        if (o == null || getClass() != o.getClass()) return false;
+
+        SongData songData = (SongData) o;
+        return deckNumber == songData.deckNumber
+                && key == songData.key
+                && trackTitle.equals(songData.trackTitle)
+                && artistName.equals(songData.artistName);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(deckNumber, trackTitle, artistName, key);
+        int result = deckNumber;
+        result = 31 * result + trackTitle.hashCode();
+        result = 31 * result + artistName.hashCode();
+        result = 31 * result + key;
+        return result;
+    }
+
+    @Override
+    public String toString() {
+        return "SongData{" +
+                "deckNumber=" + deckNumber +
+                ", trackTitle='" + trackTitle + '\'' +
+                ", artistName='" + artistName + '\'' +
+                ", key=" + key +
+                '}';
     }
 }

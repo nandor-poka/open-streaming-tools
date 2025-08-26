@@ -14,6 +14,8 @@ public class TwitchSessionController {
 
     @GetMapping (value= "/api/twitch")
     public String twitchRedirect(@RequestParam String code,@RequestParam String scope){
+        log.debug(code);
+        log.debug(scope);
         TwitchUtils.getAuthTokenFromTwitch(code);
         if(OSTConfiguration.settings.getTwitchUser() == null){
             try {
@@ -23,14 +25,14 @@ public class TwitchSessionController {
                 throw new RuntimeException(e);
             }
         }
-        if(OSTConfiguration.settings.getBotUser() == null){
+/*        if(OSTConfiguration.settings.getBotUser() == null){
             try {
                 OSTConfiguration.settings.setBotUser(TwitchUtils.getIdforUser("OSTBot").getData()[0]);
                 OSTConfiguration.saveSettings();
             } catch (JsonProcessingException e) {
                 throw new RuntimeException(e);
             }
-        }
+        }*/
         return "redirect:localhost:8080/";
     }
     @PostMapping(value= "/api/subscribeToTwtitch", consumes = "application/json")
