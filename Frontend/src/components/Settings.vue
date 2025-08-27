@@ -20,7 +20,9 @@ onMounted(() => {
       sdBlue: settingsStore.sdBlue,
       faderRed: settingsStore.faderRed,
       faderGreen: settingsStore.faderGreen,
-      faderBlue: settingsStore.faderBlue
+      faderBlue: settingsStore.faderBlue,
+      channelUserName: settingsStore.channelUserName,
+      botUserName: settingsStore.botUserName
 
     })
     .catch(function (error) {
@@ -45,9 +47,27 @@ onMounted(() => {
           <th>Comments</th>
         </tr>
         <tr>
+          <td>User name for the Twitch channel to send message to</td>
+          <td>
+            <input v-model="settingsStore.channelUserName" type="text" id="channelUserName" />
+          </td>
+          <td>
+            The name of the Twitch user who owns the channel that the bot will send message to. Typically your own user name for your own channel.
+          </td>
+        </tr>
+        <tr>
+          <td>User name for the Twitch user that acts as the bot</td>
+          <td>
+            <input v-model="settingsStore.botUserName" type="text" id="botUserName" />
+          </td>
+          <td>
+            The name of the Twitch user who owns the channel that the bot will send message to. Typically your own user name for your own channel.
+          </td>
+        </tr>
+        <tr>
           <td>Show track after info</td>
           <td>
-            <input v-bind:value="settingsStore.showTrackDelay" type="number" id="showTrackDelay" />
+            <input v-model="settingsStore.showTrackDelay" type="number" id="showTrackDelay" />
           </td>
           <td>
             seconds, 0 disables delay, meaning information will be shown immediately after loading
@@ -58,7 +78,7 @@ onMounted(() => {
           <td>Only show track info if volume is above (percent, 0 disables)</td>
           <td>
             <input
-              v-bind:value="settingsStore.volumeThreshold"
+              v-model="settingsStore.volumeThreshold"
               type="number"
               id="volumeThreshold"
             />
