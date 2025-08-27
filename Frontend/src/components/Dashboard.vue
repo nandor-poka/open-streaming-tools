@@ -30,7 +30,7 @@ onMounted(() => {
       settingsStore.faderRed = settings.faderRed
       settingsStore.faderGreen = settings.faderGreen
       settingsStore.faderBlue = settings.faderBlue
-
+      settingsStore.channelUserName = settings.channelUserName
     })
     .catch(function (error) {
       // handle error
@@ -49,7 +49,10 @@ twitchClient.onopen = ()=> {
       case "session_welcome":
         axios.post('api/subscribeToTwtitch',{
           sessionId: twitchMessage.payload.session.id
-        }).catch(function (error) {
+        }).then(function(response){
+          settingsStore.twitchResponse = response.data
+        })
+        .catch(function (error) {
           // handle error
           console.log(error)
         })
@@ -82,8 +85,9 @@ twitchClient.onopen = ()=> {
     <h1>Dashboard</h1>
   </div>
   <div>
-    <h2>Twitch connection live: {{ settingsStore.twitchStatus }}</h2>
-    <a href='https://id.twitch.tv/oauth2/authorize?client_id=n6breeyo2zy1nzlpfx43x91lgaobgo&response_type=code&redirect_uri=http://localhost:8080/api/twitch&scope=user%3Aread%3Achat%20user%3Awrite%3Achat'>Login to Twitch</a>
+    <h2>Twitch connection live: {{ settingsStore.twitchResponse }} </h2>
+    <a href='https://id.twitch.tv/oauth2/authorize?client_id=n6breeyo2zy1nzlpfx43x91lgaobgo&force_verify=true&response_type=code&redirect_uri=http://localhost:8080/api/twitch&scope=user%3Abot%20user%3Aread%3Achat%20user%3Awrite%3Achat'>Login to Twitch</a>
+  <!--user%3Abot%20 -->
   </div>
   <div>
     <h2>Current Device / Software</h2>

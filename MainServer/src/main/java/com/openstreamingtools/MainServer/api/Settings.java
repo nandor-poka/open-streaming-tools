@@ -16,6 +16,8 @@ public class Settings {
     private int faderGreen = 255;
     private int faderBlue = 128;
     private boolean twitchStatus = false;
+    private String channelUserName;
+    private String botUserName;
     private OauthToken twitchToken;
     private TwitchUser twitchUser;
     private TwitchUser botUser;

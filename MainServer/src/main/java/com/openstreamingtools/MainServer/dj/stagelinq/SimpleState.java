@@ -8,5 +8,6 @@ public enum SimpleState {
     SONG_NAME,
     VOLUME,
     IS_SHOWING,
-    KEY
+    KEY,
+    LAST_UPDATE
 }
