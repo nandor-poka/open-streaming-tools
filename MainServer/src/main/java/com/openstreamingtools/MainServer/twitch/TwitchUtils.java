@@ -14,13 +14,13 @@ import org.springframework.util.MultiValueMap;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
-import java.util.Arrays;
+
 
 @Slf4j
 public class TwitchUtils {
     public static final String TWITCH_API_GET_TOKEN_URL = "https://id.twitch.tv/oauth2/token";
     //public static final String TWITCH_API_AUTHORIZE_URL = "https://id.twitch.tv/oauth2/authorize";
-    public static final String TWITCH_EVENTSUB_WEBSOCKET_ADDRESS = "wss://eventsub.wss.twitch.tv/ws";
+    //public static final String TWITCH_EVENTSUB_WEBSOCKET_ADDRESS = "wss://eventsub.wss.twitch.tv/ws";
     public static final String TWITCC_GET_USER = "https://api.twitch.tv/helix/users";
     public static final String TWITCH_SUBSCRIBE = "https://api.twitch.tv/helix/eventsub/subscriptions";
     public static final String TWITCH_CHAT_MESSAGE = "https://api.twitch.tv/helix/chat/messages";
