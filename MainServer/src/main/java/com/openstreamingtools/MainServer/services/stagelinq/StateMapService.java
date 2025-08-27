@@ -6,13 +6,13 @@ import com.openstreamingtools.MainServer.messages.stagelinqmessages.Service;
 import com.openstreamingtools.MainServer.messages.stagelinqmessages.ServiceType;
 import com.openstreamingtools.MainServer.messaging.SongDataUpdateTask;
 import com.openstreamingtools.MainServer.utils.Utils;
+import lombok.extern.slf4j.Slf4j;
 
-import java.util.Date;
-import java.util.HashMap;
-import java.util.Map;
+import java.time.Instant;
+import java.util.*;
 
 import static com.openstreamingtools.MainServer.config.OSTConfiguration.settings;
-
+@Slf4j
 public class StateMapService extends Service {
 
     public static final String MAGIC_MARKER = "smaa";
@@ -22,7 +22,8 @@ public class StateMapService extends Service {
     public static final Map<Integer, Integer> keyIndexToKeyMapping = new HashMap<>();
     private boolean isDeviceService = false;
     private static boolean firstTrack = false;
-    public static long firstTrackTime = -1;
+    public static Instant firstTrackTime;
+
     public StateMapService() {
         super();
         this.type= ServiceType.STATEMAP;
@@ -34,10 +35,10 @@ public class StateMapService extends Service {
         deckStates.put(3, new HashMap<>());
         deckStates.put(4, new HashMap<>());
         deckStates.put(1, new HashMap<>());
-        deckStates.get(1).put(SimpleState.IS_SHOWING, false);
-        deckStates.get(2).put(SimpleState.IS_SHOWING, false);
-        deckStates.get(3).put(SimpleState.IS_SHOWING, false);
-        deckStates.get(4).put(SimpleState.IS_SHOWING, false);
+        deckStates.get(1).put(SimpleState.LAST_UPDATE, (long)0);
+        deckStates.get(2).put(SimpleState.LAST_UPDATE, (long)0);
+        deckStates.get(3).put(SimpleState.LAST_UPDATE, (long)0);
+        deckStates.get(4).put(SimpleState.LAST_UPDATE, (long)0);
         deckStates.get(1).put(SimpleState.SONG_NAME, " ");
         deckStates.get(2).put(SimpleState.SONG_NAME, " ");
         deckStates.get(3).put(SimpleState.SONG_NAME, " ");
@@ -73,39 +74,47 @@ public class StateMapService extends Service {
         keyIndexToKeyMapping.put(19, 21);
         keyIndexToKeyMapping.put(5, 22);
         keyIndexToKeyMapping.put(14, 23);
+        keyIndexToKeyMapping.put(18, 24);
     }
 
     public static void updateDeckState(int deck, SimpleState state, Object value){
         if(!firstTrack){
             firstTrack = true;
-            firstTrackTime = System.currentTimeMillis();
+            firstTrackTime = Instant.now();
         }
         deckStates.get(deck).put(state, value);
-
+        SongDataUpdateTask updateTask = new SongDataUpdateTask(new SongData(
+                deck, (String) deckStates.get(deck).get(SimpleState.SONG_NAME),
+                (String) deckStates.get(deck).get(SimpleState.ARTIST_NAME),
+                (Integer) deckStates.get(deck).get(SimpleState.KEY)));
+        SongDataUpdateTask emptySongDataTask = new SongDataUpdateTask(new SongData(
+                deck, " ",
+                " ", -1));
         if ((int)deckStates.get(deck).get(SimpleState.VOLUME) >= settings.getVolumeThreshold()){
-       //     && (long)deckStates.get(deck).get(SimpleState.LAST_UPDATE) < System.currentTimeMillis()-5000){
-            if(!((boolean) deckStates.get(deck).get(SimpleState.IS_SHOWING))) {
-                StateMapService.deckStates.get(deck).put(SimpleState.IS_SHOWING, true);
-                Utils.timer.schedule(new SongDataUpdateTask(new SongData(
-                                deck, (String) deckStates.get(deck).get(SimpleState.SONG_NAME),
-                                (String) deckStates.get(deck).get(SimpleState.ARTIST_NAME),
-                                (Integer) deckStates.get(deck).get(SimpleState.KEY))),
-                        settings.getShowTrackDelay() * 1000L);
+            if (!Utils.isCurrentlyScheduled(updateTask)){
+                Utils.taskQueue.offer(updateTask);
+            }
+            Optional<SongDataUpdateTask> task = Utils.getScheduledTask(emptySongDataTask);
+            task.ifPresent(TimerTask::cancel);
+            if(Utils.removeScheduledTask(emptySongDataTask)){
+                log.debug("Removed {} from scheduled tasks",emptySongDataTask );
             }
         }
         if ((int)deckStates.get(deck).get(SimpleState.VOLUME) == 0){
-      //  && (long)deckStates.get(deck).get(SimpleState.LAST_UPDATE) < System.currentTimeMillis()-5000){
-            if( (boolean)deckStates.get(deck).get(SimpleState.IS_SHOWING)){
-                StateMapService.deckStates.get(deck).put(SimpleState.IS_SHOWING, false);
-                Utils.timer.schedule(new SongDataUpdateTask(new SongData(
-                        deck, " ",
-                        " ", -1)), 5000L);
+            if (!Utils.isCurrentlyScheduled(emptySongDataTask)){
+                Utils.taskQueue.offer(emptySongDataTask);
+            }
+            if ( (long)deckStates.get(deck).get(SimpleState.LAST_UPDATE) > System.currentTimeMillis()-5000){
+                log.debug("Last update for {}, has been less than 5 seconds, checking for actual songdata in quue",deck);
+                Optional<SongDataUpdateTask> task = Utils.getScheduledTask(updateTask);
+                task.ifPresent(TimerTask::cancel);
+                if(Utils.removeScheduledTask(updateTask)){
+                  log.debug("Removed {} from scheduled tasks",updateTask );
+                }
             }
         }
-
-
-
     }
+
     public StateMapService(ServiceType serviceType, int port) {
         super();
         this.type = serviceType;

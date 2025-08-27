@@ -3,6 +3,7 @@ package com.openstreamingtools.MainServer.config;
 import com.openstreamingtools.MainServer.api.Settings;
 import com.openstreamingtools.MainServer.dj.stagelinq.ActingAs;
 import com.openstreamingtools.MainServer.utils.Utils;
+import jakarta.annotation.PreDestroy;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
@@ -33,7 +34,7 @@ public class OSTConfiguration {
     public static final String SETTINGS_DIR_PATH = "../settings";
     public static final String SETTINGS_FILE_PATH = "../settings/settings.json";
     public static final String TWITCH_CLIEND_ID ="n6breeyo2zy1nzlpfx43x91lgaobgo";
-    public static final String TWITCH_CLIENT_SECRET = "y6gfc36ycbvt8z89rhxsaqk6hb649f";
+    public static final String TWITCH_CLIENT_SECRET = "796km3f71jdpqreh7mkkk8bww4ruvd";
 
     public static Settings settings;
     @Getter
@@ -43,8 +44,11 @@ public class OSTConfiguration {
 
 
      public static void init() {
+        log.debug("reading settings from: "+ settingsFile.getAbsolutePath());
         try {
+
             settings = Utils.objectMapper.readValue(settingsFile , Settings.class);
+            Utils.UIUpdateSchedulerThread.start();
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
@@ -63,4 +67,16 @@ public class OSTConfiguration {
         }
     }
 
+    @PreDestroy
+    public void shutdown(){
+         Utils.taskQueue.clear();
+         Utils.timer.purge();
+         Utils.timer.cancel();
+         Utils.UIUpdateSchedulerThread.interrupt();
+        try {
+            Utils.UIUpdateSchedulerThread.join(1000);
+        } catch (InterruptedException e) {
+            throw new RuntimeException(e);
+        }
+    }
 }

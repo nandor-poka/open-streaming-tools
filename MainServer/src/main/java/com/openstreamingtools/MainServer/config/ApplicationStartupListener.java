@@ -53,7 +53,7 @@ public class ApplicationStartupListener implements
         OSTConfiguration.init();
         if (OSTConfiguration.settings.getTwitchToken() != null) {
             try {
-                TwitchUtils.refreshAuthTokenFromTwitch(OSTConfiguration.settings.getTwitchToken().getRefresh_token());
+                TwitchUtils.refreshAuthTokenFromTwitch();
             } catch (UnsupportedEncodingException e) {
                 throw new RuntimeException(e);
             }

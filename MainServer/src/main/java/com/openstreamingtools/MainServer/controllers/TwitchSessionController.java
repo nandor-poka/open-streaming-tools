@@ -14,10 +14,14 @@ public class TwitchSessionController {
 
     @GetMapping (value= "/api/twitch")
     public String twitchRedirect(@RequestParam String code,@RequestParam String scope){
+        log.debug(code);
+        log.debug(scope);
         TwitchUtils.getAuthTokenFromTwitch(code);
         if(OSTConfiguration.settings.getTwitchUser() == null){
             try {
-                OSTConfiguration.settings.setTwitchUser(TwitchUtils.getIdforUser("NAND_OR_DNB").getData()[0]);
+                OSTConfiguration.settings.setTwitchUser(
+                        TwitchUtils.getIdforUser(OSTConfiguration.settings.getChannelUserName())
+                                .getData()[0]);
                 OSTConfiguration.saveSettings();
             } catch (JsonProcessingException e) {
                 throw new RuntimeException(e);
@@ -25,16 +29,18 @@ public class TwitchSessionController {
         }
         if(OSTConfiguration.settings.getBotUser() == null){
             try {
-                OSTConfiguration.settings.setBotUser(TwitchUtils.getIdforUser("OSTBot").getData()[0]);
+                OSTConfiguration.settings.setBotUser(
+                        TwitchUtils.getIdforUser(OSTConfiguration.settings.getBotUserName())
+                                .getData()[0]);
                 OSTConfiguration.saveSettings();
             } catch (JsonProcessingException e) {
                 throw new RuntimeException(e);
             }
         }
-        return "forward:/";
+        return "redirect:localhost:8080/";
     }
     @PostMapping(value= "/api/subscribeToTwtitch", consumes = "application/json")
-    public void subscribeToEventSub(@RequestBody WebsocketSessionId websocketSessionId)  {
-        TwitchUtils.subscribeToTwitch(websocketSessionId.getSessionId());
+    public String subscribeToEventSub(@RequestBody WebsocketSessionId websocketSessionId)  {
+       return TwitchUtils.subscribeToTwitch(websocketSessionId.getSessionId());
     }
 }

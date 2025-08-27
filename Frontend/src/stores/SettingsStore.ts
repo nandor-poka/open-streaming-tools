@@ -11,6 +11,9 @@ export const SettingsStore = defineStore('SettingsStore', () => {
   const faderGreen = ref(0)
   const faderBlue = ref(0)
   const twitchStatus = ref(false)
+  const twitchResponse = ref("checking...")
+  const channelUserName = ref("")
+  const botUserName = ref("")
   return {
     showTrackDelay,
     volumeThreshold,
@@ -21,6 +24,10 @@ export const SettingsStore = defineStore('SettingsStore', () => {
     faderRed,
     faderGreen,
     faderBlue,
-    twitchStatus
+    twitchStatus,
+    twitchResponse,
+    channelUserName,
+    botUserName,
+
   }
 })
