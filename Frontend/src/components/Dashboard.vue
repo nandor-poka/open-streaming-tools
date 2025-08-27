@@ -30,7 +30,7 @@ onMounted(() => {
       settingsStore.faderRed = settings.faderRed
       settingsStore.faderGreen = settings.faderGreen
       settingsStore.faderBlue = settings.faderBlue
-      settingsStore.updateTwitchStatus(settings.twitchStatus)
+      settingsStore.channelUserName = settings.channelUserName
     })
     .catch(function (error) {
       // handle error

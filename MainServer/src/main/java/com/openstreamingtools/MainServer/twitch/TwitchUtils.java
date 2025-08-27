@@ -109,7 +109,7 @@ public class TwitchUtils {
             return "Twitch user in settings is empty. Login first.";
         }
         TwitchSubscribeMessage subscribeMessage = new TwitchSubscribeMessage(new TwitchSubscribeCondition(
-                OSTConfiguration.settings.getTwitchUser().getId(), OSTConfiguration.settings.getTwitchUser().getId()),
+                OSTConfiguration.settings.getTwitchUser().getId(), OSTConfiguration.settings.getBotUser().getId()),
                 new TwitchSubscriptionTransport(sessionId));
             response = Utils.restClient.post()
                     .uri(TWITCH_SUBSCRIBE)
@@ -149,7 +149,7 @@ public class TwitchUtils {
 
     public static void sendToChat(String message){
         ChatMessage chatMessage = new ChatMessage(OSTConfiguration.settings.getTwitchUser().getId()
-                ,OSTConfiguration.settings.getTwitchUser().getId(),message);
+                ,OSTConfiguration.settings.getBotUser().getId(),message);
         log.debug("Sending to Twitch chat: "+message);
         String respoonse = null;
         try {
