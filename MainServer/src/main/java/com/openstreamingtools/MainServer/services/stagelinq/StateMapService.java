@@ -103,14 +103,14 @@ public class StateMapService extends Service {
                 Utils.taskQueue.offer(updateTask);
             }
 
-            if ( (long)deckStates.get(deck).get(SimpleState.LAST_UPDATE)  > (System.currentTimeMillis()-5000)){
-                log.debug("Last update for {}, has been less than 5 seconds, checking for empty songdata in quue",deck);
+            //if ( (long)deckStates.get(deck).get(SimpleState.LAST_UPDATE)  > (System.currentTimeMillis()-5000)){
+            //  log.debug("Last update for {}, has been less than 5 seconds, checking for empty songdata in quue",deck);
                 Optional<SongDataUpdateTask> task = Utils.getScheduledTask(emptySongDataTask);
                 task.ifPresent(TimerTask::cancel);
                 if(Utils.removeScheduledTask(emptySongDataTask)){
                     log.debug("Removed {} from scheduled tasks",emptySongDataTask );
                 }
-            }
+            //}
 
             //}
         }
