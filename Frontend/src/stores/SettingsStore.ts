@@ -14,6 +14,8 @@ export const SettingsStore = defineStore('SettingsStore', () => {
   const twitchResponse = ref("checking...")
   const channelUserName = ref("")
   const botUserName = ref("")
+  const clientIdFilePath = ref("")
+  const clientSecretFilePath = ref("")
   return {
     showTrackDelay,
     volumeThreshold,
@@ -28,6 +30,7 @@ export const SettingsStore = defineStore('SettingsStore', () => {
     twitchResponse,
     channelUserName,
     botUserName,
-
+    clientIdFilePath,
+    clientSecretFilePath
   }
 })
