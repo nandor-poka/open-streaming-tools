@@ -21,5 +21,8 @@ public class Settings {
     private OauthToken twitchToken;
     private TwitchUser twitchUser;
     private TwitchUser botUser;
+    private String shoutOutListFilePath;
+    private String clientSecretFilePath;
+    private String clientIdFilePath;
 }
 

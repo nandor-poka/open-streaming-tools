@@ -28,8 +28,8 @@ public class TwitchUtils {
 
     public static void getAuthTokenFromTwitch(String code){
         MultiValueMap<String, String> params = new LinkedMultiValueMap<>();
-        params.add("client_id", OSTConfiguration.TWITCH_CLIEND_ID);
-        params.add("client_secret", OSTConfiguration.TWITCH_CLIENT_SECRET);
+        params.add("client_id", OSTConfiguration.getTWITCH_CLIEND_ID());
+        params.add("client_secret", OSTConfiguration.getTWITCH_CLIENT_SECRET());
         params.add("grant_type", "authorization_code");
         params.add("code", code);
         params.add("redirect_uri", "http://localhost:8080/");
@@ -53,8 +53,8 @@ public class TwitchUtils {
     public static void refreshAuthTokenFromTwitch() throws UnsupportedEncodingException {
         if (!validateToken()){
             MultiValueMap<String, String> params = new LinkedMultiValueMap<>();
-            params.add("client_id",OSTConfiguration.TWITCH_CLIEND_ID);
-            params.add("client_secret", OSTConfiguration.TWITCH_CLIENT_SECRET);
+            params.add("client_id",OSTConfiguration.getTWITCH_CLIEND_ID());
+            params.add("client_secret", OSTConfiguration.getTWITCH_CLIENT_SECRET());
             params.add("grant_type", "refresh_token");
             params.add("refresh_token", URLEncoder.encode(OSTConfiguration.settings.getTwitchToken().getRefresh_token(), StandardCharsets.UTF_8));
             params.add("redirect_uri", "http://localhost:8080/");
@@ -115,7 +115,7 @@ public class TwitchUtils {
                     .uri(TWITCH_SUBSCRIBE)
                     .header("Authorization","Bearer "
                             + OSTConfiguration.settings.getTwitchToken().getAccess_token())
-                    .header("Client-Id", OSTConfiguration.TWITCH_CLIEND_ID)
+                    .header("Client-Id", OSTConfiguration.getTWITCH_CLIEND_ID())
                     .contentType(MediaType.APPLICATION_JSON)
                     .body(subscribeMessage)
                     .retrieve()
@@ -135,7 +135,7 @@ public class TwitchUtils {
                 .uri(TWITCC_GET_USER +"?login="+name)
                 .header("Authorization","Bearer "
                         +OSTConfiguration.settings.getTwitchToken().getAccess_token())
-                .header("Client-Id", OSTConfiguration.TWITCH_CLIEND_ID)
+                .header("Client-Id", OSTConfiguration.getTWITCH_CLIEND_ID())
                 .retrieve()
                 .onStatus(HttpStatusCode::is4xxClientError
                         , (request, resp) -> {
@@ -158,7 +158,7 @@ public class TwitchUtils {
                     .contentType(MediaType.APPLICATION_JSON)
                     .header("Authorization","Bearer "
                             + OSTConfiguration.settings.getTwitchToken().getAccess_token())
-                    .header("Client-Id", OSTConfiguration.TWITCH_CLIEND_ID)
+                    .header("Client-Id", OSTConfiguration.getTWITCH_CLIEND_ID())
                     .body(Utils.objectMapper.writeValueAsString(chatMessage))
                     .retrieve()
                     .onStatus(HttpStatusCode::is4xxClientError
