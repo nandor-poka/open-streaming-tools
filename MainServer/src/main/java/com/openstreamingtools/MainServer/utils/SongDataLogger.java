@@ -26,9 +26,9 @@ public class SongDataLogger {
     public static void logSongData(SongData songData) {
         try {
             log.debug( detailedSongLog.createNewFile() ? detailedSongLog.getAbsolutePath()+" created."
-                    : detailedSongLog.getAbsolutePath()+" already exists.");
+                    : "");
             log.debug( youtubeSongLog.createNewFile() ? youtubeSongLog.getAbsolutePath()+" created."
-                    : youtubeSongLog.getAbsolutePath()+" already exists.");
+                    : "");
             if (!songData.getArtistName().equals(" ") || !songData.getTrackTitle().equals(" ")){
                 FileWriter songDataFileFriter = new FileWriter(detailedSongLog, true);
                 long durationSeconds = Duration.between(StateMapService.firstTrackTime, Instant.now()).getSeconds();

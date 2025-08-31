@@ -25,7 +25,6 @@ onMounted(() => {
       settingsStore.faderRed = settings.faderRed
       settingsStore.faderGreen = settings.faderGreen
       settingsStore.faderBlue = settings.faderBlue
-
     })
     .catch(function (error) {
       // handle error

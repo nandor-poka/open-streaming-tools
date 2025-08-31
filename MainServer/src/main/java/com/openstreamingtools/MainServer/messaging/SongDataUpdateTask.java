@@ -24,6 +24,12 @@ public class SongDataUpdateTask extends TimerTask {
             MessageSender.sendMessage(songData);
             SongDataLogger.logSongData(songData);
             Utils.removeScheduledTask(this);
+            if (!songData.getArtistName().equals(" ") || !songData.getTrackTitle().equals(" ")){
+                StateMapService.deckStates.get(songData.getDeckNumber()).put(SimpleState.IS_SHOWING, true);
+            } else {
+                StateMapService.deckStates.get(songData.getDeckNumber()).put(SimpleState.IS_SHOWING, false);
+            }
+
         } catch (JsonProcessingException e) {
             throw new RuntimeException(e);
         }
