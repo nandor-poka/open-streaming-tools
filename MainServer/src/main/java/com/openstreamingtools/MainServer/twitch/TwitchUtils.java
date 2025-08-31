@@ -26,6 +26,10 @@ public class TwitchUtils {
     public static final String TWITCH_CHAT_MESSAGE = "https://api.twitch.tv/helix/chat/messages";
     public static final String TWITCH_VALIDATE_TOKEN = "https://id.twitch.tv/oauth2/validate";
 
+    public static final String SHOUTOUT_COMMAND = "/shoutout ";
+    private static TokenValidationTask tokenValidationTask = null;
+
+
     public static void getAuthTokenFromTwitch(String code){
         MultiValueMap<String, String> params = new LinkedMultiValueMap<>();
         params.add("client_id", OSTConfiguration.getTWITCH_CLIEND_ID());
@@ -125,7 +129,11 @@ public class TwitchUtils {
                     })
                     .body(String.class);
         log.debug(response);
-        return "logged in.";
+        if (tokenValidationTask == null){
+            tokenValidationTask = new TokenValidationTask();
+            Utils.timer.scheduleAtFixedRate(tokenValidationTask, 0, Utils.HOUR_IN_MILLIS);
+        }
+        return "logged in as "+OSTConfiguration.settings.getBotUser().getLogin();
     }
 
     public static TwitchUsers getIdforUser(String name) throws JsonProcessingException {
@@ -148,6 +156,11 @@ public class TwitchUtils {
     }
 
     public static void sendToChat(String message){
+        if (OSTConfiguration.settings.getTwitchUser() == null
+        || OSTConfiguration.settings.getBotUser() == null){
+            return;
+        }
+        
         ChatMessage chatMessage = new ChatMessage(OSTConfiguration.settings.getTwitchUser().getId()
                 ,OSTConfiguration.settings.getBotUser().getId(),message);
         log.debug("Sending to Twitch chat: "+message);

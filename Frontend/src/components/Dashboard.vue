@@ -3,84 +3,11 @@
 import Navbar from './Navbar.vue'
 import { UnitStore } from '@/stores/UnitStore'
 import { SettingsStore } from '@/stores/SettingsStore'
-import { TrackStore } from '@/stores/TrackStore'
-import { onMounted } from 'vue'
-import { inject } from 'vue'
-import type { Axios } from 'axios'
-const axios: Axios = inject('axios') as Axios
+
 const unitStore = UnitStore()
 const settingsStore = SettingsStore()
-const twitchClient = new WebSocket('wss://eventsub.wss.twitch.tv/ws')
-const trackStore = TrackStore()
-onMounted(() => {
-  axios
-    .get('api/getSettings', {
-      method: 'get',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-    })
-    .then(function (response) {
-      const settings = response.data
-      settingsStore.showTrackDelay = settings.showTrackDelay
-      settingsStore.volumeThreshold = settings.volumeThreshold
-      settingsStore.sdRed = settings.sdRed
-      settingsStore.sdGreen = settings.sdGreen
-      settingsStore.sdBlue = settings.sdBlue
-      settingsStore.faderRed = settings.faderRed
-      settingsStore.faderGreen = settings.faderGreen
-      settingsStore.faderBlue = settings.faderBlue
-      settingsStore.channelUserName = settings.channelUserName
-      settingsStore.twitchStatus = settings.twitchStatus
-    })
-    .catch(function (error) {
-      // handle error
-      console.log(error)
-    })
-})
 
-twitchClient.onopen = ()=> {
-    console.log("Websocket to Twitch opened")
-  }
-  twitchClient.onmessage = (weboscketMessage) =>{
-    const twitchMessage = JSON.parse(weboscketMessage.data)
-    console.log(weboscketMessage)
-    console.log(twitchMessage)
-    switch (twitchMessage.metadata.message_type) {
-      case "session_welcome":
-        if (!settingsStore.twitchStatus){
-          break
-        }
-        axios.post('api/subscribeToTwtitch',{
-          sessionId: twitchMessage.payload.session.id
-        }).then(function(response){
-          settingsStore.twitchResponse = response.data
-        })
-        .catch(function (error) {
-          // handle error
-          console.log(error)
-        })
-        console.log(twitchMessage.payload.session.id)
-        break;
-       case "notification":
-        console.log(weboscketMessage)
-        if (twitchMessage.payload.event.message.text == "!recommend"){
-          axios
-          .get('api/getInKeyRecommendation/'+trackStore.currentKey, {
-            headers: {
-              'Content-Type': 'application/json',
-            },
-          })
-          .catch(function (error) {
-            // handle error
-            console.log(error)
-          })
-        }
-        break;
-      default:
-        break;
-    }
-  }
+
 </script>
 
 <template>

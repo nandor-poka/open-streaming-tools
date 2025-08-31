@@ -24,7 +24,8 @@ onMounted(() => {
       channelUserName: settingsStore.channelUserName,
       botUserName: settingsStore.botUserName,
       clientIdFilePath: settingsStore.clientIdFilePath,
-      clientSecretFilePath: settingsStore.clientSecretFilePath
+      clientSecretFilePath: settingsStore.clientSecretFilePath,
+      autoShoutoutList : settingsStore.autoShoutoutList
 
     })
     .catch(function (error) {
@@ -84,8 +85,13 @@ onMounted(() => {
             Fully quialified path to the file that has the Twitch client secret.
           </td>
         </tr>
+        <tr>
+          <td>Auto shoutout list</td>
+          <td>
+            <textarea v-model="settingsStore.autoShoutoutList" rows="10" cols="35" id="autoShoutoutList"></textarea>
+          </td>
+        </tr>
         <hr/>
-
         <tr>
           <td>Show track after info</td>
           <td>

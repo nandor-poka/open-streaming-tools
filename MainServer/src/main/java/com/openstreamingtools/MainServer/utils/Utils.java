@@ -24,6 +24,8 @@ public class Utils {
     private static final Vector<SongDataUpdateTask> currentlyScheduledTasks = new Vector<>(8);
     public static final Thread UIUpdateSchedulerThread = new Thread(new UIUpdateScheduler());
     private static final ReentrantLock reentrantLock = new ReentrantLock(true);
+    public static final long HOUR_IN_MILLIS = 3600000;
+
 
     public static void putIntegerToByteArray(int i, byte[] array){
         array[0] = (byte)((i >> 24)& 0xFF);

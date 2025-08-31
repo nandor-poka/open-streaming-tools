@@ -19,7 +19,7 @@ public class OSTConfiguration {
 
     // Public constatncs
     public static final String NAME = "Open Streaming Tools";
-    public static final String VERSION = "0.0.1";
+    public static final String VERSION = "0.0.2";
     public static final String SOURCE = "OST";
     public static final ActingAs STAGELINQ_ACTING_AS = ActingAs.LISTEN;
     public static final int STAGELINQ_BROADCAST_PORT = 51337;
@@ -32,6 +32,7 @@ public class OSTConfiguration {
     public static final int STATEMAP_SERVICE_PORT = 60001;
     public static final String SETTINGS_DIR_PATH = "../settings";
     public static final String SETTINGS_FILE_PATH = "../settings/settings.json";
+
     @Getter
     private static String TWITCH_CLIEND_ID ="";
     @Getter
