@@ -1,5 +1,6 @@
 package com.openstreamingtools.MainServer.controllers;
 
+import com.openstreamingtools.MainServer.config.OSTConfiguration;
 import com.openstreamingtools.MainServer.db.entities.Track;
 import com.openstreamingtools.MainServer.db.repositories.TrackRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,7 +18,8 @@ public class TrackController {
 
     @GetMapping(value = "/api/getTracksForPlaylist/{playlistID}", produces = "application/json")
     public List<Track> getTracksByPlaylist(@PathVariable int playlistID){
-       List<Track> tracks = trackRepository.findAllByPlaylistID(playlistID);
+        OSTConfiguration.settings.setPlaylistID(playlistID);
+        List<Track> tracks = trackRepository.findAllByPlaylistID(playlistID);
         return tracks;
     }
 }

@@ -16,6 +16,6 @@ public class PlaylistController {
 
     @GetMapping(value= "/api/getPlaylists", produces = "application/json")
     public List<Playlist> getPlaylists(){
-        return playlistRepository.findAll();
+        return playlistRepository.findAll().stream().filter(Playlist::isPersisted).toList();
     }
 }

@@ -25,5 +25,6 @@ public class Settings {
     private String clientSecretFilePath;
     private String clientIdFilePath;
     private String autoShoutoutList;
+    private int playlistID;
 }
 
