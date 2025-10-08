@@ -34,12 +34,12 @@ public class SongDataLogger {
                 long durationSeconds = Duration.between(StateMapService.firstTrackTime, Instant.now()).getSeconds();
 
                 songDataFileFriter.write(  String.format("%d:%02d:%02d", durationSeconds / 3600, (durationSeconds % 3600) / 60, (durationSeconds % 60))+" on deck "
-                        +songData.getDeckNumber() + " " + songData.getTrackTitle() + " - " + songData.getArtistName() + "\n");
+                        +songData.getDeckNumber() + " " + songData.getArtistName() + " - " + songData.getTrackTitle() + "\n");
                 songDataFileFriter.close();
                 FileWriter youtubeLogFileWriter = new FileWriter(youtubeSongLog, true);
                 youtubeLogFileWriter.write( String.format("%d:%02d:%02d", durationSeconds / 3600, (durationSeconds % 3600) / 60, (durationSeconds % 60))+" " + songData.getTrackTitle() + " - " + songData.getArtistName() + "\n");
                 youtubeLogFileWriter.close();
-                TwitchUtils.sendToChat("Track "+ ++counter + ": "+songData.getTrackTitle() + " - " + songData.getArtistName());
+                TwitchUtils.sendToChat("Track "+ ++counter + ": "+songData.getArtistName() + " - " + songData.getTrackTitle());
             }
         } catch (IOException e) {
             throw new RuntimeException(e);

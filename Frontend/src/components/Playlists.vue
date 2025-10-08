@@ -27,8 +27,8 @@ onMounted(() => {
     })
   if (playlistSelector.value) {
     playlistSelector.value.oninput = function () {
-      if (playlistSelector.value)
-        axios
+      if (playlistSelector.value){
+          axios
           .get('api/getTracksForPlaylist/' + playlistSelector.value.value, {
             method: 'get',
             headers: {
@@ -43,6 +43,8 @@ onMounted(() => {
             // handle error
             console.log(error)
           })
+      }
+
     }
   }
 })

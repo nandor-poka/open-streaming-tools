@@ -5,46 +5,9 @@ import type { SongData } from '@/types/SongData'
 import type { ChannelVolumeData } from '@/types/ChannelVolumeData'
 import type { Unit } from './types/Unit'
 import { TrackStore } from './stores/TrackStore'
-import { SettingsStore } from '@/stores/SettingsStore'
-import type { Axios } from 'axios'
-import { inject, onMounted } from 'vue'
-const axios: Axios = inject('axios') as Axios
-const settingsStore = SettingsStore()
-//const axiosInstance = Axios.create()
-//axiosInstance.defaults.baseURL = 'http://localhost:8080/'
-//const twitchClient = new WebSocket('wss://eventsub.wss.twitch.tv/ws')
-onMounted(() => {
-  axios
-    .get('api/getSettings', {
-      method: 'get',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-    })
-    .then(function (response) {
-      const settings = response.data
-      settingsStore.showTrackDelay = settings.showTrackDelay
-      settingsStore.volumeThreshold = settings.volumeThreshold
-      settingsStore.sdRed = settings.sdRed
-      settingsStore.sdGreen = settings.sdGreen
-      settingsStore.sdBlue = settings.sdBlue
-      settingsStore.faderRed = settings.faderRed
-      settingsStore.faderGreen = settings.faderGreen
-      settingsStore.faderBlue = settings.faderBlue
-      settingsStore.channelUserName = settings.channelUserName
-      settingsStore.botUserName = settings.botUserName
-      settingsStore.clientIdFilePath = settings.clientIdFilePath
-      settingsStore.clientSecretFilePath = settings.clientSecretFilePath
-      settingsStore.twitchStatus = settings.twitchStatus
-    })
-    .catch(function (error) {
-      // handle error
-      console.log(error)
-    })
-})
-
 const unitStore = UnitStore()
 const trackStore = TrackStore()
+
 const ostClient = new Client({
   brokerURL: 'ws://localhost:8080/api/websocket',
   onConnect: () => {

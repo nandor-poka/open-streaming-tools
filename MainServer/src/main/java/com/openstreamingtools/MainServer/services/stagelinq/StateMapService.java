@@ -82,10 +82,6 @@ public class StateMapService extends Service {
     }
 
     public static void updateDeckState(int deck, SimpleState state, Object value){
-        if(!firstTrack){
-            firstTrack = true;
-            firstTrackTime = Instant.now();
-        }
         deckStates.get(deck).put(state, value);
         SongDataUpdateTask updateTask = new SongDataUpdateTask(new SongData(
                 deck, (String) deckStates.get(deck).get(SimpleState.SONG_NAME),
@@ -96,6 +92,10 @@ public class StateMapService extends Service {
                 " ", -1));
         if ((int)deckStates.get(deck).get(SimpleState.VOLUME) >= settings.getVolumeThreshold()
                 && !(boolean)deckStates.get(deck).get(SimpleState.IS_SHOWING) ){
+            if(!firstTrack){
+                firstTrack = true;
+                firstTrackTime = Instant.now();
+            }
             if (!Utils.isCurrentlyScheduled(updateTask)){
                 Utils.taskQueue.offer(updateTask);
             }

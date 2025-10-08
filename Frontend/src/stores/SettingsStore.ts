@@ -16,6 +16,7 @@ export const SettingsStore = defineStore('SettingsStore', () => {
   const botUserName = ref("")
   const clientIdFilePath = ref("")
   const clientSecretFilePath = ref("")
+  const autoShoutoutList = ref([])
   return {
     showTrackDelay,
     volumeThreshold,
@@ -31,6 +32,7 @@ export const SettingsStore = defineStore('SettingsStore', () => {
     channelUserName,
     botUserName,
     clientIdFilePath,
-    clientSecretFilePath
+    clientSecretFilePath,
+    autoShoutoutList
   }
 })
