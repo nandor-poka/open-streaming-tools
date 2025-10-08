@@ -9,8 +9,7 @@ import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 
-import java.io.File;
-import java.io.IOException;
+import java.io.*;
 
 import static com.openstreamingtools.MainServer.utils.Utils.objectMapper;
 
@@ -20,7 +19,7 @@ public class OSTConfiguration {
 
     // Public constatncs
     public static final String NAME = "Open Streaming Tools";
-    public static final String VERSION = "0.0.1";
+    public static final String VERSION = "0.0.2";
     public static final String SOURCE = "OST";
     public static final ActingAs STAGELINQ_ACTING_AS = ActingAs.LISTEN;
     public static final int STAGELINQ_BROADCAST_PORT = 51337;
@@ -33,8 +32,11 @@ public class OSTConfiguration {
     public static final int STATEMAP_SERVICE_PORT = 60001;
     public static final String SETTINGS_DIR_PATH = "../settings";
     public static final String SETTINGS_FILE_PATH = "../settings/settings.json";
-    public static final String TWITCH_CLIEND_ID ="n6breeyo2zy1nzlpfx43x91lgaobgo";
-    public static final String TWITCH_CLIENT_SECRET = "796km3f71jdpqreh7mkkk8bww4ruvd";
+
+    @Getter
+    private static String TWITCH_CLIEND_ID ="";
+    @Getter
+    private static String TWITCH_CLIENT_SECRET = "";
 
     public static Settings settings;
     @Getter
@@ -42,13 +44,14 @@ public class OSTConfiguration {
     @Setter
     private static File settingsFile;
 
-
      public static void init() {
         log.debug("reading settings from: "+ settingsFile.getAbsolutePath());
         try {
 
             settings = Utils.objectMapper.readValue(settingsFile , Settings.class);
+            initTwitchClientData();
             Utils.UIUpdateSchedulerThread.start();
+
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
@@ -65,6 +68,44 @@ public class OSTConfiguration {
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
+    }
+
+    private static void initTwitchClientData(){
+         if (settings.getClientIdFilePath() == null || settings.getClientSecretFilePath() == null){
+             log.debug("File paths for twitch client credentials - ID and client secret - are empty.");
+             return;
+         }
+         File clientIDFile = new File(settings.getClientIdFilePath());
+         if (!clientIDFile.exists()){
+             log.debug("Twitch client ID file at {} does not exist. Please check settings.", clientIDFile.getAbsolutePath());
+         } else {
+             try {
+                 BufferedReader reader =  new BufferedReader(new FileReader(clientIDFile));
+                 TWITCH_CLIEND_ID = reader.readLine();
+             } catch (FileNotFoundException e) {
+                 log.error("Client ID file at {} could not be read.", clientIDFile.getAbsolutePath());
+                 return;
+             } catch (IOException e) {
+                 log.error("Error while reading client ID file.");
+                 return;
+             }
+         }
+        File clientSecretFile = new File(settings.getClientSecretFilePath());
+        if (!clientSecretFile.exists()){
+            log.debug("Twitch client secret file at: {} does not exist. Please check settings.", clientSecretFile.getAbsolutePath());
+        } else {
+            try {
+                BufferedReader reader =  new BufferedReader(new FileReader(clientSecretFile));
+                TWITCH_CLIENT_SECRET = reader.readLine();
+            } catch (FileNotFoundException e) {
+                log.error("Client secret file at {} could not be read.", clientSecretFile.getAbsolutePath());
+                return;
+            } catch (IOException e) {
+                log.error("Error while reading client secret file.");
+                return;
+            }
+        }
+        settings.setTwitchStatus(true);
     }
 
     @PreDestroy
