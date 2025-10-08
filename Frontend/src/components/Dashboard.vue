@@ -36,6 +36,7 @@ onMounted(() => {
       settingsStore.clientIdFilePath = settings.clientIdFilePath
       settingsStore.clientSecretFilePath = settings.clientSecretFilePath
       settingsStore.twitchStatus = settings.twitchStatus
+      settingsStore.versionString = settings.versionString
     })
     .catch(function (error) {
       // handle error

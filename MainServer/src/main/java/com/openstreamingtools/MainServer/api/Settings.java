@@ -18,13 +18,14 @@ public class Settings {
     private boolean twitchStatus = false;
     private String channelUserName;
     private String botUserName;
-    private OauthToken twitchToken;
-    private TwitchUser twitchUser;
-    private TwitchUser botUser;
     private String shoutOutListFilePath;
     private String clientSecretFilePath;
     private String clientIdFilePath;
     private String autoShoutoutList;
     private int playlistID;
+    private String versionString = "";
+    private OauthToken twitchToken;
+    private TwitchUser twitchUser;
+    private TwitchUser botUser;
 }
 
