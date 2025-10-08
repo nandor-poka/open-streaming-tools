@@ -3,10 +3,16 @@ import Dashboard from './components/Dashboard.vue'
 import Log from './components/Log.vue'
 import BrowserSource from './components/BrowserSource.vue'
 import Settings from './components/Settings.vue'
+import Playlists from './components/Playlists.vue'
+import Chatbot from './components/Chatbot.vue'
 const routes = [
   {
     path: '/',
     component: Dashboard,
+  },
+  {
+    path: '/playlists',
+    component: Playlists,
   },
   {
     path: '/log',
@@ -15,6 +21,10 @@ const routes = [
   {
     path: '/settings',
     component: Settings,
+  },
+  {
+    path: '/chatbot',
+    component: Chatbot,
   },
   {
     path: '/browsersource',

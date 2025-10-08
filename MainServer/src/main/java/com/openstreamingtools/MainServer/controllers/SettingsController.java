@@ -1,26 +1,26 @@
 package com.openstreamingtools.MainServer.controllers;
 
 import com.openstreamingtools.MainServer.api.Settings;
-import com.openstreamingtools.MainServer.config.Configuration;
+import com.openstreamingtools.MainServer.config.OSTConfiguration;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.web.bind.annotation.*;
 
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.ResponseBody;
-import org.springframework.web.bind.annotation.RestController;
-import static com.openstreamingtools.MainServer.utils.Utils.objectMapper;
 import java.io.IOException;
 
+import static com.openstreamingtools.MainServer.utils.Utils.objectMapper;
+
 @RestController
+@Slf4j
 public class SettingsController {
 
-    @GetMapping(value = "/getSettings", produces = "application/json")
+    @GetMapping(value = "/api/getSettings", produces = "application/json")
     public @ResponseBody Settings getSettings() throws IOException {
-        return Configuration.settings;
+        return OSTConfiguration.settings;
     }
 
-    @PostMapping(value = "/saveSettings", consumes = "application/json")
-    public void postSettings(String jsonString) throws IOException {
-        objectMapper.writeValue(Configuration.getSettingsFileResource().getFile(), jsonString);
-        Configuration.settings = objectMapper.readValue(Configuration.getSettingsFileResource().getFile(), Settings.class);
+    @PostMapping(value = "/api/saveSettings", consumes = "application/json")
+    public void postSettings(@RequestBody String jsonString) throws IOException {
+        OSTConfiguration.settings = objectMapper.readValue(jsonString, Settings.class);
+        OSTConfiguration.saveSettings();
     }
 }

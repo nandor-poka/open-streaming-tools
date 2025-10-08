@@ -1,9 +1,9 @@
 package com.openstreamingtools.MainServer.messages.stagelinqmessages;
 
-import com.openstreamingtools.MainServer.config.Configuration;
+import com.openstreamingtools.MainServer.config.OSTConfiguration;
 
 public enum ServiceType {
-    STATEMAP("StateMap", Configuration.STATEMAP_SERVICE_PORT);
+    STATEMAP("StateMap", OSTConfiguration.STATEMAP_SERVICE_PORT);
 
     private final String name;
     private final int port;

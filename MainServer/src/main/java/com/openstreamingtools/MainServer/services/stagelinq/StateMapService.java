@@ -1,23 +1,29 @@
 package com.openstreamingtools.MainServer.services.stagelinq;
 
-import com.openstreamingtools.MainServer.config.Configuration;
 import com.openstreamingtools.MainServer.dj.stagelinq.SimpleState;
 import com.openstreamingtools.MainServer.messages.frontend.SongData;
 import com.openstreamingtools.MainServer.messages.stagelinqmessages.Service;
 import com.openstreamingtools.MainServer.messages.stagelinqmessages.ServiceType;
 import com.openstreamingtools.MainServer.messaging.SongDataUpdateTask;
 import com.openstreamingtools.MainServer.utils.Utils;
-import static com.openstreamingtools.MainServer.config.Configuration.settings;
-import java.util.HashMap;
-import java.util.Map;
+import lombok.extern.slf4j.Slf4j;
 
+import java.time.Instant;
+import java.util.*;
+
+import static com.openstreamingtools.MainServer.config.OSTConfiguration.settings;
+@Slf4j
 public class StateMapService extends Service {
 
     public static final String MAGIC_MARKER = "smaa";
     public static final int MAGIC_MARKER_INTERVAL = 0x000007d2;
     public static final int MAGIC_MARKER_JSON = 0x00000000;
     public static final Map<Integer, Map<SimpleState,Object>> deckStates = new HashMap<>();
+    public static final Map<Integer, Integer> keyIndexToKeyMapping = new HashMap<>();
     private boolean isDeviceService = false;
+    private static boolean firstTrack = false;
+    public static Instant firstTrackTime;
+
     public StateMapService() {
         super();
         this.type= ServiceType.STATEMAP;
@@ -29,36 +35,91 @@ public class StateMapService extends Service {
         deckStates.put(3, new HashMap<>());
         deckStates.put(4, new HashMap<>());
         deckStates.put(1, new HashMap<>());
-        deckStates.get(1).put(SimpleState.LAST_UPDATE, System.currentTimeMillis());
-        deckStates.get(2).put(SimpleState.LAST_UPDATE, System.currentTimeMillis());
-        deckStates.get(3).put(SimpleState.LAST_UPDATE, System.currentTimeMillis());
-        deckStates.get(4).put(SimpleState.LAST_UPDATE, System.currentTimeMillis());
+        deckStates.get(1).put(SimpleState.LAST_UPDATE, (long)0);
+        deckStates.get(2).put(SimpleState.LAST_UPDATE, (long)0);
+        deckStates.get(3).put(SimpleState.LAST_UPDATE, (long)0);
+        deckStates.get(4).put(SimpleState.LAST_UPDATE, (long)0);
+        deckStates.get(1).put(SimpleState.IS_SHOWING, false);
+        deckStates.get(2).put(SimpleState.IS_SHOWING, false);
+        deckStates.get(3).put(SimpleState.IS_SHOWING, false);
+        deckStates.get(4).put(SimpleState.IS_SHOWING, false);
+        deckStates.get(1).put(SimpleState.SONG_NAME, " ");
+        deckStates.get(2).put(SimpleState.SONG_NAME, " ");
+        deckStates.get(3).put(SimpleState.SONG_NAME, " ");
+        deckStates.get(4).put(SimpleState.SONG_NAME, " ");
+        deckStates.get(1).put(SimpleState.ARTIST_NAME, " ");
+        deckStates.get(2).put(SimpleState.ARTIST_NAME, " ");
+        deckStates.get(3).put(SimpleState.ARTIST_NAME, " ");
+        deckStates.get(4).put(SimpleState.ARTIST_NAME, " ");
+        deckStates.get(1).put(SimpleState.KEY, -1);
+        deckStates.get(2).put(SimpleState.KEY, -1);
+        deckStates.get(3).put(SimpleState.KEY, -1);
+        deckStates.get(4).put(SimpleState.KEY, -1);
+        keyIndexToKeyMapping.put(21, 1);
+        keyIndexToKeyMapping.put(7, 2);
+        keyIndexToKeyMapping.put(16, 3);
+        keyIndexToKeyMapping.put(2, 4);
+        keyIndexToKeyMapping.put(23, 5);
+        keyIndexToKeyMapping.put(9, 6);
+        keyIndexToKeyMapping.put(0, 7);
+        keyIndexToKeyMapping.put(4, 8);
+        keyIndexToKeyMapping.put(13, 9);
+        keyIndexToKeyMapping.put(11, 10);
+        keyIndexToKeyMapping.put(20, 11);
+        keyIndexToKeyMapping.put(6, 12);
+        keyIndexToKeyMapping.put(15, 13);
+        keyIndexToKeyMapping.put(1, 14);
+        keyIndexToKeyMapping.put(22, 15);
+        keyIndexToKeyMapping.put(8, 16);
+        keyIndexToKeyMapping.put(17, 17);
+        keyIndexToKeyMapping.put(3, 18);
+        keyIndexToKeyMapping.put(12, 19);
+        keyIndexToKeyMapping.put(10, 20);
+        keyIndexToKeyMapping.put(19, 21);
+        keyIndexToKeyMapping.put(5, 22);
+        keyIndexToKeyMapping.put(14, 23);
+        keyIndexToKeyMapping.put(18, 24);
     }
 
     public static void updateDeckState(int deck, SimpleState state, Object value){
         deckStates.get(deck).put(state, value);
-
-        if ((int)deckStates.get(deck).get(SimpleState.VOLUME) > settings.getVolumeThreshold()){
-      //      if( (long)deckStates.get(deck).get(SimpleState.LAST_UPDATE) < System.currentTimeMillis()-5000) {
-                Utils.timer.schedule(new SongDataUpdateTask(new SongData(
-                                deck, (String) deckStates.get(deck).get(SimpleState.SONG_NAME),
-                                (String) deckStates.get(deck).get(SimpleState.ARTIST_NAME))),
-                        settings.getShowTrackDelay() * 1000L);
-                deckStates.get(deck).put(SimpleState.LAST_UPDATE, System.currentTimeMillis());
+        SongDataUpdateTask updateTask = new SongDataUpdateTask(new SongData(
+                deck, (String) deckStates.get(deck).get(SimpleState.SONG_NAME),
+                (String) deckStates.get(deck).get(SimpleState.ARTIST_NAME),
+                (Integer) deckStates.get(deck).get(SimpleState.KEY)));
+        SongDataUpdateTask emptySongDataTask = new SongDataUpdateTask(new SongData(
+                deck, " ",
+                " ", -1));
+        if ((int)deckStates.get(deck).get(SimpleState.VOLUME) >= settings.getVolumeThreshold()
+                && !(boolean)deckStates.get(deck).get(SimpleState.IS_SHOWING) ){
+            if(!firstTrack){
+                firstTrack = true;
+                firstTrackTime = Instant.now();
             }
-       // }
-        if ((int)deckStates.get(deck).get(SimpleState.VOLUME) == 0){
-        //    if( (long)deckStates.get(deck).get(SimpleState.LAST_UPDATE) < System.currentTimeMillis()-5000) {
-                Utils.timer.schedule(new SongDataUpdateTask(new SongData(
-                        deck, " ",
-                        " ")), 5000L);
-                deckStates.get(deck).put(SimpleState.LAST_UPDATE, System.currentTimeMillis());
-        //    }
+            if (!Utils.isCurrentlyScheduled(updateTask)){
+                Utils.taskQueue.offer(updateTask);
+            }
+            Optional<SongDataUpdateTask> task = Utils.getScheduledTask(emptySongDataTask);
+            task.ifPresent(TimerTask::cancel);
+            if(Utils.removeScheduledTask(emptySongDataTask)){
+                log.debug("Removed {} from scheduled tasks",emptySongDataTask );
+            }
         }
-
-
-
+        if ((int)deckStates.get(deck).get(SimpleState.VOLUME) == 0){
+            if (!Utils.isCurrentlyScheduled(emptySongDataTask)){
+                Utils.taskQueue.offer(emptySongDataTask);
+            }
+            if ( (long)deckStates.get(deck).get(SimpleState.LAST_UPDATE) > System.currentTimeMillis()-5000){
+                log.debug("Last update for {}, has been less than 5 seconds, checking for actual songdata in quue",deck);
+                Optional<SongDataUpdateTask> task = Utils.getScheduledTask(updateTask);
+                task.ifPresent(TimerTask::cancel);
+                if(Utils.removeScheduledTask(updateTask)){
+                  log.debug("Removed {} from scheduled tasks",updateTask );
+                }
+            }
+        }
     }
+
     public StateMapService(ServiceType serviceType, int port) {
         super();
         this.type = serviceType;

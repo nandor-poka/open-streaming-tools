@@ -1,5 +1,8 @@
 package com.openstreamingtools.MainServer.dj.stagelinq;
 
+/**
+ * Enum class to byte array representations of certain 'acting as' types
+ */
 public enum ActingAs {
     SOUNDSWITCH(new byte[]{82, (byte) 253, (byte)252, 7, 33, (byte)130, 101, 79, 22, 63, 95, 15, (byte)154, 98, 29, 114}),
     SC6000_1(new byte[]{(byte)130, (byte)139, (byte)235, 2, (byte)218, 31, 78, 104,(byte) 166,(byte) 175,(byte) 176, (byte)177,
