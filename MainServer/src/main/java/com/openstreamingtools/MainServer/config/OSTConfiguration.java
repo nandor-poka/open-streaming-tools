@@ -7,6 +7,8 @@ import jakarta.annotation.PreDestroy;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Component;
 
 import java.io.*;
@@ -19,7 +21,7 @@ public class OSTConfiguration {
 
     // Public constatncs
     public static final String NAME = "Open Streaming Tools";
-    public static final String VERSION = "0.0.2";
+    public static final String VERSION = "0.0.3";
     public static final String SOURCE = "OST";
     public static final ActingAs STAGELINQ_ACTING_AS = ActingAs.LISTEN;
     public static final int STAGELINQ_BROADCAST_PORT = 51337;
@@ -44,10 +46,9 @@ public class OSTConfiguration {
     @Setter
     private static File settingsFile;
 
-     public static void init() {
+    public static void init() {
         log.debug("reading settings from: "+ settingsFile.getAbsolutePath());
         try {
-
             settings = Utils.objectMapper.readValue(settingsFile , Settings.class);
             initTwitchClientData();
             Utils.UIUpdateSchedulerThread.start();
