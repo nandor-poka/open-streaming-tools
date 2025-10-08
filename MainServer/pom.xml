@@ -10,7 +10,7 @@
 	</parent>
 	<groupId>com.openstreamingtools</groupId>
 	<artifactId>MainServer</artifactId>
-	<version>0.0.2</version>
+	<version>0.0.3-SNAPSHOT</version>
 	<name>MainServer</name>
 	<description>Main server for OpenStreamingTools</description>
 	<url/>
