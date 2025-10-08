@@ -1,18 +1,31 @@
 package com.openstreamingtools.MainServer.utils;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import com.openstreamingtools.MainServer.messaging.SongDataUpdateTask;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.web.client.RestClient;
 
 import java.nio.ByteBuffer;
 import java.nio.charset.Charset;
+import java.util.Optional;
 import java.util.Timer;
 import java.util.UUID;
+import java.util.Vector;
+import java.util.concurrent.ArrayBlockingQueue;
+import java.util.concurrent.locks.ReentrantLock;
 
+@Slf4j
 public class Utils {
 
     public static final ObjectMapper objectMapper = new ObjectMapper();
     public static final Timer timer = new Timer();
+    public static RestClient restClient = RestClient.create();
+    public static final ArrayBlockingQueue<SongDataUpdateTask> taskQueue = new ArrayBlockingQueue<>(32, true);
+    private static final Vector<SongDataUpdateTask> currentlyScheduledTasks = new Vector<>(8);
+    public static final Thread UIUpdateSchedulerThread = new Thread(new UIUpdateScheduler());
+    private static final ReentrantLock reentrantLock = new ReentrantLock(true);
+    public static final long HOUR_IN_MILLIS = 3600000;
+
 
     public static void putIntegerToByteArray(int i, byte[] array){
         array[0] = (byte)((i >> 24)& 0xFF);
@@ -27,7 +40,6 @@ public class Utils {
         bytes[1] = (byte)((i >> 16)& 0xFF);
         bytes[2] = (byte)((i >> 8)& 0xFF);
         bytes[3] = (byte)(i & 0xFF);
-        ByteBuffer bb = ByteBuffer.wrap(bytes);
         return bytes;
     }
     public static byte[] convertShortToByteArray(int i){
@@ -65,9 +77,9 @@ public class Utils {
             networkBytes[i+4] = stringAsBytes[i];
         }
         return networkBytes;
-     }
+    }
 
-     public static int convertBytesToInt(byte[] bytes) {
+    public static int convertBytesToInt(byte[] bytes) {
          return ByteBuffer.wrap(bytes).getInt();
      }
 
@@ -75,4 +87,28 @@ public class Utils {
         return ByteBuffer.wrap(bytes).getShort();
     }
 
+    public static void addToScheduledTasks(SongDataUpdateTask task){
+        reentrantLock.lock();
+        currentlyScheduledTasks.add(task);
+        reentrantLock.unlock();
+    }
+
+    public static boolean removeScheduledTask(SongDataUpdateTask task){
+        reentrantLock.lock();
+        boolean result = currentlyScheduledTasks.remove(task);
+        reentrantLock.unlock();
+        return result;
+    }
+
+    public static boolean isCurrentlyScheduled(SongDataUpdateTask task){
+        reentrantLock.lock();
+        boolean result = currentlyScheduledTasks.contains(task);
+        reentrantLock.unlock();
+        return result;
+    }
+
+    public static Optional<SongDataUpdateTask> getScheduledTask(SongDataUpdateTask task){
+        return currentlyScheduledTasks.stream()
+            .filter(e -> e.equals(task)).findFirst();
+    }
 }

@@ -2,7 +2,7 @@ package com.openstreamingtools.MainServer.udp;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.openstreamingtools.MainServer.config.Configuration;
+import com.openstreamingtools.MainServer.config.OSTConfiguration;
 import com.openstreamingtools.MainServer.dj.UnitUtils;
 import com.openstreamingtools.MainServer.dj.stagelinq.DenonUnit;
 import com.openstreamingtools.MainServer.dj.stagelinq.ModelCode;
@@ -15,8 +15,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.integration.annotation.ServiceActivator;
 import org.springframework.integration.ip.IpHeaders;
 import org.springframework.messaging.Message;
-import org.springframework.messaging.handler.annotation.MessageMapping;
-import org.springframework.messaging.handler.annotation.SendTo;
 import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Controller;
 import org.springframework.stereotype.Service;
@@ -24,8 +22,9 @@ import org.springframework.stereotype.Service;
 import java.io.IOException;
 import java.net.*;
 
-import static com.openstreamingtools.MainServer.config.Configuration.STAGELINQ_BORADCAST_IP;
-import static com.openstreamingtools.MainServer.config.Configuration.STAGELINQ_BROADCAST_PORT;
+import static com.openstreamingtools.MainServer.config.OSTConfiguration.STAGELINQ_BORADCAST_IP;
+import static com.openstreamingtools.MainServer.config.OSTConfiguration.STAGELINQ_BROADCAST_PORT;
+import static com.openstreamingtools.MainServer.utils.Utils.objectMapper;
 
 
 @Service
@@ -35,7 +34,6 @@ public class StageLinQDiscoveryHandler {
     Logger logger = LoggerFactory.getLogger(StageLinQDiscoveryHandler.class);
 
     public static final String StageLinQChannelID = "StangelinQ Broadcast Discovery";
-    private final ObjectMapper objectMapper = new ObjectMapper();
     DatagramSocket broadcastSocket = new DatagramSocket(STAGELINQ_BROADCAST_PORT, InetAddress.getLocalHost());
 
 
@@ -45,7 +43,7 @@ public class StageLinQDiscoveryHandler {
     @ServiceActivator(inputChannel = StageLinQChannelID)
     public void handleMessage(Message message) throws JsonProcessingException {
 
-        if (!Configuration.isFrontEndRunning()){
+        if (!OSTConfiguration.isFrontEndRunning()){
             logger.debug("Waiting for frontend to connect.");
             return;
         }
@@ -68,7 +66,11 @@ public class StageLinQDiscoveryHandler {
         unit.setIpString((String) message.getHeaders().get(IpHeaders.IP_ADDRESS));
         if(!DirectoryService.hasUnit(unit.getDeviceID())){
             DirectoryService.addUnit(unit);
+        }
+        if (DirectoryService.hasUnit(unit.getDeviceID() )
+                && !DirectoryService.getUnit(unit.getDeviceID()).acknowledged ){
             MessageSender.sendMessage(objectMapper.writeValueAsString(disMessage));
+
         }
 
         ServerDiscoveryMessage broadcastMessage = new ServerDiscoveryMessage();
