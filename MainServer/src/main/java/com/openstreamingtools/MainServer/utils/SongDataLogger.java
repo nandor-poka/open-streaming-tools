@@ -14,33 +14,43 @@ import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 
+import static com.openstreamingtools.MainServer.config.OSTConfiguration.settings;
+
 @Slf4j
 public class SongDataLogger {
     private static final  String userDirectory = Paths.get("")
             .toAbsolutePath()
             .toString();
     private static final DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd_HHmmss");
-    private static final File detailedSongLog = new File(userDirectory + "/songData_"+ LocalDateTime.now().format(dateFormatter) +".txt");
+    //private static final File detailedSongLog = new File(userDirectory + "/songData_"+ LocalDateTime.now().format(dateFormatter) +".txt");
     private static final File youtubeSongLog = new File(userDirectory + "/youtubeTracklist"+ LocalDateTime.now().format(dateFormatter) +".txt");
     private static int counter=0;
-    public static void logSongData(SongData songData) {
+    public static void logSongData(SongData[] songDataArray) {
         try {
-            log.debug( detailedSongLog.createNewFile() ? detailedSongLog.getAbsolutePath()+" created."
-                    : "");
+            //log.debug( detailedSongLog.createNewFile() ? detailedSongLog.getAbsolutePath()+" created."
+            //        : "");
             log.debug( youtubeSongLog.createNewFile() ? youtubeSongLog.getAbsolutePath()+" created."
                     : "");
-            if (!songData.getArtistName().equals(" ") || !songData.getTrackTitle().equals(" ")){
-                FileWriter songDataFileFriter = new FileWriter(detailedSongLog, true);
-                long durationSeconds = Duration.between(StateMapService.firstTrackTime, Instant.now()).getSeconds();
 
-                songDataFileFriter.write(  String.format("%d:%02d:%02d", durationSeconds / 3600, (durationSeconds % 3600) / 60, (durationSeconds % 60))+" on deck "
-                        +songData.getDeckNumber() + " " + songData.getArtistName() + " - " + songData.getTrackTitle() + "\n");
-                songDataFileFriter.close();
-                FileWriter youtubeLogFileWriter = new FileWriter(youtubeSongLog, true);
-                youtubeLogFileWriter.write( String.format("%d:%02d:%02d", durationSeconds / 3600, (durationSeconds % 3600) / 60, (durationSeconds % 60))+" " + songData.getTrackTitle() + " - " + songData.getArtistName() + "\n");
-                youtubeLogFileWriter.close();
-                TwitchUtils.sendToChat("Track "+ ++counter + ": "+songData.getArtistName() + " - " + songData.getTrackTitle());
+            String trackNumsAsString = "";
+            String songsToLog = "";
+            for (SongData songData : songDataArray){
+                if (!songData.getArtistName().equals(" ") || !songData.getTrackTitle().equals(" ")){
+                    trackNumsAsString = trackNumsAsString.isEmpty() ? String.valueOf(++counter) : trackNumsAsString + " / " + (++counter) ;
+                    songsToLog = songsToLog.isEmpty() ? songData.getArtistName() + " - " + songData.getTrackTitle():
+                            songsToLog + " / " + songData.getArtistName() + " - " + songData.getTrackTitle();
+                }
             }
+            if (!trackNumsAsString.isEmpty()){
+                long durationSeconds = Duration.between(StateMapService.firstTrackTime, Instant.now()).getSeconds()-settings.getShowTrackDelay()*1000L;
+                FileWriter youtubeLogFileWriter = new FileWriter(youtubeSongLog, true);
+                youtubeLogFileWriter.write( String.format("%d:%02d:%02d", durationSeconds / 3600,
+                        (durationSeconds % 3600) / 60, (durationSeconds % 60))
+                        +" " +songsToLog+ "\n");
+                youtubeLogFileWriter.close();
+                TwitchUtils.sendToChat("Track "+ trackNumsAsString + ": "+songsToLog);
+            }
+
         } catch (IOException e) {
             throw new RuntimeException(e);
         }

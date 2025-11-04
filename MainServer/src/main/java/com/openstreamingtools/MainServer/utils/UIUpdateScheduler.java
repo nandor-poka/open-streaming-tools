@@ -13,12 +13,18 @@ public class UIUpdateScheduler implements Runnable{
         while(!Thread.currentThread().isInterrupted()){
             try {
                 SongDataUpdateTask task = Utils.taskQueue.take();
+                SongDataUpdateTask nextTask = Utils.taskQueue.peek();
+                if (nextTask.getTimestamp() > System.currentTimeMillis()- 2000L) {
+                    task.getSongData()[1] = nextTask.getSongData()[0];
+                    nextTask.cancel();
+                    Utils.taskQueue.remove();
+                }
                 Utils.timer.schedule(task,settings.getShowTrackDelay() * 1000L );
                 Utils.addToScheduledTasks(task);
             } catch (InterruptedException e) {
                 Thread.currentThread().interrupt();
             }
         }
-        log.debug("Ui update schedule thread shut down.");
+        log.debug("UI update schedule thread shut down.");
     }
 }
