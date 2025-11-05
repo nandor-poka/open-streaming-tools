@@ -84,13 +84,14 @@ public class StateMapService extends Service {
 
     public static void updateDeckState(int deck, SimpleState state, Object value){
         deckStates.get(deck).put(state, value);
+        Instant now = Instant.now();
         SongDataUpdateTask updateTask = new SongDataUpdateTask( new SongData(
                 deck, (String) deckStates.get(deck).get(SimpleState.SONG_NAME),
                 (String) deckStates.get(deck).get(SimpleState.ARTIST_NAME),
-                (Integer) deckStates.get(deck).get(SimpleState.KEY)), System.currentTimeMillis());
+                (Integer) deckStates.get(deck).get(SimpleState.KEY), now.toEpochMilli()), now);
         SongDataUpdateTask emptySongDataTask = new SongDataUpdateTask( new SongData(
                 deck, " ",
-                " ", -1),0);
+                " ", -1, now.toEpochMilli()),now);
         if ((int)deckStates.get(deck).get(SimpleState.VOLUME) >= settings.getVolumeThreshold()
                 && !(boolean)deckStates.get(deck).get(SimpleState.IS_SHOWING) ){
             if(!firstTrack){

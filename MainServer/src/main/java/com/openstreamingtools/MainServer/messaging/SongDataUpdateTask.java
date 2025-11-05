@@ -8,6 +8,7 @@ import com.openstreamingtools.MainServer.utils.SongDataLogger;
 import com.openstreamingtools.MainServer.utils.Utils;
 import lombok.Getter;
 
+import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
@@ -15,30 +16,27 @@ import java.util.TimerTask;
 
 @Getter
 public class SongDataUpdateTask extends TimerTask {
-     private final List<SongData> songData = new ArrayList<>();
-     private final long timestamp;
+     private final SongData songData;
+     private final Instant timestamp;
 
-    public SongDataUpdateTask(SongData songData, long timestamp) {
-         this.songData.add(songData);
+    public SongDataUpdateTask(SongData songData, Instant timestamp) {
+         this.songData = songData;
          this.timestamp = timestamp;
      }
 
     @Override
     public void run() {
         try {
-            for (SongData songData : songData){
-                StateMapService.deckStates.get(songData.getDeckNumber())
-                        .put(SimpleState.LAST_UPDATE, System.currentTimeMillis());
-                MessageSender.sendMessage(songData);
-
-                Utils.removeScheduledTask(this);
-                if (!songData.getArtistName().equals(" ") || !songData.getTrackTitle().equals(" ")){
-                    StateMapService.deckStates.get(songData.getDeckNumber()).put(SimpleState.IS_SHOWING, true);
-                } else {
-                    StateMapService.deckStates.get(songData.getDeckNumber()).put(SimpleState.IS_SHOWING, false);
-                }
+            StateMapService.deckStates.get(songData.getDeckNumber())
+                    .put(SimpleState.LAST_UPDATE, System.currentTimeMillis());
+            Utils.removeScheduledTask(this);
+            if (!songData.getArtistName().equals(" ") || !songData.getTrackTitle().equals(" ")){
+                StateMapService.deckStates.get(songData.getDeckNumber()).put(SimpleState.IS_SHOWING, true);
+            } else {
+                StateMapService.deckStates.get(songData.getDeckNumber()).put(SimpleState.IS_SHOWING, false);
             }
-            SongDataLogger.logSongData(songData);
+            MessageSender.sendMessage(songData);
+            Utils.logDataQueue.offer(songData);
         } catch (JsonProcessingException e) {
             throw new RuntimeException(e);
         }

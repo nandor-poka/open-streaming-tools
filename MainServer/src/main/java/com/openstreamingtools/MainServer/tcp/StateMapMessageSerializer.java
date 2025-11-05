@@ -22,6 +22,7 @@ import java.io.BufferedInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.net.SocketException;
 import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
 import java.util.UUID;
@@ -103,7 +104,7 @@ public class StateMapMessageSerializer  implements Deserializer<byte[]>, Seriali
             }
             return response;
         } catch (Exception e) {
-            e.printStackTrace();
+            log.error(e.getMessage());
         }
         return new byte[0];
     }
@@ -180,7 +181,7 @@ public class StateMapMessageSerializer  implements Deserializer<byte[]>, Seriali
             }
             return new byte[0];
         } catch (Exception e) {
-            e.printStackTrace();
+            log.error(e.getMessage());
         }
         return new byte[0];
     }

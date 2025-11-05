@@ -5,6 +5,7 @@ import com.openstreamingtools.MainServer.messages.MessageType;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.time.Instant;
 import java.util.Objects;
 
 @Getter
@@ -15,15 +16,17 @@ public class SongData extends MessageToFrontend {
     private String trackTitle;
     private String artistName;
     private int key;
+    private long timestamp;
 
 
-    public SongData(int deckNumber, String trackTitle, String artistName, Integer key) {
+    public SongData(int deckNumber, String trackTitle, String artistName, Integer key, long timestamp) {
         super();
         this.type =MessageType.SONG_DATA;
         this.deckNumber = deckNumber;
         this.trackTitle = trackTitle;
         this.artistName = artistName;
         this.key = key;
+        this.timestamp = timestamp;
 
     }
 
