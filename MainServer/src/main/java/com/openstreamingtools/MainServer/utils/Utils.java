@@ -1,16 +1,14 @@
 package com.openstreamingtools.MainServer.utils;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.openstreamingtools.MainServer.messages.frontend.SongData;
 import com.openstreamingtools.MainServer.messaging.SongDataUpdateTask;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.client.RestClient;
 
 import java.nio.ByteBuffer;
 import java.nio.charset.Charset;
-import java.util.Optional;
-import java.util.Timer;
-import java.util.UUID;
-import java.util.Vector;
+import java.util.*;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.locks.ReentrantLock;
 
@@ -21,9 +19,12 @@ public class Utils {
     public static final Timer timer = new Timer();
     public static RestClient restClient = RestClient.create();
     public static final ArrayBlockingQueue<SongDataUpdateTask> taskQueue = new ArrayBlockingQueue<>(32, true);
+    public static final ArrayBlockingQueue<SongData> logDataQueue = new ArrayBlockingQueue<>(32, true);
     private static final Vector<SongDataUpdateTask> currentlyScheduledTasks = new Vector<>(8);
     public static final Thread UIUpdateSchedulerThread = new Thread(new UIUpdateScheduler());
-    private static final ReentrantLock reentrantLock = new ReentrantLock(true);
+    public static final Thread SongDataLoggerThread = new Thread(new SongDataLogger());
+    private static final ReentrantLock taskReentrantLock = new ReentrantLock(true);
+    private static final ReentrantLock logDataReentrantLock = new ReentrantLock(true);
     public static final long HOUR_IN_MILLIS = 3600000;
 
 
@@ -88,27 +89,39 @@ public class Utils {
     }
 
     public static void addToScheduledTasks(SongDataUpdateTask task){
-        reentrantLock.lock();
+        taskReentrantLock.lock();
         currentlyScheduledTasks.add(task);
-        reentrantLock.unlock();
+        taskReentrantLock.unlock();
     }
 
     public static boolean removeScheduledTask(SongDataUpdateTask task){
-        reentrantLock.lock();
+        taskReentrantLock.lock();
         boolean result = currentlyScheduledTasks.remove(task);
-        reentrantLock.unlock();
+        taskReentrantLock.unlock();
         return result;
     }
 
     public static boolean isCurrentlyScheduled(SongDataUpdateTask task){
-        reentrantLock.lock();
+        taskReentrantLock.lock();
         boolean result = currentlyScheduledTasks.contains(task);
-        reentrantLock.unlock();
+        taskReentrantLock.unlock();
         return result;
     }
 
     public static Optional<SongDataUpdateTask> getScheduledTask(SongDataUpdateTask task){
-        return currentlyScheduledTasks.stream()
+        taskReentrantLock.lock();
+        Optional<SongDataUpdateTask>  result = currentlyScheduledTasks.stream()
             .filter(e -> e.equals(task)).findFirst();
+        taskReentrantLock.unlock();
+        return result;
+    }
+
+    public static List<SongData> getCurrentSongDataToLog(){
+        logDataReentrantLock.lock();
+        List<SongData> currentSongData = new ArrayList<>();
+        logDataQueue.drainTo(currentSongData);
+        logDataReentrantLock.unlock();
+        return currentSongData;
+
     }
 }
