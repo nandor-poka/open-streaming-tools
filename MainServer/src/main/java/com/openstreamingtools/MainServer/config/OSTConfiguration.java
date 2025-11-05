@@ -52,7 +52,7 @@ public class OSTConfiguration {
             settings = Utils.objectMapper.readValue(settingsFile , Settings.class);
             initTwitchClientData();
             Utils.UIUpdateSchedulerThread.start();
-
+            Utils.SongDataLoggerThread.start();
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
@@ -115,8 +115,10 @@ public class OSTConfiguration {
          Utils.timer.purge();
          Utils.timer.cancel();
          Utils.UIUpdateSchedulerThread.interrupt();
+         Utils.SongDataLoggerThread.interrupt();
         try {
             Utils.UIUpdateSchedulerThread.join(1000);
+            Utils.SongDataLoggerThread.join(1000);
         } catch (InterruptedException e) {
             throw new RuntimeException(e);
         }

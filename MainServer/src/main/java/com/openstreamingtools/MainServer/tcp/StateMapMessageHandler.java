@@ -63,38 +63,7 @@ public class StateMapMessageHandler {
 
                     }
                 }
-/*                // handle array of messages that
-                int pos = 0;
-                while (pos <= msg.length) {
-                    int stateDataLength = Utils.convertBytesToInt(Arrays.copyOfRange(msg, pos, 4));
-                    pos += 4;
-                    byte[] messageBytes = Arrays.copyOfRange(msg, pos, stateDataLength);
-                    pos += stateDataLength;
-                    StateData stateData = StateData.parseStateData(messageBytes);
-                    State state = stateData.getState();
-                    if (state.equals(PlayerState.EngineDeck1TrackTrackName)
-                            || state.equals(PlayerState.EngineDeck2TrackTrackName)
-                            || state.equals(PlayerState.EngineDeck3TrackTrackName)
-                            || state.equals(PlayerState.EngineDeck4TrackTrackName)) {
-                        String[] songElements = stateData.getJsonString().split("\",\"")[0].split("\\.")[0].split("-");
-
-                      //  MessageSender.sendMessage(new SongData(stateData.getDeckNum(), songElements[0], songElements[1])
-                     //   );
-                    }
-                    if (state.equals(PlayerState.EngineDeck1ExternalMixerVolume)
-                            || state.equals(PlayerState.EngineDeck2ExternalMixerVolume)
-                            || state.equals(PlayerState.EngineDeck3ExternalMixerVolume)
-                            || state.equals(PlayerState.EngineDeck4ExternalMixerVolume)) {
-                        //ExternalMixerVolume N{"type":0,"value":0.012926282361149788}
-                        int volume = (int)Math.round(Math.ceil(Float.parseFloat(
-                                stateData.getJsonString().split("\"value\":")[1].split("}")[0])*100));
-                        //MessageSender.sendMessage(new ChannelVolumeData(stateData.getDeckNum(), volume));
-                    }
-
-                }*/
-
                 return new byte[0];
-
             }
         }
         return new byte[0];
