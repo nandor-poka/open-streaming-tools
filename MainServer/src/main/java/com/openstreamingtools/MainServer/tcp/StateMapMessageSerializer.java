@@ -32,75 +32,80 @@ public class StateMapMessageSerializer  implements Deserializer<byte[]>, Seriali
 
     @Override
     public byte[] deserialize(InputStream inputStream) throws IOException {
-         BufferedInputStream bis = new BufferedInputStream(inputStream);
+        try {
+            BufferedInputStream bis = new BufferedInputStream(inputStream);
 
-        /**
-         * the header decides mostly what we are dealing with.
-         * a full zero header means we are dealing with a service announcement
-         * (this happens typically only once at the initial connection setup)
-         * then it must be followed by an uuid
-         * then the length of the service name
-         * then the service name
-         *  then the port
-         *  A non-zero header means we are dealing with a state map message
-         *  and the header is the length of the string that follows.
-         *  a statemap starts with the string smaa magic string, then the state
-         *  then length - smaa- state repeats
-         */
-        // inputStream.mark();
+            /**
+             * the header decides mostly what we are dealing with.
+             * a full zero header means we are dealing with a service announcement
+             * (this happens typically only once at the initial connection setup)
+             * then it must be followed by an uuid
+             * then the length of the service name
+             * then the service name
+             *  then the port
+             *  A non-zero header means we are dealing with a state map message
+             *  and the header is the length of the string that follows.
+             *  a statemap starts with the string smaa magic string, then the state
+             *  then length - smaa- state repeats
+             */
+            // inputStream.mark();
 
-        byte[] header = new byte[4];
-        bis.read(header);
-        if (Utils.convertBytesToInt(header) == DirectoryService.SERVICE_ANNOUNCEMENT){
-            byte[] uuid = new byte[16];
-            bis.read(uuid);
-            if (Utils.convertBytesToInt(uuid) == 0){
-                return new byte[0];
-            }
-            UUID deviceId = Utils.convertBytesToUUID(uuid);
-
-            if (DirectoryService.hasUnit(deviceId)){
-                byte[] servceNameLength = new byte[4];
-                bis.read(servceNameLength);
-                int serviceNameLength = Utils.convertBytesToInt(servceNameLength);
-                byte[] serviceName = new byte[serviceNameLength];
-                bis.read(serviceName);
-                byte[] servicePort = new byte[2];
-                bis.read(servicePort);
-                int port = Utils.convertBytesToShort(servicePort);
-                ServiceAnnouncement sa = new ServiceAnnouncement(
-                        DirectoryService.SERVICE_ANNOUNCEMENT,
-                        deviceId, new String(serviceName, StandardCharsets.UTF_16BE), port);
-                return sa.toBytes();
-            }
-        }
-        //todo for proper statemap messages that are expected after the initial connection
-        // can be respones reject or actual state
-        Vector<Byte> buffer = new Vector<>();
-        int stateMapMessagelength = Utils.convertBytesToInt(header);
-        byte [] messageBytes = bis.readNBytes(stateMapMessagelength);
-        for (byte  b: checkStateData(messageBytes)){
-            buffer.add(b);
-        }
-        // Check if there are other messages
-        //
-        boolean endOfMessages = false;
-        while (!endOfMessages){
-            stateMapMessagelength = Utils.convertBytesToInt(bis.readNBytes(4));
-            if(stateMapMessagelength > 0){
-                messageBytes = bis.readNBytes(stateMapMessagelength);
-                for (byte  b: checkStateData(messageBytes)){
-                    buffer.add(b);
+            byte[] header = new byte[4];
+            bis.read(header);
+            if (Utils.convertBytesToInt(header) == DirectoryService.SERVICE_ANNOUNCEMENT){
+                byte[] uuid = new byte[16];
+                bis.read(uuid);
+                if (Utils.convertBytesToInt(uuid) == 0){
+                    return new byte[0];
                 }
-            }else{
-                endOfMessages = true;
+                UUID deviceId = Utils.convertBytesToUUID(uuid);
+
+                if (DirectoryService.hasUnit(deviceId)){
+                    byte[] servceNameLength = new byte[4];
+                    bis.read(servceNameLength);
+                    int serviceNameLength = Utils.convertBytesToInt(servceNameLength);
+                    byte[] serviceName = new byte[serviceNameLength];
+                    bis.read(serviceName);
+                    byte[] servicePort = new byte[2];
+                    bis.read(servicePort);
+                    int port = Utils.convertBytesToShort(servicePort);
+                    ServiceAnnouncement sa = new ServiceAnnouncement(
+                            DirectoryService.SERVICE_ANNOUNCEMENT,
+                            deviceId, new String(serviceName, StandardCharsets.UTF_16BE), port);
+                    return sa.toBytes();
+                }
             }
+            //todo for proper statemap messages that are expected after the initial connection
+            // can be respones reject or actual state
+            Vector<Byte> buffer = new Vector<>();
+            int stateMapMessagelength = Utils.convertBytesToInt(header);
+            byte [] messageBytes = bis.readNBytes(stateMapMessagelength);
+            for (byte  b: checkStateData(messageBytes)){
+                buffer.add(b);
+            }
+            // Check if there are other messages
+            //
+            boolean endOfMessages = false;
+            while (!endOfMessages){
+                stateMapMessagelength = Utils.convertBytesToInt(bis.readNBytes(4));
+                if(stateMapMessagelength > 0){
+                    messageBytes = bis.readNBytes(stateMapMessagelength);
+                    for (byte  b: checkStateData(messageBytes)){
+                        buffer.add(b);
+                    }
+                }else{
+                    endOfMessages = true;
+                }
+            }
+            byte[] response = new byte[buffer.size()];
+            for (int i = 0 ; i< response.length;i++){
+                response[i] = buffer.get(i);
+            }
+            return response;
+        } catch (Exception e) {
+            e.printStackTrace();
         }
-        byte[] response = new byte[buffer.size()];
-        for (int i = 0 ; i< response.length;i++){
-            response[i] = buffer.get(i);
-        }
-        return response;
+        return new byte[0];
     }
 
     private byte[] checkStateData(byte[] messageBytes) throws JsonProcessingException {
@@ -175,7 +180,7 @@ public class StateMapMessageSerializer  implements Deserializer<byte[]>, Seriali
             }
             return new byte[0];
         } catch (Exception e) {
-            log.debug(e.toString());
+            e.printStackTrace();
         }
         return new byte[0];
     }

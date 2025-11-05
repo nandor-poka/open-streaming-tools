@@ -13,6 +13,7 @@ import java.time.Duration;
 import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.List;
 
 import static com.openstreamingtools.MainServer.config.OSTConfiguration.settings;
 
@@ -25,7 +26,7 @@ public class SongDataLogger {
     //private static final File detailedSongLog = new File(userDirectory + "/songData_"+ LocalDateTime.now().format(dateFormatter) +".txt");
     private static final File youtubeSongLog = new File(userDirectory + "/youtubeTracklist"+ LocalDateTime.now().format(dateFormatter) +".txt");
     private static int counter=0;
-    public static void logSongData(SongData[] songDataArray) {
+    public static void logSongData(List<SongData> songDataList) {
         try {
             //log.debug( detailedSongLog.createNewFile() ? detailedSongLog.getAbsolutePath()+" created."
             //        : "");
@@ -34,7 +35,7 @@ public class SongDataLogger {
 
             String trackNumsAsString = "";
             String songsToLog = "";
-            for (SongData songData : songDataArray){
+            for (SongData songData : songDataList){
                 if (!songData.getArtistName().equals(" ") || !songData.getTrackTitle().equals(" ")){
                     trackNumsAsString = trackNumsAsString.isEmpty() ? String.valueOf(++counter) : trackNumsAsString + " / " + (++counter) ;
                     songsToLog = songsToLog.isEmpty() ? songData.getArtistName() + " - " + songData.getTrackTitle():
@@ -42,7 +43,7 @@ public class SongDataLogger {
                 }
             }
             if (!trackNumsAsString.isEmpty()){
-                long durationSeconds = Duration.between(StateMapService.firstTrackTime, Instant.now()).getSeconds()-settings.getShowTrackDelay()*1000L;
+                long durationSeconds = Duration.between(Instant.now(), StateMapService.firstTrackTime).getSeconds()-(settings.getShowTrackDelay()*1000L);
                 FileWriter youtubeLogFileWriter = new FileWriter(youtubeSongLog, true);
                 youtubeLogFileWriter.write( String.format("%d:%02d:%02d", durationSeconds / 3600,
                         (durationSeconds % 3600) / 60, (durationSeconds % 60))

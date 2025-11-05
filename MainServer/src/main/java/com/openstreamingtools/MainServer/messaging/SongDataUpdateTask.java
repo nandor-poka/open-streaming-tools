@@ -8,16 +8,18 @@ import com.openstreamingtools.MainServer.utils.SongDataLogger;
 import com.openstreamingtools.MainServer.utils.Utils;
 import lombok.Getter;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Objects;
 import java.util.TimerTask;
 
 @Getter
 public class SongDataUpdateTask extends TimerTask {
-     private final SongData[] songData = new SongData[4];
+     private final List<SongData> songData = new ArrayList<>();
      private final long timestamp;
 
     public SongDataUpdateTask(SongData songData, long timestamp) {
-         this.songData[0] = songData;
+         this.songData.add(songData);
          this.timestamp = timestamp;
      }
 
