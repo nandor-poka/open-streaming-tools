@@ -1,5 +1,6 @@
 package com.openstreamingtools.MainServer.services.stagelinq;
 
+import com.openstreamingtools.MainServer.config.OSTConfiguration;
 import com.openstreamingtools.MainServer.dj.stagelinq.SimpleState;
 import com.openstreamingtools.MainServer.messages.frontend.SongData;
 import com.openstreamingtools.MainServer.messages.stagelinqmessages.Service;
@@ -83,13 +84,14 @@ public class StateMapService extends Service {
 
     public static void updateDeckState(int deck, SimpleState state, Object value){
         deckStates.get(deck).put(state, value);
-        SongDataUpdateTask updateTask = new SongDataUpdateTask(new SongData(
+        Instant now = Instant.now();
+        SongDataUpdateTask updateTask = new SongDataUpdateTask( new SongData(
                 deck, (String) deckStates.get(deck).get(SimpleState.SONG_NAME),
                 (String) deckStates.get(deck).get(SimpleState.ARTIST_NAME),
-                (Integer) deckStates.get(deck).get(SimpleState.KEY)));
-        SongDataUpdateTask emptySongDataTask = new SongDataUpdateTask(new SongData(
+                (Integer) deckStates.get(deck).get(SimpleState.KEY), now.toEpochMilli()), now);
+        SongDataUpdateTask emptySongDataTask = new SongDataUpdateTask( new SongData(
                 deck, " ",
-                " ", -1));
+                " ", -1, now.toEpochMilli()),now);
         if ((int)deckStates.get(deck).get(SimpleState.VOLUME) >= settings.getVolumeThreshold()
                 && !(boolean)deckStates.get(deck).get(SimpleState.IS_SHOWING) ){
             if(!firstTrack){
@@ -109,8 +111,9 @@ public class StateMapService extends Service {
             if (!Utils.isCurrentlyScheduled(emptySongDataTask)){
                 Utils.taskQueue.offer(emptySongDataTask);
             }
-            if ( (long)deckStates.get(deck).get(SimpleState.LAST_UPDATE) > System.currentTimeMillis()-5000){
-                log.debug("Last update for {}, has been less than 5 seconds, checking for actual songdata in quue",deck);
+            if ( (long)deckStates.get(deck).get(SimpleState.LAST_UPDATE) > System.currentTimeMillis()- settings.getShowTrackDelay()* 1000L){
+                log.debug("Last update for {}, has been less than {} seconds, checking for actual song data in queue",
+                        deck, settings.getShowTrackDelay());
                 Optional<SongDataUpdateTask> task = Utils.getScheduledTask(updateTask);
                 task.ifPresent(TimerTask::cancel);
                 if(Utils.removeScheduledTask(updateTask)){

@@ -3,6 +3,8 @@ package com.openstreamingtools.MainServer.utils;
 import com.openstreamingtools.MainServer.messaging.SongDataUpdateTask;
 import lombok.extern.slf4j.Slf4j;
 
+import java.time.Duration;
+
 import static com.openstreamingtools.MainServer.config.OSTConfiguration.settings;
 
 @Slf4j
@@ -19,6 +21,6 @@ public class UIUpdateScheduler implements Runnable{
                 Thread.currentThread().interrupt();
             }
         }
-        log.debug("Ui update schedule thread shut down.");
+        log.debug("UI update schedule thread shut down.");
     }
 }
