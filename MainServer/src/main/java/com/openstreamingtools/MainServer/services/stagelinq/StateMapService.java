@@ -1,6 +1,5 @@
 package com.openstreamingtools.MainServer.services.stagelinq;
 
-import com.openstreamingtools.MainServer.config.OSTConfiguration;
 import com.openstreamingtools.MainServer.dj.stagelinq.SimpleState;
 import com.openstreamingtools.MainServer.messages.frontend.SongData;
 import com.openstreamingtools.MainServer.messages.stagelinqmessages.Service;

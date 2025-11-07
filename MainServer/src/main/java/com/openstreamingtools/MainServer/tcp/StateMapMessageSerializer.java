@@ -49,7 +49,6 @@ public class StateMapMessageSerializer  implements Deserializer<byte[]>, Seriali
              *  a statemap starts with the string smaa magic string, then the state
              *  then length - smaa- state repeats
              */
-            // inputStream.mark();
 
             byte[] header = new byte[4];
             bis.read(header);
@@ -77,7 +76,7 @@ public class StateMapMessageSerializer  implements Deserializer<byte[]>, Seriali
                 }
             }
             //todo for proper statemap messages that are expected after the initial connection
-            // can be respones reject or actual state
+            // can be response reject or actual state
             Vector<Byte> buffer = new Vector<>();
             int stateMapMessagelength = Utils.convertBytesToInt(header);
             byte [] messageBytes = bis.readNBytes(stateMapMessagelength);
@@ -115,9 +114,6 @@ public class StateMapMessageSerializer  implements Deserializer<byte[]>, Seriali
                     .equals(StateMapService.MAGIC_MARKER)){
                 int dataType = Utils.convertBytesToInt(Arrays.copyOfRange(messageBytes, 4,8));
                 if (Utils.convertBytesToInt(Arrays.copyOfRange(messageBytes, 4,8) )==StateMapService.MAGIC_MARKER_JSON){
-                    int nameLength = Utils.convertBytesToInt(Arrays.copyOfRange(messageBytes, 8,12) );
-                    //String stateDataName = new String(Arrays.copyOfRange(messageBytes, 12, 12+nameLength),StandardCharsets.UTF_16BE);
-                    //String jsonString = new String(Arrays.copyOfRange(messageBytes, 12+nameLength+4, messageBytes.length),StandardCharsets.UTF_16BE);
                     StateData stateData = StateData.parseStateData(messageBytes);
                     if (stateData == null){
                         return new byte[0];
