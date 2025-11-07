@@ -22,17 +22,4 @@ public class StageLinQDiscoveryMessageJSONSerializer extends JsonSerializer<Stag
         jgen.writeStringField("version", stageLinQDiscoveryMessage.getSoftwareVersion());
         jgen.writeEndObject();
     }
-
-    //    public static class Deserializer extends JsonDeserializer<StageLinqDiscoveryMessage> {
-//
-//        @Override
-//        public MyObject deserialize(JsonParser jsonParser, DeserializationContext ctxt) throws IOException {
-//            ObjectCodec codec = jsonParser.getCodec();
-//            JsonNode tree = codec.readTree(jsonParser);
-//            String name = tree.get("name").textValue();
-//            int age = tree.get("age").intValue();
-//            return new MyObject(name, age);
-//        }
-//
-//    }
 }
