@@ -28,16 +28,11 @@ public class SongDataLogger implements Runnable{
             .toAbsolutePath()
             .toString();
     private static final DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd_HHmmss");
-    //private static final File detailedSongLog = new File(userDirectory + "/songData_"+ LocalDateTime.now().format(dateFormatter) +".txt");
     private static final File youtubeSongLog = new File(userDirectory + "/youtubeTracklist"+ LocalDateTime.now().format(dateFormatter) +".txt");
     private static int counter=0;
     public static void logSongData(List<SongData> songDataList) {
         try {
-            //log.debug( detailedSongLog.createNewFile() ? detailedSongLog.getAbsolutePath()+" created."
-            //        : "");
-            log.debug( youtubeSongLog.createNewFile() ? youtubeSongLog.getAbsolutePath()+" created."
-                    : "");
-
+            log.debug( youtubeSongLog.createNewFile() ? youtubeSongLog.getAbsolutePath()+" created." : "");
             String trackNumsAsString = "";
             String songsToLog = "";
             for (SongData songData : songDataList){
