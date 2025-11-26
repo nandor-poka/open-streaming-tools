@@ -22,11 +22,8 @@ import org.springframework.messaging.handler.annotation.Header;
 @IntegrationComponentScan
 public class StateMapServiceTCPSocketServerConfiguration {
 
-
     private final int socketPort = OSTConfiguration.STATEMAP_SERVICE_PORT;
     public static final StateMapMessageSerializer SERIALIZER = new StateMapMessageSerializer();
-
-    //serializer is headerbytearray
 
     /**
      * Reply messages are routed to the connection only if the reply contains the ip_connectionId header
@@ -55,9 +52,6 @@ public class StateMapServiceTCPSocketServerConfiguration {
         stateMapServerCf.setDeserializer(SERIALIZER);
         stateMapServerCf.setSoTcpNoDelay(true);
         stateMapServerCf.setSoKeepAlive(true);
-        // serverCf.setSingleUse(true);
-        // final int soTimeout = 5000;
-        // serverCf.setSoTimeout(soTimeout);
         return stateMapServerCf;
     }
 
@@ -69,9 +63,6 @@ public class StateMapServiceTCPSocketServerConfiguration {
         sstateMapClientCf.setDeserializer(SERIALIZER);
         sstateMapClientCf.setSoTcpNoDelay(true);
         sstateMapClientCf.setSoKeepAlive(true);
-        // clientCf.setSingleUse(true);
-        // final int soTimeout = 5000;
-        // clientCf.setSoTimeout(soTimeout);
         return sstateMapClientCf;
     }
 
