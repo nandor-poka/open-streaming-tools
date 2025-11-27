@@ -1,22 +1,20 @@
 package com.openstreamingtools.MainServer.twitch;
 
 
+import lombok.Data;
 import lombok.Getter;
 import lombok.Setter;
 
 
-@Getter
-@Setter
+@Data
 public class TwitchSubscribeMessage {
-    private String type="channel.chat.message";
+    private String type="";
     private String version = "1";
-    TwitchSubscribeCondition condition;
-    TwitchSubscriptionTransport transport;
+    private TwitchSubscribtionCondition condition;
+    private TwitchSubscriptionTransport transport;
 
-    public TwitchSubscribeMessage(TwitchSubscribeCondition condition, TwitchSubscriptionTransport transport) {
-        this.condition = condition;
-        this.transport = transport;
-    }
+    public TwitchSubscribeMessage(){}
+
 }
 
 
