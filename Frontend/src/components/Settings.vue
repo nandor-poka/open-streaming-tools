@@ -25,7 +25,7 @@ onMounted(() => {
       botUserName: settingsStore.botUserName,
       clientIdFilePath: settingsStore.clientIdFilePath,
       clientSecretFilePath: settingsStore.clientSecretFilePath,
-      autoShoutoutList : settingsStore.autoShoutoutList
+      //autoShoutoutList : settingsStore.autoShoutoutList
 
     })
     .catch(function (error) {

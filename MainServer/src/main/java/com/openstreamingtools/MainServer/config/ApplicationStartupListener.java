@@ -51,7 +51,7 @@ public class ApplicationStartupListener implements
         }
         OSTConfiguration.setSettingsFile(settingsFile);
         OSTConfiguration.init();
-        if (OSTConfiguration.settings.getTwitchToken() != null) {
+        if (OSTConfiguration.settings.getTwitchBotToken() != null) {
             try {
                 TwitchUtils.refreshAuthTokenFromTwitch();
             } catch (UnsupportedEncodingException e) {
