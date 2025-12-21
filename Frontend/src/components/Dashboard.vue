@@ -53,10 +53,16 @@ onMounted(() => {
     <h1>Dashboard</h1>
   </div>
   <div>
+    <ul>
+      <li v-if="settingsStore.channelUserName == null">Broadcaster username is missing</li>
+      <li v-if="settingsStore.botUserName == null">Bot username is missing</li>
+      <li v-if="settingsStore.clientIdFilePath == null">Path for client ID file is missing</li>
+      <li v-if="settingsStore.clientSecretFilePath == null">Path for client secret file is missing</li>
+    </ul>
     <h2>Twitch credetials : {{ settingsStore.twitchStatus }} </h2>
     <h2>Twitch connection live: {{ settingsStore.twitchResponse }} </h2>
-    <a href='https://id.twitch.tv/oauth2/authorize?client_id=n6breeyo2zy1nzlpfx43x91lgaobgo&force_verify=true&response_type=code&redirect_uri=http://localhost:8080/api/twitchBot&scope=user%3Abot%20user%3Aread%3Achat%20user%3Awrite%3Achat'>Connect to Twitch Bot user</a>
-    <!-- <a href='https://id.twitch.tv/oauth2/authorize?client_id=n6breeyo2zy1nzlpfx43x91lgaobgo&force_verify=true&response_type=code&redirect_uri=http://localhost:8080/api/twitchChannel&scope=channel%3Amanage%3Aredemptions%20channel%3Aread%3Aredemptions'>Connect to Twitch Boradcasting user</a> -->
+    <a href='https://id.twitch.tv/oauth2/authorize?client_id=n6breeyo2zy1nzlpfx43x91lgaobgo&force_verify=true&response_type=code&redirect_uri=http://localhost:8080/api/twitchBot&scope=user%3Abot%20user%3Awrite%3Achat'>Connect to Twitch Bot user</a>
+    <a href='https://id.twitch.tv/oauth2/authorize?client_id=n6breeyo2zy1nzlpfx43x91lgaobgo&force_verify=true&response_type=code&redirect_uri=http://localhost:8080/api/twitchBroadcaster&scope=user%3Abot%20user%3Aread%3Achat%20channel%3Amanage%3Aredemptions%20channel%3Aread%3Aredemptions'>Connect to Twitch Boradcasting user</a>
   <!--user%3Abot%20 -->
   </div>
   <div>
@@ -87,5 +93,11 @@ h3 {
   .greetings h3 {
     text-align: left;
   }
+}
+
+li {
+  color: red;
+  font-weight: 300;
+  font-size: 2rem;
 }
 </style>

@@ -16,7 +16,35 @@ public class TwitchSessionController {
     public String twitchBotRedirect(@RequestParam String code,@RequestParam String scope){
         log.debug(code);
         log.debug(scope);
-        TwitchUtils.getAuthTokenFromTwitch(code);
+        TwitchUtils.getAuthTokenFromTwitch(code, TwitchUtils.TwitchUserType.BOT);
+        if(OSTConfiguration.settings.getTwitchUser() == null){
+            try {
+                OSTConfiguration.settings.setTwitchUser(
+                        TwitchUtils.getIdforUser(OSTConfiguration.settings.getChannelUserName())
+                                .getData()[0]);
+                OSTConfiguration.saveSettings();
+            } catch (JsonProcessingException e) {
+                throw new RuntimeException(e);
+            }
+        }
+        if(OSTConfiguration.settings.getBotUser() == null){
+            try {
+                OSTConfiguration.settings.setBotUser(
+                        TwitchUtils.getIdforUser(OSTConfiguration.settings.getBotUserName())
+                                .getData()[0]);
+                OSTConfiguration.saveSettings();
+            } catch (JsonProcessingException e) {
+                throw new RuntimeException(e);
+            }
+        }
+        return "redirect:localhost:8080/";
+    }
+
+    @GetMapping (value= "/api/twitchBroadcaster")
+    public String twitchChannelRedirect(@RequestParam String code,@RequestParam String scope){
+        log.debug(code);
+        log.debug(scope);
+        TwitchUtils.getAuthTokenFromTwitch(code, TwitchUtils.TwitchUserType.BROADCASTER);
         if(OSTConfiguration.settings.getTwitchUser() == null){
             try {
                 OSTConfiguration.settings.setTwitchUser(

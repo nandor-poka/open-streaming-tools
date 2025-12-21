@@ -52,7 +52,7 @@ onMounted(() => {
         <tr>
           <td>User name for the Twitch channel to send message to</td>
           <td>
-            <input v-model="settingsStore.channelUserName" type="text" id="channelUserName" />
+            <input v-model="settingsStore.channelUserName" type="text" id="channelUserName"/>
           </td>
           <td>
             The name of the Twitch user who owns the channel that the bot will send message to. Typically your own user name for your own channel.
