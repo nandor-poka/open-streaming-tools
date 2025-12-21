@@ -25,6 +25,7 @@ public class Settings {
     private int playlistID;
     private String versionString = "";
     private OauthToken twitchBotToken;
+    private OauthToken twitchBroadcasterToken;
     private TwitchUser twitchUser;
     private TwitchUser botUser;
 }

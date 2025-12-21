@@ -33,14 +33,26 @@ public class TwitchUtils {
             "channel.channel_points_automatic_reward_redemption.add"
     };
 
+    public enum TwitchUserType {
+        BOT,
+        BROADCASTER
+    }
 
-    public static void getAuthTokenFromTwitch(String code){
+    public static void getAuthTokenFromTwitch(String code, TwitchUserType userType){
         MultiValueMap<String, String> params = new LinkedMultiValueMap<>();
         params.add("client_id", OSTConfiguration.getTWITCH_CLIEND_ID());
         params.add("client_secret", OSTConfiguration.getTWITCH_CLIENT_SECRET());
         params.add("grant_type", "authorization_code");
         params.add("code", code);
-        params.add("redirect_uri", "http://localhost:8080/api/twitchBot");
+        switch (userType){
+            case BOT:
+                params.add("redirect_uri", "http://localhost:8080/api/twitchBot");
+                break;
+            case BROADCASTER:
+                params.add("redirect_uri", "http://localhost:8080/api/twitchBroadcaster");
+                break;
+        }
+
         OauthToken response = Utils.restClient.post()
                 .uri(TWITCH_API_GET_TOKEN_URL)
                 .contentType(MediaType.APPLICATION_FORM_URLENCODED)
@@ -53,7 +65,13 @@ public class TwitchUtils {
                         })
                 .body(OauthToken.class);
         log.debug(response.toString());
-        OSTConfiguration.settings.setTwitchBotToken(response);
+        switch (userType){
+            case BOT:
+                OSTConfiguration.settings.setTwitchBotToken(response);
+                break;
+            case BROADCASTER:
+               OSTConfiguration.settings.setTwitchBroadcasterToken(response);
+        }
         OSTConfiguration.saveSettings();
     }
 
@@ -63,7 +81,7 @@ public class TwitchUtils {
             params.add("client_id",OSTConfiguration.getTWITCH_CLIEND_ID());
             params.add("client_secret", OSTConfiguration.getTWITCH_CLIENT_SECRET());
             params.add("grant_type", "refresh_token");
-            params.add("refresh_token", URLEncoder.encode(OSTConfiguration.settings.getTwitchBotToken().getRefresh_token(), StandardCharsets.UTF_8));
+            params.add("refresh_token", URLEncoder.encode(OSTConfiguration.settings.getTwitchBroadcasterToken().getRefresh_token(), StandardCharsets.UTF_8));
             params.add("redirect_uri", "http://localhost:8080/");
             OauthToken response = null;
             try{
@@ -97,7 +115,7 @@ public class TwitchUtils {
             ResponseEntity response = Utils.restClient.get()
                     .uri(TWITCH_VALIDATE_TOKEN)
                     .header("Authorization","Bearer "
-                            + OSTConfiguration.settings.getTwitchBotToken().getAccess_token())
+                            + OSTConfiguration.settings.getTwitchBroadcasterToken().getAccess_token())
                     .retrieve()
                     .onStatus(HttpStatusCode::is4xxClientError
                             , (request, resp) -> {
@@ -116,12 +134,12 @@ public class TwitchUtils {
     }
     public static String subscribeToTwitch(String sessionId) {
         String response = null;
-        if (OSTConfiguration.settings.getTwitchBotToken() == null){
+        if (OSTConfiguration.settings.getTwitchBroadcasterToken() == null){
             log.debug("Twitch user in settings is empty. Login first.");
             return "Twitch user in settings is empty. Login first.";
         }
         TwitchSubscriptionTransport transport = new TwitchSubscriptionTransport(sessionId);
-        String tokenString = OSTConfiguration.settings.getTwitchBotToken().getAccess_token();
+        String tokenString = OSTConfiguration.settings.getTwitchBroadcasterToken().getAccess_token();
         for(String subType : subscriptions){
                     TwitchSubscribeMessage subscribeMessage = new TwitchSubscribeMessage();
                     subscribeMessage.setType(subType);
@@ -130,7 +148,7 @@ public class TwitchUtils {
                     switch (subType){
                         case "channel.chat.message":
                             condition = new TwitchChatMessageSubscribeCondition(
-                                    OSTConfiguration.settings.getBotUser().getId());
+                                    OSTConfiguration.settings.getTwitchUser().getId());
                             break;
                         case "channel.channel_points_custom_reward_redemption.add":
                         case "channel.channel_points_automatic_reward_redemption.add":
@@ -166,7 +184,7 @@ public class TwitchUtils {
         String response = Utils.restClient.get()
                 .uri(TWITCH_GET_USER +"?login="+name)
                 .header("Authorization","Bearer "
-                        +OSTConfiguration.settings.getTwitchBotToken().getAccess_token())
+                        +OSTConfiguration.settings.getTwitchBroadcasterToken().getAccess_token())
                 .header("Client-Id", OSTConfiguration.getTWITCH_CLIEND_ID())
                 .retrieve()
                 .onStatus(HttpStatusCode::is4xxClientError
@@ -213,7 +231,7 @@ public class TwitchUtils {
         String response = Utils.restClient.get()
                 .uri(TWITCH_SUBSCRIBE)
                 .header("Authorization","Bearer "
-                        + OSTConfiguration.settings.getTwitchBotToken().getAccess_token())
+                        + OSTConfiguration.settings.getTwitchBroadcasterToken().getAccess_token())
                 .header("Client-Id", OSTConfiguration.getTWITCH_CLIEND_ID())
                 .retrieve()
                 .onStatus(HttpStatusCode::is4xxClientError
