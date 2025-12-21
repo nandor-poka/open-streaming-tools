@@ -3,7 +3,8 @@ package com.openstreamingtools.MainServer.messages.stagelinqmessages;
 import com.openstreamingtools.MainServer.config.OSTConfiguration;
 
 public enum ServiceType {
-    STATEMAP("StateMap", OSTConfiguration.STATEMAP_SERVICE_PORT);
+    STATEMAP("StateMap", OSTConfiguration.STATEMAP_SERVICE_PORT),
+    BEATINFO("BeatInfo", OSTConfiguration.BEATINFO_SERVICE_PORT);
 
     private final String name;
     private final int port;

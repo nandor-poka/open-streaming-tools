@@ -32,6 +32,7 @@ public class OSTConfiguration {
     public static final String FRONTEND_JAR_ORIGN = "http://localhost:8080";
     public static final int DIRECTORY_SERVICE_PORT = 60000;
     public static final int STATEMAP_SERVICE_PORT = 60001;
+    public static final int BEATINFO_SERVICE_PORT = 60002;
     public static final String SETTINGS_DIR_PATH = "../settings";
     public static final String SETTINGS_FILE_PATH = "../settings/settings.json";
 
