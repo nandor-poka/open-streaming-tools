@@ -3,14 +3,14 @@
 import Navbar from './Navbar.vue'
 import { UnitStore } from '@/stores/UnitStore'
 import { SettingsStore } from '@/stores/SettingsStore'
-import { TrackStore } from '@/stores/TrackStore'
+import TwitchClient from './TwitchClient.vue'
 import type { Axios } from 'axios'
 import { inject, onMounted } from 'vue'
 const unitStore = UnitStore()
-const trackStore = TrackStore()
+
 const settingsStore = SettingsStore()
 const axios: Axios = inject('axios') as Axios
-const twitchClient = new WebSocket('wss://eventsub.wss.twitch.tv/ws')
+
 
 
 onMounted(() => {
@@ -44,61 +44,25 @@ onMounted(() => {
     })
 })
 
-twitchClient.onopen = ()=> {
-    console.log("Websocket to Twitch opened")
-  }
-  twitchClient.onmessage = (weboscketMessage) =>{
-    const twitchMessage = JSON.parse(weboscketMessage.data)
-    console.log(weboscketMessage)
-    console.log(twitchMessage)
-    switch (twitchMessage.metadata.message_type) {
-      case "session_welcome":
-        if (!settingsStore.twitchStatus){
-          break
-        }
-        axios.post('api/subscribeToTwtitch',{
-          sessionId: twitchMessage.payload.session.id
-        }).then(function(response){
-          settingsStore.twitchResponse = response.data
-        })
-        .catch(function (error) {
-          // handle error
-          console.log(error)
-        })
-        console.log(twitchMessage.payload.session.id)
-        break;
-       case "notification":
-        console.log(weboscketMessage)
-        if (twitchMessage.payload.event.message.text == "!recommend"){
-          axios
-          .get('api/getInKeyRecommendation/'+trackStore.currentKey, {
-            headers: {
-              'Content-Type': 'application/json',
-            },
-          })
-          .catch(function (error) {
-            // handle error
-            console.log(error)
-          })
-        }
-        break;
-      default:
-        break;
-    }
-  }
-
-
 </script>
 
 <template>
+  <TwitchClient/>
   <Navbar />
   <div class="greetings">
     <h1>Dashboard</h1>
   </div>
   <div>
+    <ul>
+      <li v-if="settingsStore.channelUserName == null">Broadcaster username is missing</li>
+      <li v-if="settingsStore.botUserName == null">Bot username is missing</li>
+      <li v-if="settingsStore.clientIdFilePath == null">Path for client ID file is missing</li>
+      <li v-if="settingsStore.clientSecretFilePath == null">Path for client secret file is missing</li>
+    </ul>
     <h2>Twitch credetials : {{ settingsStore.twitchStatus }} </h2>
     <h2>Twitch connection live: {{ settingsStore.twitchResponse }} </h2>
-    <a href='https://id.twitch.tv/oauth2/authorize?client_id=n6breeyo2zy1nzlpfx43x91lgaobgo&force_verify=true&response_type=code&redirect_uri=http://localhost:8080/api/twitch&scope=user%3Abot%20user%3Aread%3Achat%20user%3Awrite%3Achat'>Login to Twitch</a>
+    <a href='https://id.twitch.tv/oauth2/authorize?client_id=n6breeyo2zy1nzlpfx43x91lgaobgo&force_verify=true&response_type=code&redirect_uri=http://localhost:8080/api/twitchBot&scope=user%3Abot%20user%3Awrite%3Achat'>Connect to Twitch Bot user</a>
+    <a href='https://id.twitch.tv/oauth2/authorize?client_id=n6breeyo2zy1nzlpfx43x91lgaobgo&force_verify=true&response_type=code&redirect_uri=http://localhost:8080/api/twitchBroadcaster&scope=user%3Abot%20user%3Aread%3Achat%20channel%3Amanage%3Aredemptions%20channel%3Aread%3Aredemptions'>Connect to Twitch Boradcasting user</a>
   <!--user%3Abot%20 -->
   </div>
   <div>
@@ -129,5 +93,11 @@ h3 {
   .greetings h3 {
     text-align: left;
   }
+}
+
+li {
+  color: red;
+  font-weight: 300;
+  font-size: 2rem;
 }
 </style>

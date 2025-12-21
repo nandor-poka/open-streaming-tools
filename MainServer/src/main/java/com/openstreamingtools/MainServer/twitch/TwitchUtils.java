@@ -21,22 +21,37 @@ public class TwitchUtils {
     public static final String TWITCH_API_GET_TOKEN_URL = "https://id.twitch.tv/oauth2/token";
     //public static final String TWITCH_API_AUTHORIZE_URL = "https://id.twitch.tv/oauth2/authorize";
     //public static final String TWITCH_EVENTSUB_WEBSOCKET_ADDRESS = "wss://eventsub.wss.twitch.tv/ws";
-    public static final String TWITCC_GET_USER = "https://api.twitch.tv/helix/users";
+    public static final String TWITCH_GET_USER = "https://api.twitch.tv/helix/users";
     public static final String TWITCH_SUBSCRIBE = "https://api.twitch.tv/helix/eventsub/subscriptions";
     public static final String TWITCH_CHAT_MESSAGE = "https://api.twitch.tv/helix/chat/messages";
     public static final String TWITCH_VALIDATE_TOKEN = "https://id.twitch.tv/oauth2/validate";
-
     public static final String SHOUTOUT_COMMAND = "/shoutout ";
     private static TokenValidationTask tokenValidationTask = null;
+    private static final String[] subscriptions= new String[]{
+            "channel.chat.message",
+            "channel.channel_points_custom_reward_redemption.add",
+            "channel.channel_points_automatic_reward_redemption.add"
+    };
 
+    public enum TwitchUserType {
+        BOT,
+        BROADCASTER
+    }
 
-    public static void getAuthTokenFromTwitch(String code){
+    public static void getAuthTokenFromTwitch(String code, TwitchUserType userType){
         MultiValueMap<String, String> params = new LinkedMultiValueMap<>();
         params.add("client_id", OSTConfiguration.getTWITCH_CLIEND_ID());
         params.add("client_secret", OSTConfiguration.getTWITCH_CLIENT_SECRET());
         params.add("grant_type", "authorization_code");
         params.add("code", code);
-        params.add("redirect_uri", "http://localhost:8080/");
+        switch (userType){
+            case BOT:
+                params.add("redirect_uri", "http://localhost:8080/api/twitchBot");
+                break;
+            case BROADCASTER:
+                params.add("redirect_uri", "http://localhost:8080/api/twitchBroadcaster");
+                break;
+        }
 
         OauthToken response = Utils.restClient.post()
                 .uri(TWITCH_API_GET_TOKEN_URL)
@@ -50,7 +65,13 @@ public class TwitchUtils {
                         })
                 .body(OauthToken.class);
         log.debug(response.toString());
-        OSTConfiguration.settings.setTwitchToken(response);
+        switch (userType){
+            case BOT:
+                OSTConfiguration.settings.setTwitchBotToken(response);
+                break;
+            case BROADCASTER:
+               OSTConfiguration.settings.setTwitchBroadcasterToken(response);
+        }
         OSTConfiguration.saveSettings();
     }
 
@@ -60,7 +81,7 @@ public class TwitchUtils {
             params.add("client_id",OSTConfiguration.getTWITCH_CLIEND_ID());
             params.add("client_secret", OSTConfiguration.getTWITCH_CLIENT_SECRET());
             params.add("grant_type", "refresh_token");
-            params.add("refresh_token", URLEncoder.encode(OSTConfiguration.settings.getTwitchToken().getRefresh_token(), StandardCharsets.UTF_8));
+            params.add("refresh_token", URLEncoder.encode(OSTConfiguration.settings.getTwitchBroadcasterToken().getRefresh_token(), StandardCharsets.UTF_8));
             params.add("redirect_uri", "http://localhost:8080/");
             OauthToken response = null;
             try{
@@ -80,7 +101,7 @@ public class TwitchUtils {
             }
             if (response != null){
                 log.debug(response.toString());
-                OSTConfiguration.settings.setTwitchToken(response);
+                OSTConfiguration.settings.setTwitchBotToken(response);
                 OSTConfiguration.settings.setTwitchStatus(true);
                 OSTConfiguration.saveSettings();
             }
@@ -90,45 +111,66 @@ public class TwitchUtils {
     }
 
     public static boolean validateToken(){
-        ResponseEntity response = Utils.restClient.get()
-                .uri(TWITCH_VALIDATE_TOKEN)
-                .header("Authorization","Bearer "
-                        + OSTConfiguration.settings.getTwitchToken().getAccess_token())
-                .retrieve()
-                .onStatus(HttpStatusCode::is4xxClientError
-                        , (request, resp) -> {
-                            log.error(resp.getStatusText());
-                        })
-                .toBodilessEntity();
-        log.debug(response.toString());
-        if (response.getStatusCode().is2xxSuccessful()){
-            return true;
+        try {
+            ResponseEntity response = Utils.restClient.get()
+                    .uri(TWITCH_VALIDATE_TOKEN)
+                    .header("Authorization","Bearer "
+                            + OSTConfiguration.settings.getTwitchBroadcasterToken().getAccess_token())
+                    .retrieve()
+                    .onStatus(HttpStatusCode::is4xxClientError
+                            , (request, resp) -> {
+                                log.error(resp.getStatusText());
+                            })
+                    .toBodilessEntity();
+            log.debug(response.toString());
+            if (response.getStatusCode().is2xxSuccessful()){
+                return true;
+            }
+        } catch (Exception e) {
+            log.error(e.getMessage());
+            return false;
         }
         return false;
     }
     public static String subscribeToTwitch(String sessionId) {
         String response = null;
-        if (OSTConfiguration.settings.getTwitchToken() == null){
+        if (OSTConfiguration.settings.getTwitchBroadcasterToken() == null){
             log.debug("Twitch user in settings is empty. Login first.");
             return "Twitch user in settings is empty. Login first.";
         }
-        TwitchSubscribeMessage subscribeMessage = new TwitchSubscribeMessage(new TwitchSubscribeCondition(
-                OSTConfiguration.settings.getTwitchUser().getId(), OSTConfiguration.settings.getBotUser().getId()),
-                new TwitchSubscriptionTransport(sessionId));
+        TwitchSubscriptionTransport transport = new TwitchSubscriptionTransport(sessionId);
+        String tokenString = OSTConfiguration.settings.getTwitchBroadcasterToken().getAccess_token();
+        for(String subType : subscriptions){
+                    TwitchSubscribeMessage subscribeMessage = new TwitchSubscribeMessage();
+                    subscribeMessage.setType(subType);
+                    subscribeMessage.setTransport(transport);
+                    TwitchSubscribtionCondition condition = new TwitchSubscribtionCondition();
+                    switch (subType){
+                        case "channel.chat.message":
+                            condition = new TwitchChatMessageSubscribeCondition(
+                                    OSTConfiguration.settings.getTwitchUser().getId());
+                            break;
+                        case "channel.channel_points_custom_reward_redemption.add":
+                        case "channel.channel_points_automatic_reward_redemption.add":
+                           break;
+                    }
+                    subscribeMessage.setCondition(condition);
             response = Utils.restClient.post()
                     .uri(TWITCH_SUBSCRIBE)
                     .header("Authorization","Bearer "
-                            + OSTConfiguration.settings.getTwitchToken().getAccess_token())
+                            + tokenString)
                     .header("Client-Id", OSTConfiguration.getTWITCH_CLIEND_ID())
                     .contentType(MediaType.APPLICATION_JSON)
                     .body(subscribeMessage)
                     .retrieve()
                     .onStatus(HttpStatusCode::is4xxClientError
                             , (request, resp) -> {
-                        log.error(resp.getStatusText());
-                    })
+                                log.error(resp.getStatusText());
+                            })
                     .body(String.class);
-        log.debug(response);
+            log.debug(subscribeMessage.toString(), response);
+        }
+
         if (tokenValidationTask == null){
             tokenValidationTask = new TokenValidationTask();
             Utils.timer.scheduleAtFixedRate(tokenValidationTask, 0, Utils.HOUR_IN_MILLIS);
@@ -140,9 +182,9 @@ public class TwitchUtils {
         MultiValueMap<String, String> params = new LinkedMultiValueMap<>();
         params.add("login", name);
         String response = Utils.restClient.get()
-                .uri(TWITCC_GET_USER +"?login="+name)
+                .uri(TWITCH_GET_USER +"?login="+name)
                 .header("Authorization","Bearer "
-                        +OSTConfiguration.settings.getTwitchToken().getAccess_token())
+                        +OSTConfiguration.settings.getTwitchBroadcasterToken().getAccess_token())
                 .header("Client-Id", OSTConfiguration.getTWITCH_CLIEND_ID())
                 .retrieve()
                 .onStatus(HttpStatusCode::is4xxClientError
@@ -170,7 +212,7 @@ public class TwitchUtils {
                     .uri(TWITCH_CHAT_MESSAGE)
                     .contentType(MediaType.APPLICATION_JSON)
                     .header("Authorization","Bearer "
-                            + OSTConfiguration.settings.getTwitchToken().getAccess_token())
+                            + OSTConfiguration.settings.getTwitchBotToken().getAccess_token())
                     .header("Client-Id", OSTConfiguration.getTWITCH_CLIEND_ID())
                     .body(Utils.objectMapper.writeValueAsString(chatMessage))
                     .retrieve()
@@ -183,5 +225,21 @@ public class TwitchUtils {
             throw new RuntimeException(e);
         }
         log.debug(respoonse);
+    }
+
+    public static String getSubscriptions() {
+        String response = Utils.restClient.get()
+                .uri(TWITCH_SUBSCRIBE)
+                .header("Authorization","Bearer "
+                        + OSTConfiguration.settings.getTwitchBroadcasterToken().getAccess_token())
+                .header("Client-Id", OSTConfiguration.getTWITCH_CLIEND_ID())
+                .retrieve()
+                .onStatus(HttpStatusCode::is4xxClientError
+                        , (request, resp) -> {
+                            log.error(resp.getStatusText());
+                        })
+                .body(String.class);
+        log.debug(response);
+        return response;
     }
 }

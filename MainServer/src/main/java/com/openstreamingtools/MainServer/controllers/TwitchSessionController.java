@@ -12,11 +12,11 @@ import org.springframework.web.bind.annotation.*;
 @RestController
 public class TwitchSessionController {
 
-    @GetMapping (value= "/api/twitch")
-    public String twitchRedirect(@RequestParam String code,@RequestParam String scope){
+    @GetMapping (value= "/api/twitchBot")
+    public String twitchBotRedirect(@RequestParam String code,@RequestParam String scope){
         log.debug(code);
         log.debug(scope);
-        TwitchUtils.getAuthTokenFromTwitch(code);
+        TwitchUtils.getAuthTokenFromTwitch(code, TwitchUtils.TwitchUserType.BOT);
         if(OSTConfiguration.settings.getTwitchUser() == null){
             try {
                 OSTConfiguration.settings.setTwitchUser(
@@ -39,8 +39,42 @@ public class TwitchSessionController {
         }
         return "redirect:localhost:8080/";
     }
+
+    @GetMapping (value= "/api/twitchBroadcaster")
+    public String twitchChannelRedirect(@RequestParam String code,@RequestParam String scope){
+        log.debug(code);
+        log.debug(scope);
+        TwitchUtils.getAuthTokenFromTwitch(code, TwitchUtils.TwitchUserType.BROADCASTER);
+        if(OSTConfiguration.settings.getTwitchUser() == null){
+            try {
+                OSTConfiguration.settings.setTwitchUser(
+                        TwitchUtils.getIdforUser(OSTConfiguration.settings.getChannelUserName())
+                                .getData()[0]);
+                OSTConfiguration.saveSettings();
+            } catch (JsonProcessingException e) {
+                throw new RuntimeException(e);
+            }
+        }
+        if(OSTConfiguration.settings.getBotUser() == null){
+            try {
+                OSTConfiguration.settings.setBotUser(
+                        TwitchUtils.getIdforUser(OSTConfiguration.settings.getBotUserName())
+                                .getData()[0]);
+                OSTConfiguration.saveSettings();
+            } catch (JsonProcessingException e) {
+                throw new RuntimeException(e);
+            }
+        }
+        return "redirect:localhost:8080/";
+    }
+
     @PostMapping(value= "/api/subscribeToTwtitch", consumes = "application/json")
     public String subscribeToEventSub(@RequestBody WebsocketSessionId websocketSessionId)  {
        return TwitchUtils.subscribeToTwitch(websocketSessionId.getSessionId());
+    }
+
+    @GetMapping(value= "/api/getSubscriptions")
+    public String getSubscriptions(){
+        return TwitchUtils.getSubscriptions();
     }
 }

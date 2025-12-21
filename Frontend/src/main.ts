@@ -1,5 +1,4 @@
 import './assets/main.css'
-
 import { createApp } from 'vue'
 import { createPinia } from 'pinia'
 import router from './router'
@@ -13,6 +12,7 @@ const app = createApp(App)
 app.provide('axios', axiosInstance)
 app.use(router)
 app.use(createPinia())
+
 const settingsStore = SettingsStore()
 app.provide('settingsStore', settingsStore)
 app.mount('#app')

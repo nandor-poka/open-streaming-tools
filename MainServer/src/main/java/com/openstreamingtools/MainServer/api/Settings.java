@@ -24,7 +24,8 @@ public class Settings {
     private String autoShoutoutList;
     private int playlistID;
     private String versionString = "";
-    private OauthToken twitchToken;
+    private OauthToken twitchBotToken;
+    private OauthToken twitchBroadcasterToken;
     private TwitchUser twitchUser;
     private TwitchUser botUser;
 }

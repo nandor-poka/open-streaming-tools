@@ -1,10 +1,10 @@
 package com.openstreamingtools.MainServer.twitch;
 
 
+import lombok.Data;
 import lombok.Getter;
 import lombok.Setter;
-@Getter
-@Setter
+@Data
 public class TwitchSubscriptionTransport {
     private String method = "websocket";
     private String session_id;
