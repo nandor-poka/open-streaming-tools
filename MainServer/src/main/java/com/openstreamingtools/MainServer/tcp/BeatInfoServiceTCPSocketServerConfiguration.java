@@ -34,17 +34,17 @@ public class BeatInfoServiceTCPSocketServerConfiguration {
     }
 
     @Bean
-    public MessageChannel toDirectory() {
+    public MessageChannel toBeatInfo() {
         return new DirectChannel();
     }
 
     @Bean
-    public MessageChannel fromDirectory() {
+    public MessageChannel fromBeatInfo() {
         return new DirectChannel();
     }
 
     @Bean
-    public AbstractServerConnectionFactory DirectoryServiceServerCF() {
+    public AbstractServerConnectionFactory BeatInfoServiceServerCF() {
         TcpNetServerConnectionFactory beatInfoServerCf = new TcpNetServerConnectionFactory(socketPort);
         beatInfoServerCf.setSerializer(SERIALIZER);
         beatInfoServerCf.setDeserializer(SERIALIZER);
@@ -54,7 +54,7 @@ public class BeatInfoServiceTCPSocketServerConfiguration {
     }
 
     @Bean
-    public AbstractClientConnectionFactory DirectoryServiceClientCF() {
+    public AbstractClientConnectionFactory BeatInfoServiceClientCF() {
 
         TcpNetClientConnectionFactory beatInfoClientCf = new TcpNetClientConnectionFactory("localhost", socketPort);
         beatInfoClientCf.setSerializer(SERIALIZER);
@@ -65,19 +65,19 @@ public class BeatInfoServiceTCPSocketServerConfiguration {
     }
 
     @Bean
-    public TcpInboundGateway DirectoryTcpInGate() {
+    public TcpInboundGateway BeatInfoTcpInGate() {
         TcpInboundGateway beatInfoServiceTCPInGate = new TcpInboundGateway();
-        beatInfoServiceTCPInGate.setConnectionFactory(DirectoryServiceServerCF());
-        beatInfoServiceTCPInGate.setRequestChannel(toDirectory());
-        beatInfoServiceTCPInGate.setReplyChannel(fromDirectory());
+        beatInfoServiceTCPInGate.setConnectionFactory(BeatInfoServiceServerCF());
+        beatInfoServiceTCPInGate.setRequestChannel(toBeatInfo());
+        beatInfoServiceTCPInGate.setReplyChannel(fromBeatInfo());
         return beatInfoServiceTCPInGate;
     }
 
     @Bean
-    public TcpOutboundGateway DirectoryTcpOutGate() {
+    public TcpOutboundGateway BeatInfoTcpOutGate() {
         TcpOutboundGateway beatInfoServiceTCPOutgate = new TcpOutboundGateway();
-        beatInfoServiceTCPOutgate.setConnectionFactory(DirectoryServiceClientCF());
-        beatInfoServiceTCPOutgate.setReplyChannel(fromDirectory());
+        beatInfoServiceTCPOutgate.setConnectionFactory(BeatInfoServiceClientCF());
+        beatInfoServiceTCPOutgate.setReplyChannel(fromBeatInfo());
         return beatInfoServiceTCPOutgate;
     }
 
