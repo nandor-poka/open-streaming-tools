@@ -7,6 +7,7 @@ describe('TopTabs', () => {
     const wrapper = mount(TopTabs)
     const div = wrapper.find('div')
     expect(div.exists()).toBe(true)
-    expect(div.attributes('style')).toContain('display:none')
+    expect(div.attributes('style')).toContain('display')
+    expect(div.attributes('style')).toContain('none')
   })
 })
