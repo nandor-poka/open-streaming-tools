@@ -5,15 +5,40 @@ import { UnitStore } from '@/stores/UnitStore'
 import { SettingsStore } from '@/stores/SettingsStore'
 import TwitchClient from './TwitchClient.vue'
 import type { Axios } from 'axios'
-import { inject, onMounted } from 'vue'
+import { inject, onMounted, ref, onBeforeUnmount } from 'vue'
 const unitStore = UnitStore()
 
 const settingsStore = SettingsStore()
 const axios: Axios = inject('axios') as Axios
 
+const showCredentialsModal = ref(false)
+const showConnectionModal = ref(false)
 
+const oauthBotUrl = 'https://id.twitch.tv/oauth2/authorize?client_id=n6breeyo2zy1nzlpfx43x91lgaobgo&force_verify=true&response_type=code&redirect_uri=http://localhost:8080/api/twitchBot&scope=user%3Abot%20user%3Awrite%3Achat'
+const oauthBroadcasterUrl = 'https://id.twitch.tv/oauth2/authorize?client_id=n6breeyo2zy1nzlpfx43x91lgaobgo&force_verify=true&response_type=code&redirect_uri=http://localhost:8080/api/twitchBroadcaster&scope=user%3Abot%20user%3Aread%3Achat%20channel%3Amanage%3Aredemptions%20channel%3Aread%3Aredemptions'
+
+function connectBot(){
+  const win = window.open(oauthBotUrl, '_blank', 'noopener,noreferrer')
+  if (win) { try { win.opener = null } catch (e) { /* ignore */ } }
+}
+function connectBroadcaster(){
+  const win = window.open(oauthBroadcasterUrl, '_blank', 'noopener,noreferrer')
+  if (win) { try { win.opener = null } catch (e) { /* ignore */ } }
+}
+
+function closeModals(){
+  showCredentialsModal.value = false
+  showConnectionModal.value = false
+}
+
+function handleKeyDown(e: KeyboardEvent){
+  if(e.key === 'Escape'){
+    closeModals()
+  }
+}
 
 onMounted(() => {
+  window.addEventListener('keydown', handleKeyDown)
   axios
     .get('api/getSettings', {
       method: 'get',
@@ -44,60 +69,198 @@ onMounted(() => {
     })
 })
 
+onBeforeUnmount(() => {
+  window.removeEventListener('keydown', handleKeyDown)
+})
+
 </script>
 
 <template>
-  <TwitchClient/>
+  <TwitchClient />
   <Navbar />
-  <div class="greetings">
-    <h1>Dashboard</h1>
-  </div>
-  <div>
-    <ul>
-      <li v-if="settingsStore.channelUserName == null">Broadcaster username is missing</li>
-      <li v-if="settingsStore.botUserName == null">Bot username is missing</li>
-      <li v-if="settingsStore.clientIdFilePath == null">Path for client ID file is missing</li>
-      <li v-if="settingsStore.clientSecretFilePath == null">Path for client secret file is missing</li>
-    </ul>
-    <h2>Twitch credetials : {{ settingsStore.twitchStatus }} </h2>
-    <h2>Twitch connection live: {{ settingsStore.twitchResponse }} </h2>
-    <a href='https://id.twitch.tv/oauth2/authorize?client_id=n6breeyo2zy1nzlpfx43x91lgaobgo&force_verify=true&response_type=code&redirect_uri=http://localhost:8080/api/twitchBot&scope=user%3Abot%20user%3Awrite%3Achat'>Connect to Twitch Bot user</a>
-    <a href='https://id.twitch.tv/oauth2/authorize?client_id=n6breeyo2zy1nzlpfx43x91lgaobgo&force_verify=true&response_type=code&redirect_uri=http://localhost:8080/api/twitchBroadcaster&scope=user%3Abot%20user%3Aread%3Achat%20channel%3Amanage%3Aredemptions%20channel%3Aread%3Aredemptions'>Connect to Twitch Boradcasting user</a>
-  <!--user%3Abot%20 -->
-  </div>
-  <div>
-    <h2>Current Device / Software</h2>
-    <h3>{{ unitStore.currentUnit.longName }} version {{ unitStore.currentUnit.version }}</h3>
-  </div>
+
+  <main class="dashboard">
+    <header class="dashboard-header">
+      <h1>Dashboard</h1>
+      <div class="header-actions">
+        <button class="btn btn-primary" @click="connectBot" aria-label="Connect Bot User">
+          <!-- robot icon -->
+          <svg class="btn-icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M12 2a2 2 0 0 0-2 2v1H8a2 2 0 0 0-2 2v3h12V7a2 2 0 0 0-2-2h-2V4a2 2 0 0 0-2-2zM6 14v4a2 2 0 0 0 2 2h8a2 2 0 0 0 2-2v-4H6zm3 2a1 1 0 1 1 0-2 1 1 0 0 1 0 2zm6 0a1 1 0 1 1 0-2 1 1 0 0 1 0 2z"/></svg>
+          Connect Bot User
+        </button>
+        <button class="btn btn-secondary" @click="connectBroadcaster" aria-label="Connect Broadcaster">
+          <!-- broadcast icon -->
+          <svg class="btn-icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M12 3a9 9 0 0 0-9 9 9 9 0 0 0 1 4.2L2 20l3.8-2A9 9 0 1 0 12 3zm0 4a5 5 0 0 1 0 10 5 5 0 0 1 0-10z"/></svg>
+          Connect Broadcaster
+        </button>
+      </div>
+    </header>
+
+    <section class="cards">
+      <article class="card cred-card">
+        <h3>Credentials</h3>
+        <ul class="checks">
+          <li :class="{ missing: !settingsStore.channelUserName }"><span class="label">Broadcaster:</span> <strong>{{ settingsStore.channelUserName || 'Not configured' }}</strong></li>
+          <li :class="{ missing: !settingsStore.botUserName }"><span class="label">Bot:</span> <strong>{{ settingsStore.botUserName || 'Not configured' }}</strong></li>
+          <li :class="{ missing: !settingsStore.clientIdFilePath }"><span class="label">Client ID:</span> <strong>{{ settingsStore.clientIdFilePath || 'Not configured' }}</strong></li>
+          <li :class="{ missing: !settingsStore.clientSecretFilePath }"><span class="label">Secret:</span> <strong>{{ settingsStore.clientSecretFilePath || 'Not configured' }}</strong></li>
+        </ul>
+        <button class="card-link" @click="showCredentialsModal = true">View Details →</button>
+      </article>
+
+      <article class="card conn-card">
+        <h3>Twitch Connection</h3>
+        <p><span class="label">Status:</span> <span :class="{'ok': settingsStore.twitchStatus, 'warn': !settingsStore.twitchStatus}">{{ settingsStore.twitchStatus ? 'Connected' : 'Disconnected' }}</span></p>
+        <p><span class="label">Response:</span> <em>{{ settingsStore.twitchResponse }}</em></p>
+        <button class="card-link" @click="showConnectionModal = true">View Details →</button>
+      </article>
+
+      <article class="card device-card">
+        <h3>Current Device / Software</h3>
+        <p class="muted">{{ unitStore.currentUnit.longName || 'Unknown' }}</p>
+        <p class="muted">Version {{ unitStore.currentUnit.version || 'N/A' }}</p>
+      </article>
+    </section>
+
+    <!-- Credentials Modal -->
+    <div v-if="showCredentialsModal" class="modal-overlay" @click="showCredentialsModal = false">
+      <div class="modal" @click.stop>
+        <div class="modal-header">
+          <h2>Credentials Details</h2>
+          <button class="modal-close" @click="showCredentialsModal = false" aria-label="Close">✕</button>
+        </div>
+        <div class="modal-body">
+          <div class="detail-item">
+            <span class="detail-label">Broadcaster Username:</span>
+            <span class="detail-value" :class="{ error: !settingsStore.channelUserName }">{{ settingsStore.channelUserName || 'Not configured' }}</span>
+          </div>
+          <div class="detail-item">
+            <span class="detail-label">Bot Username:</span>
+            <span class="detail-value" :class="{ error: !settingsStore.botUserName }">{{ settingsStore.botUserName || 'Not configured' }}</span>
+          </div>
+          <div class="detail-item">
+            <span class="detail-label">Client ID File Path:</span>
+            <span class="detail-value" :class="{ error: !settingsStore.clientIdFilePath }">{{ settingsStore.clientIdFilePath || 'Not configured' }}</span>
+          </div>
+          <div class="detail-item">
+            <span class="detail-label">Client Secret File Path:</span>
+            <span class="detail-value" :class="{ error: !settingsStore.clientSecretFilePath }">{{ settingsStore.clientSecretFilePath || 'Not configured' }}</span>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button class="btn btn-primary" @click="showCredentialsModal = false">Close</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Connection Modal -->
+    <div v-if="showConnectionModal" class="modal-overlay" @click="showConnectionModal = false">
+      <div class="modal" @click.stop>
+        <div class="modal-header">
+          <h2>Connection Details</h2>
+          <button class="modal-close" @click="showConnectionModal = false" aria-label="Close">✕</button>
+        </div>
+        <div class="modal-body">
+          <div class="detail-item">
+            <span class="detail-label">Twitch Status:</span>
+            <span :class="{'ok': settingsStore.twitchStatus, 'warn': !settingsStore.twitchStatus}">{{ settingsStore.twitchStatus ? 'Connected' : 'Disconnected' }}</span>
+          </div>
+          <div class="detail-item">
+            <span class="detail-label">Last Response:</span>
+            <em>{{ settingsStore.twitchResponse }}</em>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button class="btn btn-primary" @click="showConnectionModal = false">Close</button>
+        </div>
+      </div>
+    </div>
+  </main>
 </template>
 
 <style scoped>
-h1 {
-  font-weight: 500;
-  font-size: 2.6rem;
-  position: relative;
-  top: -10px;
+@keyframes fadeIn {
+  from { opacity: 0 }
+  to { opacity: 1 }
 }
 
-h3 {
-  font-size: 1.2rem;
-}
-
-.greetings h1,
-.greetings h3 {
-  text-align: center;
-}
-
-@media (min-width: 1024px) {
-  .greetings h1,
-  .greetings h3 {
-    text-align: left;
+@keyframes slideUp {
+  from {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
   }
 }
 
-li {
-  color: red;
-  font-weight: 300;
-  font-size: 2rem;
+@keyframes fadeOut {
+  from { opacity: 1 }
+  to { opacity: 0 }
 }
+
+@keyframes slideDown {
+  from {
+    opacity: 1;
+    transform: translateY(0);
+  }
+  to {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+}
+
+.dashboard{ padding: 1rem; max-width: 1100px; margin: 0 auto }
+.dashboard-header{ display:flex; align-items:center; justify-content:space-between; gap:1rem; margin-bottom:1rem }
+.header-actions{ display:flex; gap:0.5rem }
+
+.cards{ display:grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap:1rem }
+.card{ background: #000; border: 3px solid var(--azure); padding:1rem; border-radius:8px; box-shadow: 0 2px 8px rgba(0,152,255,0.2) }
+.card h3{ margin:0 0 0.75rem 0; color: var(--sgbus-green); border-bottom: 2px solid var(--azure); padding-bottom:0.5rem }
+
+.checks{ list-style:none; padding:0; margin:0 }
+.checks li{ padding:0.5rem 0; color: var(--sgbus-green); display:flex; justify-content:space-between; align-items:center; font-weight:500 }
+.checks li.missing{ color: #ff6b6b; font-weight:600 }
+.checks li.missing .label{ color: #ff6b6b }
+.label{ font-weight:600; color: var(--sgbus-green) }
+
+.card-link{ background:transparent; border:none; color: var(--azure); cursor:pointer; font-weight:600; margin-top:0.5rem; padding:0; text-decoration:underline; transition: color 0.2s }
+.card-link:hover{ color: var(--sgbus-green) }
+
+.btn{ padding:0.5rem 0.9rem; border-radius:6px; border:1px solid var(--azure); cursor:pointer; font-weight:600; display:inline-flex; align-items:center }
+.btn-icon{ width:1rem; height:1rem; margin-right:0.5rem; fill:currentColor }
+.btn-primary{ background: var(--azure); color: white; border-color: var(--azure) }
+.btn-secondary{ background: transparent; color: var(--sgbus-green); border-color: var(--sgbus-green) }
+
+.muted{ color: #aaa }
+.ok{ color: var(--sgbus-green); font-weight:700 }
+.warn{ color: #ff6b6b; font-weight:700 }
+
+.conn-card{ border-color: var(--sgbus-green) }
+.conn-card h3{ border-bottom-color: var(--sgbus-green) }
+
+/* Modal styles with animations */
+.modal-overlay{
+  position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.7); display:flex; align-items:center; justify-content:center; z-index:1000;
+  animation: fadeIn 0.2s ease-out;
+}
+
+.modal{
+  background:#000; border: 3px solid var(--azure); border-radius:8px; max-width:500px; width:90%; box-shadow: 0 4px 16px rgba(0,152,255,0.3);
+  animation: slideUp 0.3s ease-out;
+}
+
+.modal-header{ display:flex; align-items:center; justify-content:space-between; padding:1rem; border-bottom: 2px solid var(--sgbus-green) }
+.modal-header h2{ margin:0; color: var(--sgbus-green) }
+.modal-close{ background:transparent; border:none; font-size:1.5rem; cursor:pointer; color: var(--azure); transition: color 0.2s }
+.modal-close:hover{ color: var(--sgbus-green) }
+.modal-body{ padding:1rem }
+.modal-footer{ display:flex; gap:0.5rem; justify-content:flex-end; padding:1rem; border-top: 1px solid #333 }
+
+.detail-item{ display:flex; flex-direction:column; margin-bottom:1rem; padding-bottom:0.75rem; border-bottom: 1px solid #333 }
+.detail-label{ font-weight:600; color: var(--azure); margin-bottom:0.25rem }
+.detail-value{ color: var(--sgbus-green); word-break:break-word }
+.detail-value.error{ color: #ff6b6b }
+
 </style>
