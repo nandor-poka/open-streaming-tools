@@ -84,8 +84,8 @@ onBeforeUnmount(()=>{ if(onKeyDown) window.removeEventListener('keydown', onKeyD
 
 /* reuse Settings tab styles (kept local to Navbar) */
 .nav-tabs{ display:flex; gap:0.5rem; }
-.tab-btn{ padding:0.45rem 0.9rem; border-radius:6px; border:1px solid var(--azure); background:transparent; color:var(--azure); cursor:pointer; font-weight:600 }
+.tab-btn{ padding:0.45rem 0.9rem; border-radius:6px; border:1px solid var(--azure); background:transparent; color:var(--azure); cursor:pointer; font-weight:600; transition: background 180ms ease, color 180ms ease, box-shadow 180ms ease, border-color 180ms ease }
 .tab-btn:hover{ background: rgba(0,152,255,0.06) }
 .tab-btn:focus{ outline:3px solid rgba(0,152,255,0.12); outline-offset:2px }
-.tab-btn.active{ background:var(--sgbus-green); color:#001800; border-color:var(--sgbus-green); box-shadow: 0 0 0 3px rgba(82,223,0,0.08) inset }
+.tab-btn.active{ background: linear-gradient(180deg, var(--azure), var(--sgbus-green)); color:#001800; border-color:var(--sgbus-green); box-shadow: 0 0 0 3px rgba(82,223,0,0.08) inset }
 </style>

@@ -91,7 +91,22 @@ onBeforeUnmount(()=>{ if(onKeyDown) window.removeEventListener('keydown', onKeyD
 
 <template>
   <Navbar />
-  <h1>Settings</h1>
+
+  <!-- Header with title and right-aligned save button -->
+  <div class="settings-header">
+    <div class="title-actions">
+      <h1>Settings</h1>
+      <button
+        ref="saveSettings"
+        class="save-btn in-title"
+        aria-label="Save settings"
+        title="Save settings"
+        type="button"
+      >
+        Save
+      </button>
+    </div>
+  </div>
 
   <!-- Tab bar -->
   <div class="settings-tabs" role="tablist" aria-label="Settings sections">
@@ -135,6 +150,29 @@ label {
   padding: 5px;
 }
 
+/* Header */
+.settings-header{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:1rem;
+  margin-bottom:0.5rem;
+}
+.title-actions{ display:flex; gap:0.5rem; align-items:center }
+.save-btn{
+  padding:0.45rem 0.9rem;
+  border-radius:6px;
+  border:1px solid var(--azure);
+  background:var(--azure);
+  color:#001f1f; /* darkish text */
+  cursor:pointer;
+  font-weight:700;
+  transition: background 180ms ease, color 180ms ease, box-shadow 180ms ease;
+}
+.save-btn.in-title{ padding:0.25rem 0.6rem; font-size:0.95rem }
+.save-btn:hover{ background: linear-gradient(180deg, var(--azure), var(--sgbus-green)); color:#001800 }
+.save-btn:focus{ outline:3px solid rgba(0,152,255,0.12); outline-offset:2px }
+
 /* Tabs */
 .settings-tabs{
   display:flex;
@@ -149,6 +187,7 @@ label {
   color:var(--azure);
   cursor:pointer;
   font-weight:600;
+  transition: background 180ms ease, color 180ms ease, box-shadow 180ms ease, border-color 180ms ease;
 }
 .tab-btn:hover{
   background: rgba(0,152,255,0.06); /* subtle blue hover */
@@ -158,9 +197,10 @@ label {
   outline-offset:2px;
 }
 .tab-btn.active{
-  background:var(--sgbus-green);
+  /* Match the save button gradient for active state */
+  background: linear-gradient(180deg, var(--azure), var(--sgbus-green));
   color: #001800; /* dark text on bright green */
-  border-color:var(--sgbus-green);
+  border-color: var(--sgbus-green);
   box-shadow: 0 0 0 3px rgba(82,223,0,0.08) inset;
 }
 
