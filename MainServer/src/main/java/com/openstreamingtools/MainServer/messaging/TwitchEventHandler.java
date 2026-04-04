@@ -1,9 +1,13 @@
 package com.openstreamingtools.MainServer.messaging;
 
+import com.fasterxml.jackson.databind.JsonNode;
 import com.openstreamingtools.MainServer.twitch.TwitchWebSocketClient;
+import com.openstreamingtools.MainServer.twitch.TwitchUtils;
+import com.openstreamingtools.MainServer.utils.Utils;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.messaging.handler.annotation.MessageMapping;
+import org.springframework.messaging.handler.annotation.Payload;
 import org.springframework.stereotype.Controller;
 
 /**
@@ -88,6 +92,33 @@ public class TwitchEventHandler {
         } catch (Exception e) {
             log.error("❌ Error during manual subscription: {}", e.getMessage(), e);
             twitchEventBroadcaster.broadcastError("Failed to subscribe: " + e.getMessage());
+        }
+    }
+
+    /**
+     * Send a message to Twitch chat
+     * Receives message from frontend and routes it to TwitchUtils for sending
+     */
+    @SuppressWarnings("unused")
+    @MessageMapping("/app/twitch/send-message")
+    public void handleSendMessage(@Payload String payload) {
+        try {
+            log.info("💬 Chat message send request received from frontend");
+            JsonNode messageNode = Utils.objectMapper.readTree(payload);
+            String messageText = messageNode.get("message").asText();
+
+            if (messageText == null || messageText.trim().isEmpty()) {
+                log.warn("⚠️ Empty message received, ignoring");
+                return;
+            }
+
+            log.debug("📤 Sending message to Twitch chat: {}", messageText);
+            TwitchUtils.sendToChat(messageText);
+            log.info("✅ Chat message sent successfully");
+
+        } catch (Exception e) {
+            log.error("❌ Error sending chat message: {}", e.getMessage(), e);
+            twitchEventBroadcaster.broadcastError("Failed to send message: " + e.getMessage());
         }
     }
 }

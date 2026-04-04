@@ -2,6 +2,7 @@
 import { Client } from '@stomp/stompjs'
 import { provide, inject } from 'vue'
 import { UnitStore } from '@/stores/UnitStore'
+import { ChatStore } from '@/stores/ChatStore'
 import type { SongData } from '@/types/SongData'
 import type { ChannelVolumeData } from '@/types/ChannelVolumeData'
 import type { Unit } from './types/Unit'
@@ -19,6 +20,7 @@ import type {
 const unitStore = UnitStore()
 const trackStore = TrackStore()
 const settingsStore = SettingsStore()
+const chatStore = ChatStore()
 const axios: Axios = inject('axios') as Axios
 
 const ostClient = new Client({
@@ -109,9 +111,13 @@ function handleChatMessage(message: TwitchChatMessage) {
 
     const messageText = event.message?.text || ''
     const chatterName = event.chatter_user_name || event.chatter_user_login || 'Unknown'
+    const chatterColor = event.chatter_user_color || undefined
 
-    // Log chat activity (could be used for chat display, moderation, etc.)
+    // Log chat activity
     console.debug(`[${chatterName}]: ${messageText}`)
+
+    // Add to ChatStore for dashboard display
+    chatStore.addMessage(chatterName, messageText, chatterColor)
   } catch (error) {
     console.error('Error handling chat message:', error)
   }
