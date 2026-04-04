@@ -3,12 +3,15 @@
 import Navbar from './Navbar.vue'
 import { UnitStore } from '@/stores/UnitStore'
 import { SettingsStore } from '@/stores/SettingsStore'
+import { ChatStore } from '@/stores/ChatStore'
 import TwitchClient from './TwitchClient.vue'
+import TwitchChatDisplay from './TwitchChatDisplay.vue'
 import type { Axios } from 'axios'
 import { inject, onMounted, ref, onBeforeUnmount } from 'vue'
 const unitStore = UnitStore()
 
 const settingsStore = SettingsStore()
+const chatStore = ChatStore()
 const axios: Axios = inject('axios') as Axios
 
 const showCredentialsModal = ref(false)
@@ -120,6 +123,10 @@ onBeforeUnmount(() => {
         <p class="muted">{{ unitStore.currentUnit.longName || 'Unknown' }}</p>
         <p class="muted">Version {{ unitStore.currentUnit.version || 'N/A' }}</p>
       </article>
+
+      <div class="chat-container">
+        <TwitchChatDisplay />
+      </div>
     </section>
 
     <!-- Credentials Modal -->
@@ -216,6 +223,7 @@ onBeforeUnmount(() => {
 .header-actions{ display:flex; gap:0.5rem }
 
 .cards{ display:grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap:1rem }
+.chat-container { grid-column: 1 / -1; width: 100% }
 .card{ background: #000; border: 3px solid var(--azure); padding:1rem; border-radius:8px; box-shadow: 0 2px 8px rgba(0,152,255,0.2) }
 .card h3{ margin:0 0 0.75rem 0; color: var(--sgbus-green); border-bottom: 2px solid var(--azure); padding-bottom:0.5rem }
 
