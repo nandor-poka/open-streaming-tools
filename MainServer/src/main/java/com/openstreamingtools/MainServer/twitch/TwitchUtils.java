@@ -135,47 +135,91 @@ public class TwitchUtils {
     public static String subscribeToTwitch(String sessionId) {
         String response = null;
         if (OSTConfiguration.settings.getTwitchBroadcasterToken() == null){
-            log.debug("Twitch user in settings is empty. Login first.");
-            return "Twitch user in settings is empty. Login first.";
+            log.debug("Twitch broadcaster token is empty. Login first.");
+            return "Twitch broadcaster token is empty. Login first.";
         }
+        if (OSTConfiguration.settings.getTwitchBotToken() == null){
+            log.debug("Twitch bot token is empty. Login first.");
+            return "Twitch bot token is empty. Login first.";
+        }
+
         TwitchSubscriptionTransport transport = new TwitchSubscriptionTransport(sessionId);
-        String tokenString = OSTConfiguration.settings.getTwitchBroadcasterToken().getAccess_token();
-        for(String subType : subscriptions){
-                    TwitchSubscribeMessage subscribeMessage = new TwitchSubscribeMessage();
-                    subscribeMessage.setType(subType);
-                    subscribeMessage.setTransport(transport);
-                    TwitchSubscribtionCondition condition = new TwitchSubscribtionCondition();
-                    switch (subType){
-                        case "channel.chat.message":
-                            condition = new TwitchChatMessageSubscribeCondition(
-                                    OSTConfiguration.settings.getTwitchUser().getId());
-                            break;
-                        case "channel.channel_points_custom_reward_redemption.add":
-                        case "channel.channel_points_automatic_reward_redemption.add":
-                           break;
-                    }
-                    subscribeMessage.setCondition(condition);
+
+        // Subscribe to chat messages for bot's channel
+        if (OSTConfiguration.settings.getBotUser() != null) {
+            log.info("📝 Subscribing to chat messages for bot channel: {}", OSTConfiguration.settings.getBotUser().getLogin());
+            TwitchSubscribeMessage chatSubscribeMessage = new TwitchSubscribeMessage();
+            chatSubscribeMessage.setType("channel.chat.message");
+            chatSubscribeMessage.setTransport(transport);
+            TwitchSubscribtionCondition chatCondition = new TwitchChatMessageSubscribeCondition(
+                OSTConfiguration.settings.getBotUser().getId());
+            chatSubscribeMessage.setCondition(chatCondition);
+
+            String chatToken = OSTConfiguration.settings.getTwitchBotToken().getAccess_token();
+            log.debug("🔑 Using bot token for chat subscription (length: {})", chatToken.length());
             response = Utils.restClient.post()
+                .uri(TWITCH_SUBSCRIBE)
+                .header("Authorization","Bearer " + chatToken)
+                .header("Client-Id", OSTConfiguration.getTWITCH_CLIEND_ID())
+                .contentType(MediaType.APPLICATION_JSON)
+                .body(chatSubscribeMessage)
+                .retrieve()
+                .onStatus(HttpStatusCode::is4xxClientError, (request, resp) -> {
+                    log.error("❌ Failed to subscribe to chat messages: HTTP {} - {}", resp.getStatusCode(), resp.getStatusText());
+                })
+                .body(String.class);
+            log.info("✅ Chat message subscription response: {}", response);
+        } else {
+            log.warn("⚠️ Bot user not configured, skipping chat message subscription");
+        }
+
+        // Subscribe to channel points for broadcaster's channel
+        if (OSTConfiguration.settings.getTwitchUser() != null) {
+            log.info("🎯 Subscribing to channel points for broadcaster channel: {}", OSTConfiguration.settings.getTwitchUser().getLogin());
+
+            String[] channelSubscriptions = {
+                "channel.channel_points_custom_reward_redemption.add",
+                "channel.channel_points_automatic_reward_redemption.add"
+            };
+
+            String broadcasterToken = OSTConfiguration.settings.getTwitchBroadcasterToken().getAccess_token();
+            log.debug("🔑 Using broadcaster token for channel subscriptions (length: {})", broadcasterToken.length());
+
+            for(String subType : channelSubscriptions){
+                TwitchSubscribeMessage subscribeMessage = new TwitchSubscribeMessage();
+                subscribeMessage.setType(subType);
+                subscribeMessage.setTransport(transport);
+                // Channel points subscriptions use broadcaster's channel by default (no condition needed)
+
+                log.debug("📡 Creating subscription for: {}", subType);
+                response = Utils.restClient.post()
                     .uri(TWITCH_SUBSCRIBE)
-                    .header("Authorization","Bearer "
-                            + tokenString)
+                    .header("Authorization","Bearer " + broadcasterToken)
                     .header("Client-Id", OSTConfiguration.getTWITCH_CLIEND_ID())
                     .contentType(MediaType.APPLICATION_JSON)
                     .body(subscribeMessage)
                     .retrieve()
-                    .onStatus(HttpStatusCode::is4xxClientError
-                            , (request, resp) -> {
-                                log.error(resp.getStatusText());
-                            })
+                    .onStatus(HttpStatusCode::is4xxClientError, (request, resp) -> {
+                        log.error("❌ Failed to subscribe to {}: HTTP {} - {}", subType, resp.getStatusCode(), resp.getStatusText());
+                    })
                     .body(String.class);
-            log.debug(subscribeMessage.toString(), response);
+                log.info("✅ {} subscription response: {}", subType, response);
+            }
+        } else {
+            log.warn("⚠️ Broadcaster user not configured, skipping channel subscriptions");
         }
 
         if (tokenValidationTask == null){
             tokenValidationTask = new TokenValidationTask();
             Utils.timer.scheduleAtFixedRate(tokenValidationTask, 0, Utils.HOUR_IN_MILLIS);
         }
-        return "logged in as "+OSTConfiguration.settings.getBotUser().getLogin();
+
+        String botChannel = OSTConfiguration.settings.getBotUser() != null ?
+            OSTConfiguration.settings.getBotUser().getLogin() : "unknown";
+        String broadcasterChannel = OSTConfiguration.settings.getTwitchUser() != null ?
+            OSTConfiguration.settings.getTwitchUser().getLogin() : "unknown";
+
+        return "Subscribed - Chat: " + botChannel + ", Channel Points: " + broadcasterChannel;
     }
 
     public static TwitchUsers getIdforUser(String name) throws JsonProcessingException {
