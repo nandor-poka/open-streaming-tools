@@ -164,8 +164,8 @@ public class TwitchUtils {
                 log.info("📤 CHAT SUBSCRIPTION PAYLOAD - Length: {} bytes", chatPayloadJson.length());
                 log.debug("📄 Chat subscription payload: {}", chatPayloadJson);
                 log.debug("   └─ Type: {}", chatSubscribeMessage.getType());
-                log.debug("   └─ Transport: Session ID {}", transport.getSessionId());
-                log.debug("   └─ Condition: Broadcaster ID {}", chatCondition.getBroadcasterUserId());
+                log.debug("   └─ Transport: Session ID {}", transport.getSession_id());
+                log.debug("   └─ Condition: Broadcaster ID {}", chatCondition.getBroadcaster_user_id());
             } catch (JsonProcessingException e) {
                 log.warn("⚠️ Could not serialize chat subscription payload for logging: {}", e.getMessage());
             }
@@ -210,7 +210,7 @@ public class TwitchUtils {
                     log.info("📤 {} SUBSCRIPTION PAYLOAD - Length: {} bytes", subType.toUpperCase(), channelPayloadJson.length());
                     log.debug("📄 {} subscription payload: {}", subType, channelPayloadJson);
                     log.debug("   └─ Type: {}", subscribeMessage.getType());
-                    log.debug("   └─ Transport: Session ID {}", transport.getSessionId());
+                    log.debug("   └─ Transport: Session ID {}", transport.getSession_id());
                     log.debug("   └─ Condition: None (broadcaster channel default)");
                 } catch (JsonProcessingException e) {
                     log.warn("⚠️ Could not serialize {} subscription payload for logging: {}", subType, e.getMessage());
@@ -280,8 +280,8 @@ public class TwitchUtils {
             String chatMessageJson = Utils.objectMapper.writeValueAsString(chatMessage);
             log.info("💬 CHAT MESSAGE PAYLOAD - Length: {} bytes", chatMessageJson.length());
             log.debug("📄 Chat message payload: {}", chatMessageJson);
-            log.debug("   └─ Broadcaster ID: {}", chatMessage.getBroadcasterId());
-            log.debug("   └─ Sender ID: {}", chatMessage.getSenderId());
+            log.debug("   └─ Broadcaster ID: {}", chatMessage.getBroadcaster_id());
+            log.debug("   └─ Sender ID: {}", chatMessage.getSender_id());
             log.debug("   └─ Message: {}", chatMessage.getMessage());
         } catch (JsonProcessingException e) {
             log.warn("⚠️ Could not serialize chat message payload for logging: {}", e.getMessage());
