@@ -53,6 +53,12 @@ public class TwitchUtils {
                 break;
         }
 
+        // Log detailed request information
+        log.info("🔗 POST {} - Getting auth token for {}", TWITCH_API_GET_TOKEN_URL, userType);
+        log.debug("📋 Request params: client_id={}, grant_type=authorization_code, redirect_uri={}",
+                 OSTConfiguration.getTWITCH_CLIEND_ID(),
+                 userType == TwitchUserType.BOT ? "http://localhost:8080/api/twitchBot" : "http://localhost:8080/api/twitchBroadcaster");
+
         OauthToken response = Utils.restClient.post()
                 .uri(TWITCH_API_GET_TOKEN_URL)
                 .contentType(MediaType.APPLICATION_FORM_URLENCODED)
@@ -61,9 +67,15 @@ public class TwitchUtils {
                 .retrieve()
                 .onStatus(HttpStatusCode::is4xxClientError
                         , (request, resp) -> {
-                            log.error(resp.toString());
+                            log.error("❌ POST {} failed: HTTP {} - {}", TWITCH_API_GET_TOKEN_URL, resp.getStatusCode(), resp.getStatusText());
                         })
                 .body(OauthToken.class);
+
+        log.info("✅ POST {} successful - Auth token retrieved for {}", TWITCH_API_GET_TOKEN_URL, userType);
+        log.debug("📄 Response: access_token length={}, token_type={}, expires_in={}",
+                 response.getAccess_token() != null ? response.getAccess_token().length() : 0,
+                 response.getToken_type(),
+                 response.getExpires_in());
         log.debug(response.toString());
         switch (userType){
             case BOT:
@@ -84,6 +96,12 @@ public class TwitchUtils {
             params.add("refresh_token", URLEncoder.encode(OSTConfiguration.settings.getTwitchBroadcasterToken().getRefresh_token(), StandardCharsets.UTF_8));
             params.add("redirect_uri", "http://localhost:8080/");
             OauthToken response = null;
+
+            // Log detailed request information
+            log.info("🔄 POST {} - Refreshing auth token", TWITCH_API_GET_TOKEN_URL);
+            log.debug("📋 Refresh request params: client_id={}, grant_type=refresh_token, redirect_uri=http://localhost:8080/",
+                     OSTConfiguration.getTWITCH_CLIEND_ID());
+
             try{
                 response = Utils.restClient.post()
                         .uri(TWITCH_API_GET_TOKEN_URL)
@@ -93,11 +111,17 @@ public class TwitchUtils {
                         .retrieve()
                         .onStatus(HttpStatusCode::is4xxClientError
                                 , (request, resp) -> {
-                                    log.error(resp.getStatusText());
+                                    log.error("❌ POST {} refresh failed: HTTP {} - {}", TWITCH_API_GET_TOKEN_URL, resp.getStatusCode(), resp.getStatusText());
                                 })
                         .body(OauthToken.class);
+
+                log.info("✅ POST {} refresh successful - Token refreshed", TWITCH_API_GET_TOKEN_URL);
+                log.debug("📄 Refresh response: access_token length={}, token_type={}, expires_in={}",
+                         response.getAccess_token() != null ? response.getAccess_token().length() : 0,
+                         response.getToken_type(),
+                         response.getExpires_in());
             } catch (Exception e) {
-                log.error(e.getMessage());
+                log.error("❌ POST {} refresh exception: {}", TWITCH_API_GET_TOKEN_URL, e.getMessage());
             }
             if (response != null){
                 log.debug(response.toString());
@@ -303,6 +327,10 @@ public class TwitchUtils {
                                 log.error(resp.getStatusText());
                             })
                     .body(String.class);
+
+            // Log detailed response information
+            log.info("✅ Message sent to chat - Response: {}", respoonse);
+            log.debug("📄 Response details: {}", respoonse);
         } catch (JsonProcessingException e) {
             throw new RuntimeException(e);
         }
