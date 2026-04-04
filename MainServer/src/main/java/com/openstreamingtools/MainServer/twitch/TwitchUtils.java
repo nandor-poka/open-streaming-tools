@@ -157,6 +157,19 @@ public class TwitchUtils {
 
             String chatToken = OSTConfiguration.settings.getTwitchBotToken().getAccess_token();
             log.debug("🔑 Using bot token for chat subscription (length: {})", chatToken.length());
+
+            // Log detailed payload for chat subscription
+            try {
+                String chatPayloadJson = Utils.objectMapper.writeValueAsString(chatSubscribeMessage);
+                log.info("📤 CHAT SUBSCRIPTION PAYLOAD - Length: {} bytes", chatPayloadJson.length());
+                log.debug("📄 Chat subscription payload: {}", chatPayloadJson);
+                log.debug("   └─ Type: {}", chatSubscribeMessage.getType());
+                log.debug("   └─ Transport: Session ID {}", transport.getSessionId());
+                log.debug("   └─ Condition: Broadcaster ID {}", chatCondition.getBroadcasterUserId());
+            } catch (JsonProcessingException e) {
+                log.warn("⚠️ Could not serialize chat subscription payload for logging: {}", e.getMessage());
+            }
+
             response = Utils.restClient.post()
                 .uri(TWITCH_SUBSCRIBE)
                 .header("Authorization","Bearer " + chatToken)
@@ -190,6 +203,18 @@ public class TwitchUtils {
                 subscribeMessage.setType(subType);
                 subscribeMessage.setTransport(transport);
                 // Channel points subscriptions use broadcaster's channel by default (no condition needed)
+
+                // Log detailed payload for channel points subscription
+                try {
+                    String channelPayloadJson = Utils.objectMapper.writeValueAsString(subscribeMessage);
+                    log.info("📤 {} SUBSCRIPTION PAYLOAD - Length: {} bytes", subType.toUpperCase(), channelPayloadJson.length());
+                    log.debug("📄 {} subscription payload: {}", subType, channelPayloadJson);
+                    log.debug("   └─ Type: {}", subscribeMessage.getType());
+                    log.debug("   └─ Transport: Session ID {}", transport.getSessionId());
+                    log.debug("   └─ Condition: None (broadcaster channel default)");
+                } catch (JsonProcessingException e) {
+                    log.warn("⚠️ Could not serialize {} subscription payload for logging: {}", subType, e.getMessage());
+                }
 
                 log.debug("📡 Creating subscription for: {}", subType);
                 response = Utils.restClient.post()
@@ -249,6 +274,19 @@ public class TwitchUtils {
         
         ChatMessage chatMessage = new ChatMessage(OSTConfiguration.settings.getTwitchUser().getId()
                 ,OSTConfiguration.settings.getBotUser().getId(),message);
+
+        // Log detailed payload for chat message
+        try {
+            String chatMessageJson = Utils.objectMapper.writeValueAsString(chatMessage);
+            log.info("💬 CHAT MESSAGE PAYLOAD - Length: {} bytes", chatMessageJson.length());
+            log.debug("📄 Chat message payload: {}", chatMessageJson);
+            log.debug("   └─ Broadcaster ID: {}", chatMessage.getBroadcasterId());
+            log.debug("   └─ Sender ID: {}", chatMessage.getSenderId());
+            log.debug("   └─ Message: {}", chatMessage.getMessage());
+        } catch (JsonProcessingException e) {
+            log.warn("⚠️ Could not serialize chat message payload for logging: {}", e.getMessage());
+        }
+
         log.debug("Sending to Twitch chat: "+message);
         String respoonse = null;
         try {
