@@ -17,16 +17,26 @@ const axios: Axios = inject('axios') as Axios
 const showCredentialsModal = ref(false)
 const showConnectionModal = ref(false)
 
-const oauthBotUrl = 'https://id.twitch.tv/oauth2/authorize?client_id=n6breeyo2zy1nzlpfx43x91lgaobgo&force_verify=true&response_type=code&redirect_uri=http://localhost:8080/api/twitchBot&scope=user%3Abot%20user%3Awrite%3Achat'
-const oauthBroadcasterUrl = 'https://id.twitch.tv/oauth2/authorize?client_id=n6breeyo2zy1nzlpfx43x91lgaobgo&force_verify=true&response_type=code&redirect_uri=http://localhost:8080/api/twitchBroadcaster&scope=user%3Abot%20user%3Aread%3Achat%20channel%3Amanage%3Aredemptions%20channel%3Aread%3Aredemptions'
-
-function connectBot(){
-  const win = window.open(oauthBotUrl, '_blank', 'noopener,noreferrer')
-  if (win) { try { win.opener = null } catch (e) { /* ignore */ } }
+async function connectBot(){
+  try {
+    const response = await axios.get('/api/twitchBotOAuthUrl')
+    const oauthUrl = response.data
+    const win = window.open(oauthUrl, '_blank', 'noopener,noreferrer')
+    if (win) { try { win.opener = null } catch (e) { /* ignore */ } }
+  } catch (error) {
+    console.error('Failed to get bot OAuth URL:', error)
+  }
 }
-function connectBroadcaster(){
-  const win = window.open(oauthBroadcasterUrl, '_blank', 'noopener,noreferrer')
-  if (win) { try { win.opener = null } catch (e) { /* ignore */ } }
+
+async function connectBroadcaster(){
+  try {
+    const response = await axios.get('/api/twitchBroadcasterOAuthUrl')
+    const oauthUrl = response.data
+    const win = window.open(oauthUrl, '_blank', 'noopener,noreferrer')
+    if (win) { try { win.opener = null } catch (e) { /* ignore */ } }
+  } catch (error) {
+    console.error('Failed to get broadcaster OAuth URL:', error)
+  }
 }
 
 function closeModals(){

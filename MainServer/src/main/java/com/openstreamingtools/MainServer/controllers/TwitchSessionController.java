@@ -26,16 +26,6 @@ public class TwitchSessionController {
         log.debug(code);
         log.debug(scope);
         TwitchUtils.getAuthTokenFromTwitch(code, TwitchUtils.TwitchUserType.BOT);
-        if(OSTConfiguration.settings.getTwitchUser() == null){
-            try {
-                OSTConfiguration.settings.setTwitchUser(
-                        TwitchUtils.getIdforUser(OSTConfiguration.settings.getChannelUserName())
-                                .getData()[0]);
-                OSTConfiguration.saveSettings();
-            } catch (JsonProcessingException e) {
-                throw new RuntimeException(e);
-            }
-        }
         if(OSTConfiguration.settings.getBotUser() == null){
             try {
                 OSTConfiguration.settings.setBotUser(
@@ -72,25 +62,6 @@ public class TwitchSessionController {
                 throw new RuntimeException(e);
             }
         }
-
-        if(OSTConfiguration.settings.getBotUser() == null){
-            try {
-                log.info("Setting up bot user information");
-                OSTConfiguration.settings.setBotUser(
-                        TwitchUtils.getIdforUser(OSTConfiguration.settings.getBotUserName())
-                                .getData()[0]);
-                OSTConfiguration.saveSettings();
-                log.info("✅ Bot user configured: {}", OSTConfiguration.settings.getBotUser().getLogin());
-            } catch (JsonProcessingException e) {
-                log.error("❌ Failed to configure bot user", e);
-                throw new RuntimeException(e);
-            }
-        }
-
-        // Note: WebSocket connection now starts automatically on server startup
-        // No need to manually trigger connection here
-        log.info("🔄 Twitch WebSocket will connect automatically on next server startup or reconnection");
-
         return "redirect:localhost:8080/";
     }
 
@@ -106,5 +77,29 @@ public class TwitchSessionController {
     @GetMapping(value= "/api/getSubscriptions")
     public String getSubscriptions(){
         return TwitchUtils.getSubscriptions();
+    }
+
+    @GetMapping(value= "/api/twitchBotOAuthUrl")
+    public String getTwitchBotOAuthUrl(){
+        log.info("📋 Generating Twitch Bot OAuth URL");
+        String oauthUrl = "https://id.twitch.tv/oauth2/authorize?" +
+                "client_id=" + OSTConfiguration.getTWITCH_CLIEND_ID() +
+                "&force_verify=true&response_type=code" +
+                "&redirect_uri=http://localhost:8080/api/twitchBot" +
+                "&scope=user%3Aread%3Achat%20user%3Abot%20user%3Awrite%3Achat";
+        log.debug("✅ Bot OAuth URL generated");
+        return oauthUrl;
+    }
+
+    @GetMapping(value= "/api/twitchBroadcasterOAuthUrl")
+    public String getTwitchBroadcasterOAuthUrl(){
+        log.info("📋 Generating Twitch Broadcaster OAuth URL");
+        String oauthUrl = "https://id.twitch.tv/oauth2/authorize?" +
+                "client_id=" + OSTConfiguration.getTWITCH_CLIEND_ID() +
+                "&force_verify=true&response_type=code" +
+                "&redirect_uri=http://localhost:8080/api/twitchBroadcaster" +
+                "&scope=channel%3Amanage%3Aredemptions%20channel%3Aread%3Aredemptions";
+        log.debug("✅ Broadcaster OAuth URL generated");
+        return oauthUrl;
     }
 }
