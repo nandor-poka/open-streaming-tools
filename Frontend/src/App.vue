@@ -89,6 +89,10 @@ const ostClient = new Client({
       handleError(JSON.parse(message.body))
     })
 
+    ostClient.subscribe('/api/websocketData/twitch/subscription', (message: any) => {
+      handleSubscriptionStatus(JSON.parse(message.body))
+    })
+
     ostClient.publish({ destination: '/app/startup', body: 'Frontend running.' })
   },
 })
@@ -185,6 +189,36 @@ function handleStatusUpdate(message: TwitchConnectionStatus) {
 function handleError(message: TwitchError) {
   console.error('Twitch error:', message.error)
   settingsStore.twitchResponse = 'Error: ' + message.error
+}
+
+function handleSubscriptionStatus(message: any) {
+  try {
+    console.log('Subscription status update:', message)
+    const subscriptionType = message.subscriptionType
+    const status = message.status
+
+    switch (subscriptionType) {
+      case 'BOT_chat':
+        settingsStore.botChatSubscriptionStatus = status
+        break
+      case 'BROADCASTER_custom_rewards':
+        settingsStore.broadcasterCustomRewardsSubscriptionStatus = status
+        break
+      case 'BROADCASTER_automatic_rewards':
+        settingsStore.broadcasterAutomaticRewardsSubscriptionStatus = status
+        break
+      case 'BROADCASTER_stream_online':
+        settingsStore.broadcasterStreamOnlineSubscriptionStatus = status
+        break
+      case 'BROADCASTER_stream_offline':
+        settingsStore.broadcasterStreamOfflineSubscriptionStatus = status
+        break
+      default:
+        console.warn('Unknown subscription type:', subscriptionType)
+    }
+  } catch (error) {
+    console.error('Error handling subscription status:', error)
+  }
 }
 </script>
 

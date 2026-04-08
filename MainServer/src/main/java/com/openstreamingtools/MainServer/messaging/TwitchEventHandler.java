@@ -1,7 +1,6 @@
 package com.openstreamingtools.MainServer.messaging;
 
 import com.fasterxml.jackson.databind.JsonNode;
-import com.openstreamingtools.MainServer.twitch.TwitchWebSocketClient;
 import com.openstreamingtools.MainServer.twitch.TwitchUtils;
 import com.openstreamingtools.MainServer.utils.Utils;
 import lombok.extern.slf4j.Slf4j;
@@ -17,6 +16,7 @@ import org.springframework.stereotype.Controller;
 @Controller
 @Slf4j
 public class TwitchEventHandler {
+/*
 
     private final TwitchWebSocketClient twitchWebSocketClient;
     private final TwitchEventBroadcaster twitchEventBroadcaster;
@@ -34,10 +34,12 @@ public class TwitchEventHandler {
         this.twitchWebSocketClient.setChatMessageHandler(chatMessageHandler);
     }
 
-    /**
+    */
+/**
      * Manually trigger Twitch WebSocket connection (for debugging/testing)
      * Note: Connection normally starts automatically on server startup
-     */
+     *//*
+
     @SuppressWarnings("unused")
     @MessageMapping("/app/twitch/connect")
     public void handleTwitchConnect() {
@@ -51,9 +53,11 @@ public class TwitchEventHandler {
         }
     }
 
-    /**
+    */
+/**
      * Manually disconnect Twitch WebSocket (for debugging/testing)
-     */
+     *//*
+
     @SuppressWarnings("unused")
     @MessageMapping("/app/twitch/disconnect")
     public void handleTwitchDisconnect() {
@@ -66,9 +70,11 @@ public class TwitchEventHandler {
         }
     }
 
-    /**
+    */
+/**
      * Get current Twitch connection status
-     */
+     *//*
+
     @SuppressWarnings("unused")
     @MessageMapping("/app/twitch/status")
     public void handleStatusRequest() {
@@ -79,15 +85,17 @@ public class TwitchEventHandler {
         twitchEventBroadcaster.broadcastConnectionStatus(status);
     }
 
-    /**
+    */
+/**
      * Manually trigger event subscription (for debugging/testing)
-     */
+     *//*
+
     @SuppressWarnings("unused")
     @MessageMapping("/app/twitch/subscribe")
     public void handleSubscribeRequest() {
         log.info("🔄 Manual subscription request received");
         try {
-            twitchWebSocketClient.subscribeToEvents();
+          //  twitchWebSocketClient.subscribeToEvents();
             log.info("✅ Manual subscription request processed");
         } catch (Exception e) {
             log.error("❌ Error during manual subscription: {}", e.getMessage(), e);
@@ -95,10 +103,12 @@ public class TwitchEventHandler {
         }
     }
 
-    /**
+    */
+/**
      * Send a message to Twitch chat
      * Receives message from frontend and routes it to TwitchUtils for sending
-     */
+     *//*
+
     @SuppressWarnings("unused")
     @MessageMapping("/app/twitch/send-message")
     public void handleSendMessage(@Payload String payload) {
@@ -121,4 +131,6 @@ public class TwitchEventHandler {
             twitchEventBroadcaster.broadcastError("Failed to send message: " + e.getMessage());
         }
     }
+*/
+
 }

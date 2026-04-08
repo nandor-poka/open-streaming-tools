@@ -4,7 +4,8 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.openstreamingtools.MainServer.api.WebsocketSessionId;
 import com.openstreamingtools.MainServer.config.OSTConfiguration;
 import com.openstreamingtools.MainServer.twitch.TwitchUtils;
-import com.openstreamingtools.MainServer.twitch.TwitchWebSocketClient;
+import com.openstreamingtools.MainServer.twitch.BotTwitchWebSocketClient;
+import com.openstreamingtools.MainServer.twitch.BroadcasterTwitchWebSocketClient;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -14,11 +15,14 @@ import org.springframework.web.bind.annotation.*;
 @RestController
 public class TwitchSessionController {
 
-    private final TwitchWebSocketClient twitchWebSocketClient;
+    private final BotTwitchWebSocketClient botTwitchWebSocketClient;
+    private final BroadcasterTwitchWebSocketClient broadcasterTwitchWebSocketClient;
 
     @Autowired
-    public TwitchSessionController(TwitchWebSocketClient twitchWebSocketClient) {
-        this.twitchWebSocketClient = twitchWebSocketClient;
+    public TwitchSessionController(BotTwitchWebSocketClient botTwitchWebSocketClient,
+                                  BroadcasterTwitchWebSocketClient broadcasterTwitchWebSocketClient) {
+        this.botTwitchWebSocketClient = botTwitchWebSocketClient;
+        this.broadcasterTwitchWebSocketClient = broadcasterTwitchWebSocketClient;
     }
 
     @GetMapping (value= "/api/twitchBot")
@@ -36,7 +40,12 @@ public class TwitchSessionController {
                 throw new RuntimeException(e);
             }
         }
-        return "redirect:localhost:8080/";
+
+        // Connect bot WebSocket client after successful authentication
+        log.info("🔌 Connecting bot WebSocket client after authentication");
+        botTwitchWebSocketClient.connect();
+
+        return "redirect:/";
     }
 
     @GetMapping (value= "/api/twitchBroadcaster")
@@ -62,15 +71,20 @@ public class TwitchSessionController {
                 throw new RuntimeException(e);
             }
         }
-        return "redirect:localhost:8080/";
+
+        // Connect broadcaster WebSocket client after successful authentication
+        log.info("🔌 Connecting broadcaster WebSocket client after authentication");
+        broadcasterTwitchWebSocketClient.connect();
+
+        return "redirect:/";
     }
 
     @PostMapping(value= "/api/subscribeToTwtitch", consumes = "application/json")
     @Deprecated(since = "0.0.3", forRemoval = true)
     public String subscribeToEventSub(@RequestBody WebsocketSessionId websocketSessionId)  {
-        log.warn("subscribeToEventSub called - this endpoint is deprecated. Subscriptions are now handled by backend WebSocket client");
+        log.warn("subscribeToEventSub called - this endpoint is deprecated. Subscriptions are now handled by backend WebSocket clients");
         // This endpoint is kept for backward compatibility but is no longer needed
-        // Subscriptions are now automatically handled by TwitchWebSocketClient when session_welcome is received
+        // Subscriptions are now automatically handled by WebSocket clients when session_welcome is received
         return TwitchUtils.subscribeToTwitch(websocketSessionId.getSessionId());
     }
 
