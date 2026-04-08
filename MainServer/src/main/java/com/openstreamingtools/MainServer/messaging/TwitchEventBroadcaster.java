@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Bean;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Component;
 
@@ -161,6 +162,24 @@ public class TwitchEventBroadcaster {
             log.info("⚡ BROADCAST CHAT COMMAND - Topic: {}, Payload: {}", TWITCH_CHAT_COMMAND_TOPIC, messageJson);
         } catch (Exception e) {
             log.error("❌ ERROR broadcasting chat command: {}", e.getMessage(), e);
+        }
+    }
+
+    /**
+     * Broadcast subscription status to frontend
+     */
+    public void broadcastSubscriptionStatus(String subscriptionType, String status) {
+        try {
+            Map<String, Object> message = new HashMap<>();
+            message.put("subscriptionType", subscriptionType);
+            message.put("status", status);
+            message.put("timestamp", System.currentTimeMillis());
+
+            String messageJson = objectMapper.writeValueAsString(message);
+            template.convertAndSend("/api/websocketData/twitch/subscription", messageJson);
+            log.info("📋 BROADCAST SUBSCRIPTION STATUS - Type: {}, Status: {}, Topic: /api/websocketData/twitch/subscription", subscriptionType, status);
+        } catch (Exception e) {
+            log.error("❌ ERROR broadcasting subscription status: {}", e.getMessage(), e);
         }
     }
 }

@@ -117,7 +117,7 @@ onBeforeUnmount(()=>{ if(onKeyDown) window.removeEventListener('keydown', onKeyD
       @click="selectTab(tab.id)"
       role="tab"
       :aria-selected="activeTab === tab.id"
-      :ref="el => tabRefs[index] = el"
+      :ref="el => tabRefs[index] = el as HTMLButtonElement"
     >
       {{ tab.label }}
     </button>

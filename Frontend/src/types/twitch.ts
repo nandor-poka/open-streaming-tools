@@ -16,6 +16,7 @@ export interface TwitchChatMessage {
     }
     chatter_user_login?: string
     chatter_user_name?: string
+    chatter_user_color?: string
   }
   timestamp: number
 }

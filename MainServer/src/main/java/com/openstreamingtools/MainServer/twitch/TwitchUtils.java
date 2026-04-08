@@ -87,51 +87,88 @@ public class TwitchUtils {
         OSTConfiguration.saveSettings();
     }
 
-    public static void refreshAuthTokenFromTwitch() throws UnsupportedEncodingException {
-        if (!validateToken()){
+    public static boolean refreshBotToken() {
+        if (OSTConfiguration.settings.getTwitchBotToken() == null ||
+            OSTConfiguration.settings.getTwitchBotToken().getRefresh_token() == null) {
+            log.warn("⚠️ Bot token or refresh token is null, cannot refresh");
+            OSTConfiguration.settings.setBotTokenRefreshSuccess(false);
+            return false;
+        }
+
+        try {
             MultiValueMap<String, String> params = new LinkedMultiValueMap<>();
-            params.add("client_id",OSTConfiguration.getTWITCH_CLIEND_ID());
+            params.add("client_id", OSTConfiguration.getTWITCH_CLIEND_ID());
+            params.add("client_secret", OSTConfiguration.getTWITCH_CLIENT_SECRET());
+            params.add("grant_type", "refresh_token");
+            params.add("refresh_token", URLEncoder.encode(OSTConfiguration.settings.getTwitchBotToken().getRefresh_token(), StandardCharsets.UTF_8));
+            params.add("redirect_uri", "http://localhost:8080/api/twitchBot");
+
+            log.info("🔄 POST {} - Refreshing bot auth token", TWITCH_API_GET_TOKEN_URL);
+
+            OauthToken response = Utils.restClient.post()
+                    .uri(TWITCH_API_GET_TOKEN_URL)
+                    .contentType(MediaType.APPLICATION_FORM_URLENCODED)
+                    .accept(MediaType.APPLICATION_JSON)
+                    .body(params)
+                    .retrieve()
+                    .onStatus(HttpStatusCode::is4xxClientError, (request, resp) -> {
+                        log.error("❌ POST {} bot refresh failed: HTTP {} - {}", TWITCH_API_GET_TOKEN_URL, resp.getStatusCode(), resp.getStatusText());
+                    })
+                    .body(OauthToken.class);
+
+            log.info("✅ POST {} bot refresh successful - Token refreshed", TWITCH_API_GET_TOKEN_URL);
+            OSTConfiguration.settings.setTwitchBotToken(response);
+            OSTConfiguration.settings.setBotTokenRefreshSuccess(true);
+            OSTConfiguration.saveSettings();
+            return true;
+
+        } catch (Exception e) {
+            log.error("❌ POST {} bot refresh exception: {}", TWITCH_API_GET_TOKEN_URL, e.getMessage());
+            OSTConfiguration.settings.setBotTokenRefreshSuccess(false);
+            return false;
+        }
+    }
+
+    public static boolean refreshBroadcasterToken() {
+        if (OSTConfiguration.settings.getTwitchBroadcasterToken() == null ||
+            OSTConfiguration.settings.getTwitchBroadcasterToken().getRefresh_token() == null) {
+            log.warn("⚠️ Broadcaster token or refresh token is null, cannot refresh");
+            OSTConfiguration.settings.setBroadcasterTokenRefreshSuccess(false);
+            return false;
+        }
+
+        try {
+            MultiValueMap<String, String> params = new LinkedMultiValueMap<>();
+            params.add("client_id", OSTConfiguration.getTWITCH_CLIEND_ID());
             params.add("client_secret", OSTConfiguration.getTWITCH_CLIENT_SECRET());
             params.add("grant_type", "refresh_token");
             params.add("refresh_token", URLEncoder.encode(OSTConfiguration.settings.getTwitchBroadcasterToken().getRefresh_token(), StandardCharsets.UTF_8));
-            params.add("redirect_uri", "http://localhost:8080/");
-            OauthToken response = null;
+            params.add("redirect_uri", "http://localhost:8080/api/twitchBroadcaster");
 
-            // Log detailed request information
-            log.info("🔄 POST {} - Refreshing auth token", TWITCH_API_GET_TOKEN_URL);
-            log.debug("📋 Refresh request params: client_id={}, grant_type=refresh_token, redirect_uri=http://localhost:8080/",
-                     OSTConfiguration.getTWITCH_CLIEND_ID());
+            log.info("🔄 POST {} - Refreshing broadcaster auth token", TWITCH_API_GET_TOKEN_URL);
 
-            try{
-                response = Utils.restClient.post()
-                        .uri(TWITCH_API_GET_TOKEN_URL)
-                        .contentType(MediaType.APPLICATION_FORM_URLENCODED)
-                        .accept(MediaType.APPLICATION_JSON)
-                        .body(params)
-                        .retrieve()
-                        .onStatus(HttpStatusCode::is4xxClientError
-                                , (request, resp) -> {
-                                    log.error("❌ POST {} refresh failed: HTTP {} - {}", TWITCH_API_GET_TOKEN_URL, resp.getStatusCode(), resp.getStatusText());
-                                })
-                        .body(OauthToken.class);
+            OauthToken response = Utils.restClient.post()
+                    .uri(TWITCH_API_GET_TOKEN_URL)
+                    .contentType(MediaType.APPLICATION_FORM_URLENCODED)
+                    .accept(MediaType.APPLICATION_JSON)
+                    .body(params)
+                    .retrieve()
+                    .onStatus(HttpStatusCode::is4xxClientError, (request, resp) -> {
+                        log.error("❌ POST {} broadcaster refresh failed: HTTP {} - {}", TWITCH_API_GET_TOKEN_URL, resp.getStatusCode(), resp.getStatusText());
+                    })
+                    .body(OauthToken.class);
 
-                log.info("✅ POST {} refresh successful - Token refreshed", TWITCH_API_GET_TOKEN_URL);
-                log.debug("📄 Refresh response: access_token length={}, token_type={}, expires_in={}",
-                         response.getAccess_token() != null ? response.getAccess_token().length() : 0,
-                         response.getToken_type(),
-                         response.getExpires_in());
-            } catch (Exception e) {
-                log.error("❌ POST {} refresh exception: {}", TWITCH_API_GET_TOKEN_URL, e.getMessage());
-            }
-            if (response != null){
-                log.debug(response.toString());
-                OSTConfiguration.settings.setTwitchBotToken(response);
-                OSTConfiguration.settings.setTwitchStatus(true);
-                OSTConfiguration.saveSettings();
-            }
+            log.info("✅ POST {} broadcaster refresh successful - Token refreshed", TWITCH_API_GET_TOKEN_URL);
+            OSTConfiguration.settings.setTwitchBroadcasterToken(response);
+            OSTConfiguration.settings.setBroadcasterTokenRefreshSuccess(true);
+            OSTConfiguration.saveSettings();
+            return true;
+
+        } catch (Exception e) {
+            log.error("❌ POST {} broadcaster refresh exception: {}", TWITCH_API_GET_TOKEN_URL, e.getMessage());
+            OSTConfiguration.settings.setBroadcasterTokenRefreshSuccess(false);
+            return false;
         }
-
-
     }
 
     public static boolean validateToken(){
@@ -221,11 +258,14 @@ public class TwitchUtils {
 
             String broadcasterToken = OSTConfiguration.settings.getTwitchBroadcasterToken().getAccess_token();
             log.debug("🔑 Using broadcaster token for channel subscriptions (length: {})", broadcasterToken.length());
-
+            TwitchSubscribtionCondition channelCondition = new TwitchChatMessageSubscribeCondition(
+                    OSTConfiguration.settings.getBotUser().getId());
             for(String subType : channelSubscriptions){
                 TwitchSubscribeMessage subscribeMessage = new TwitchSubscribeMessage();
                 subscribeMessage.setType(subType);
                 subscribeMessage.setTransport(transport);
+                subscribeMessage.setCondition(channelCondition);
+
                 // Channel points subscriptions use broadcaster's channel by default (no condition needed)
 
                 // Log detailed payload for channel points subscription

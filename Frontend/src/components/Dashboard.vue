@@ -8,11 +8,13 @@ import TwitchClient from './TwitchClient.vue'
 import TwitchChatDisplay from './TwitchChatDisplay.vue'
 import type { Axios } from 'axios'
 import { inject, onMounted, ref, onBeforeUnmount } from 'vue'
+import { useRouter } from 'vue-router'
 const unitStore = UnitStore()
 
 const settingsStore = SettingsStore()
 const chatStore = ChatStore()
 const axios: Axios = inject('axios') as Axios
+const router = useRouter()
 
 const showCredentialsModal = ref(false)
 const showConnectionModal = ref(false)
@@ -22,7 +24,10 @@ async function connectBot(){
     const response = await axios.get('/api/twitchBotOAuthUrl')
     const oauthUrl = response.data
     const win = window.open(oauthUrl, '_blank', 'noopener,noreferrer')
-    if (win) { try { win.opener = null } catch (e) { /* ignore */ } }
+    if (win) { try {
+     win.opener = null
+     router.push('/')
+     } catch (e) { /* ignore */ } }
   } catch (error) {
     console.error('Failed to get bot OAuth URL:', error)
   }
@@ -75,6 +80,8 @@ onMounted(() => {
       settingsStore.clientSecretFilePath = settings.clientSecretFilePath
       settingsStore.twitchStatus = settings.twitchStatus
       settingsStore.versionString = settings.versionString
+      settingsStore.botTokenRefreshSuccess = settings.botTokenRefreshSuccess !== undefined ? settings.botTokenRefreshSuccess : true
+      settingsStore.broadcasterTokenRefreshSuccess = settings.broadcasterTokenRefreshSuccess !== undefined ? settings.broadcasterTokenRefreshSuccess : true
     })
     .catch(function (error) {
       // handle error
@@ -117,6 +124,8 @@ onBeforeUnmount(() => {
           <li :class="{ missing: !settingsStore.botUserName }"><span class="label">Bot:</span> <strong>{{ settingsStore.botUserName || 'Not configured' }}</strong></li>
           <li :class="{ missing: !settingsStore.clientIdFilePath }"><span class="label">Client ID:</span> <strong>{{ settingsStore.clientIdFilePath || 'Not configured' }}</strong></li>
           <li :class="{ missing: !settingsStore.clientSecretFilePath }"><span class="label">Secret:</span> <strong>{{ settingsStore.clientSecretFilePath || 'Not configured' }}</strong></li>
+          <li v-if="!settingsStore.botTokenRefreshSuccess" class="error"><span class="label">Bot Token:</span> <strong>Refresh failed on startup</strong></li>
+          <li v-if="!settingsStore.broadcasterTokenRefreshSuccess" class="error"><span class="label">Broadcaster Token:</span> <strong>Refresh failed on startup</strong></li>
         </ul>
         <button class="card-link" @click="showCredentialsModal = true">View Details →</button>
       </article>
@@ -126,6 +135,42 @@ onBeforeUnmount(() => {
         <p><span class="label">Status:</span> <span :class="{'ok': settingsStore.twitchStatus, 'warn': !settingsStore.twitchStatus}">{{ settingsStore.twitchStatus ? 'Connected' : 'Disconnected' }}</span></p>
         <p><span class="label">Response:</span> <em>{{ settingsStore.twitchResponse }}</em></p>
         <button class="card-link" @click="showConnectionModal = true">View Details →</button>
+      </article>
+
+      <article class="card subscriptions-card">
+        <h3>Active Subscriptions</h3>
+        <div class="subscription-list">
+          <div class="subscription-item">
+            <span class="subscription-label">Bot Chat:</span>
+            <span :class="{'active': settingsStore.botChatSubscriptionStatus === 'active', 'inactive': settingsStore.botChatSubscriptionStatus === 'inactive'}">
+              {{ settingsStore.botChatSubscriptionStatus === 'active' ? 'Active' : 'Inactive' }}
+            </span>
+          </div>
+          <div class="subscription-item">
+            <span class="subscription-label">Broadcaster Custom Rewards:</span>
+            <span :class="{'active': settingsStore.broadcasterCustomRewardsSubscriptionStatus === 'active', 'inactive': settingsStore.broadcasterCustomRewardsSubscriptionStatus === 'inactive'}">
+              {{ settingsStore.broadcasterCustomRewardsSubscriptionStatus === 'active' ? 'Active' : 'Inactive' }}
+            </span>
+          </div>
+          <div class="subscription-item">
+            <span class="subscription-label">Broadcaster Auto Rewards:</span>
+            <span :class="{'active': settingsStore.broadcasterAutomaticRewardsSubscriptionStatus === 'active', 'inactive': settingsStore.broadcasterAutomaticRewardsSubscriptionStatus === 'inactive'}">
+              {{ settingsStore.broadcasterAutomaticRewardsSubscriptionStatus === 'active' ? 'Active' : 'Inactive' }}
+            </span>
+          </div>
+          <div class="subscription-item">
+            <span class="subscription-label">Broadcaster Stream Online:</span>
+            <span :class="{'active': settingsStore.broadcasterStreamOnlineSubscriptionStatus === 'active', 'inactive': settingsStore.broadcasterStreamOfflineSubscriptionStatus === 'inactive'}">
+              {{ settingsStore.broadcasterStreamOnlineSubscriptionStatus === 'active' ? 'Active' : 'Inactive' }}
+            </span>
+          </div>
+          <div class="subscription-item">
+            <span class="subscription-label">Broadcaster Stream Offline:</span>
+            <span :class="{'active': settingsStore.broadcasterStreamOfflineSubscriptionStatus === 'active', 'inactive': settingsStore.broadcasterStreamOfflineSubscriptionStatus === 'inactive'}">
+              {{ settingsStore.broadcasterStreamOfflineSubscriptionStatus === 'active' ? 'Active' : 'Inactive' }}
+            </span>
+          </div>
+        </div>
       </article>
 
       <article class="card device-card">
@@ -162,6 +207,14 @@ onBeforeUnmount(() => {
           <div class="detail-item">
             <span class="detail-label">Client Secret File Path:</span>
             <span class="detail-value" :class="{ error: !settingsStore.clientSecretFilePath }">{{ settingsStore.clientSecretFilePath || 'Not configured' }}</span>
+          </div>
+          <div class="detail-item">
+            <span class="detail-label">Bot Token Refresh Status:</span>
+            <span :class="settingsStore.botTokenRefreshSuccess ? 'ok' : 'error'">{{ settingsStore.botTokenRefreshSuccess ? 'Success' : 'Failed on startup' }}</span>
+          </div>
+          <div class="detail-item">
+            <span class="detail-label">Broadcaster Token Refresh Status:</span>
+            <span :class="settingsStore.broadcasterTokenRefreshSuccess ? 'ok' : 'error'">{{ settingsStore.broadcasterTokenRefreshSuccess ? 'Success' : 'Failed on startup' }}</span>
           </div>
         </div>
         <div class="modal-footer">
@@ -241,6 +294,8 @@ onBeforeUnmount(() => {
 .checks li{ padding:0.5rem 0; color: var(--sgbus-green); display:flex; justify-content:space-between; align-items:center; font-weight:500 }
 .checks li.missing{ color: #ff6b6b; font-weight:600 }
 .checks li.missing .label{ color: #ff6b6b }
+.checks li.error{ color: #ff6b6b; font-weight:600 }
+.checks li.error .label{ color: #ff6b6b }
 .label{ font-weight:600; color: var(--sgbus-green) }
 
 .card-link{ background:transparent; border:none; color: var(--azure); cursor:pointer; font-weight:600; margin-top:0.5rem; padding:0; text-decoration:underline; transition: color 0.2s }
@@ -257,6 +312,15 @@ onBeforeUnmount(() => {
 
 .conn-card{ border-color: var(--sgbus-green) }
 .conn-card h3{ border-bottom-color: var(--sgbus-green) }
+
+.subscriptions-card{ border-color: var(--azure) }
+.subscriptions-card h3{ border-bottom-color: var(--azure) }
+
+.subscription-list{ display:flex; flex-direction:column; gap:0.5rem }
+.subscription-item{ display:flex; justify-content:space-between; align-items:center; padding:0.25rem 0 }
+.subscription-label{ font-weight:600; color: var(--sgbus-green) }
+.subscription-item .active{ color: var(--sgbus-green); font-weight:700 }
+.subscription-item .inactive{ color: #ff6b6b; font-weight:700 }
 
 /* Modal styles with animations */
 .modal-overlay{
