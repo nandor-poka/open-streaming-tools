@@ -20,7 +20,7 @@ public class BotTwitchWebSocketClient extends BaseTwitchWebSocketClient {
 
     @Autowired
     public BotTwitchWebSocketClient(TwitchEventBroadcaster eventBroadcaster) {
-        super("BOT");
+        super(UserType.BOT);
         setEventBroadcaster(eventBroadcaster);
         setChatMessageHandler(new TwitchChatMessageHandler(eventBroadcaster));
     }

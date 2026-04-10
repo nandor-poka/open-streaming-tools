@@ -3,6 +3,7 @@ package com.openstreamingtools.MainServer.utils;
 import com.openstreamingtools.MainServer.messages.frontend.SongData;
 import com.openstreamingtools.MainServer.services.stagelinq.StateMapService;
 import com.openstreamingtools.MainServer.twitch.TwitchUtils;
+import com.openstreamingtools.MainServer.twitch.UserType;
 import jdk.jshell.execution.Util;
 import lombok.extern.slf4j.Slf4j;
 
@@ -49,7 +50,7 @@ public class SongDataLogger implements Runnable{
                         (durationSeconds % 3600) / 60, (durationSeconds % 60))
                         +" " +songsToLog+ "\n");
                 youtubeLogFileWriter.close();
-                TwitchUtils.sendToChat("Track "+ trackNumsAsString + ": "+songsToLog);
+                TwitchUtils.sendToChat("Track "+ trackNumsAsString + ": "+songsToLog, UserType.BOT);
             }
 
         } catch (IOException e) {

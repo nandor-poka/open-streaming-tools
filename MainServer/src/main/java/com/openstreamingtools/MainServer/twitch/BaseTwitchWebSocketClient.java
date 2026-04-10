@@ -38,9 +38,9 @@ public abstract class BaseTwitchWebSocketClient extends WebSocketAdapter {
     protected boolean isConnecting = false;
     protected boolean shouldReconnect = true;
     protected long connectionStartTime = 0;
-    protected final String clientType;
+    protected final UserType clientType;
 
-    public BaseTwitchWebSocketClient(String clientType) {
+    public BaseTwitchWebSocketClient(UserType clientType) {
         this.clientType = clientType;
         this.objectMapper = Utils.objectMapper;
         log.debug("✅ {} WebSocket client initialized", clientType);
