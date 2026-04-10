@@ -10,8 +10,7 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
-
-import java.io.UnsupportedEncodingException;
+import com.openstreamingtools.MainServer.twitch.UserType;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 
@@ -330,14 +329,15 @@ public class TwitchUtils {
         return Utils.objectMapper.readValue(response , TwitchUsers.class ) ;
     }
 
-    public static void sendToChat(String message){
+    public static void sendToChat(String message, UserType userType){
         if (OSTConfiguration.settings.getTwitchUser() == null
         || OSTConfiguration.settings.getBotUser() == null){
             return;
         }
-        
+        String senderId = userType == UserType.BROADCASTER ? OSTConfiguration.settings.getTwitchUser().getId() :
+                OSTConfiguration.settings.getBotUser().getId();
         ChatMessage chatMessage = new ChatMessage(OSTConfiguration.settings.getTwitchUser().getId()
-                ,OSTConfiguration.settings.getBotUser().getId(),message);
+                , senderId,message);
 
         // Log detailed payload for chat message
         try {
@@ -354,11 +354,14 @@ public class TwitchUtils {
         log.debug("Sending to Twitch chat: "+message);
         String respoonse = null;
         try {
+            String token = userType == UserType.BROADCASTER ? OSTConfiguration.settings.getTwitchBroadcasterToken().getAccess_token() :
+                    OSTConfiguration.settings.getTwitchBotToken().getAccess_token();
             respoonse = Utils.restClient.post()
                     .uri(TWITCH_CHAT_MESSAGE)
                     .contentType(MediaType.APPLICATION_JSON)
+
                     .header("Authorization","Bearer "
-                            + OSTConfiguration.settings.getTwitchBotToken().getAccess_token())
+                            + token)
                     .header("Client-Id", OSTConfiguration.getTWITCH_CLIEND_ID())
                     .body(Utils.objectMapper.writeValueAsString(chatMessage))
                     .retrieve()

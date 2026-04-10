@@ -112,7 +112,7 @@ public class TwitchSessionController {
                 "client_id=" + OSTConfiguration.getTWITCH_CLIEND_ID() +
                 "&force_verify=true&response_type=code" +
                 "&redirect_uri=http://localhost:8080/api/twitchBroadcaster" +
-                "&scope=channel%3Amanage%3Aredemptions%20channel%3Aread%3Aredemptions";
+                "&scope=channel%3Amanage%3Aredemptions%20channel%3Aread%3Aredemptions%20user%3Aread%3Achat%20user%3Abot%20user%3Awrite%3Achat";
         log.debug("✅ Broadcaster OAuth URL generated");
         return oauthUrl;
     }

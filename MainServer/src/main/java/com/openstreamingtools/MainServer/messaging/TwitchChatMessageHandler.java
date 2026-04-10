@@ -2,6 +2,7 @@ package com.openstreamingtools.MainServer.messaging;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.openstreamingtools.MainServer.twitch.TwitchUtils;
+import com.openstreamingtools.MainServer.twitch.UserType;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -115,7 +116,7 @@ public class TwitchChatMessageHandler {
             }
 
             log.info("📣 EXECUTING SHOUTOUT COMMAND - Target: {}, Sending to Twitch chat", targetUser);
-            TwitchUtils.sendToChat("/shoutout " + targetUser);
+            TwitchUtils.sendToChat("/shoutout " + targetUser, UserType.BROADCASTER);
             log.info("✅ SHOUTOUT COMMAND PROCESSED - Sent to Twitch chat for user: {}", targetUser);
 
         } catch (Exception e) {

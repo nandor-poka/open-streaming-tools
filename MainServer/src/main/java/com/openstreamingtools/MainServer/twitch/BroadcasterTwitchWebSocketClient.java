@@ -22,7 +22,7 @@ public class BroadcasterTwitchWebSocketClient extends BaseTwitchWebSocketClient 
 
     @Autowired
     public BroadcasterTwitchWebSocketClient(TwitchEventBroadcaster eventBroadcaster) {
-        super("BROADCASTER");
+        super(UserType.BROADCASTER);
         setEventBroadcaster(eventBroadcaster);
     }
 
