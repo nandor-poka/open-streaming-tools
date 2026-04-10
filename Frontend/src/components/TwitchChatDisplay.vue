@@ -2,13 +2,15 @@
 <script setup lang="ts">
 import { ref, inject, computed, watch, nextTick, onMounted } from 'vue'
 import { ChatStore } from '@/stores/ChatStore'
-import type { Client } from '@stomp/stompjs'
+import type { Axios } from 'axios'
 
 const chatStore = ChatStore()
-const ostClient = inject('ostWebSocketClient') as Client
+const axios: Axios = inject('axios') as Axios
 const messageInput = ref('')
-const isConnected = ref(false)
+const isConnected = ref(true)
 const chatContainer = ref<HTMLDivElement | null>(null)
+const isSending = ref(false)
+const sendError = ref('')
 
 // Auto-scroll to bottom when new messages arrive
 watch(
@@ -21,13 +23,6 @@ watch(
   }
 )
 
-// Check connection status
-onMounted(() => {
-  if (ostClient) {
-    isConnected.value = ostClient.connected
-  }
-})
-
 const formattedTime = computed(() => {
   return (date: Date) => {
     const hours = String(date.getHours()).padStart(2, '0')
@@ -36,26 +31,25 @@ const formattedTime = computed(() => {
   }
 })
 
-function sendMessage() {
+async function sendMessage() {
   if (!messageInput.value.trim()) return
 
-  try {
-    // Send message to backend via STOMP
-    if (ostClient && ostClient.connected) {
-      ostClient.publish({
-        destination: '/app/twitch/send-message',
-        body: JSON.stringify({
-          message: messageInput.value,
-        }),
-      })
+  isSending.value = true
+  sendError.value = ''
 
-      // Clear input
-      messageInput.value = ''
-    } else {
-      console.warn('WebSocket client not connected')
-    }
-  } catch (error) {
-    console.error('Error sending chat message:', error)
+  try {
+    console.log('📤 Sending message to backend API: /api/chat/send')
+    const response = await axios.post('/api/chat/send', {
+      message: messageInput.value,
+    })
+
+    console.log('✅ Message sent successfully:', response.data)
+    messageInput.value = ''
+  } catch (error: any) {
+    console.error('❌ Error sending chat message:', error)
+    sendError.value = error.response?.data?.message || error.message || 'Failed to send message'
+  } finally {
+    isSending.value = false
   }
 }
 
