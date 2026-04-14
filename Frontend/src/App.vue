@@ -2,7 +2,7 @@
 import { Client } from '@stomp/stompjs'
 import { provide, inject } from 'vue'
 import { UnitStore } from '@/stores/UnitStore'
-import { ChatStore } from '@/stores/ChatStore'
+import { ChatStore, type MessageFragment } from '@/stores/ChatStore'
 import type { SongData } from '@/types/SongData'
 import type { ChannelVolumeData } from '@/types/ChannelVolumeData'
 import type { Unit } from './types/Unit'
@@ -17,11 +17,13 @@ import type {
   TwitchConnectionStatus,
   TwitchError,
 } from '@/types/twitch'
+import { FollowerStore } from '@/stores/FollowerStore'
 const unitStore = UnitStore()
 const trackStore = TrackStore()
 const settingsStore = SettingsStore()
 const chatStore = ChatStore()
 const axios: Axios = inject('axios') as Axios
+const followerStore = FollowerStore()
 
 const ostClient = new Client({
   brokerURL: 'ws://localhost:8080/api/websocket',
@@ -93,6 +95,10 @@ const ostClient = new Client({
       handleSubscriptionStatus(JSON.parse(message.body))
     })
 
+    ostClient.subscribe('/api/websocketData/twitch/follow', (message: any) => {
+      handleFollowerEvent(JSON.parse(message.body))
+    })
+
     ostClient.publish({ destination: '/app/startup', body: 'Frontend running.' })
   },
 })
@@ -113,15 +119,28 @@ function handleChatMessage(message: TwitchChatMessage) {
     const event = message.event
     if (!event) return
 
-    const messageText = event.message?.text || ''
     const chatterName = event.chatter_user_name || event.chatter_user_login || 'Unknown'
     const chatterColor = event.chatter_user_color || undefined
 
+    // Parse message fragments for emotes
+    let fragments: MessageFragment[] = []
+    if (event.message?.fragments && event.message.fragments.length > 0) {
+      fragments = event.message.fragments.map(fragment => ({
+        type: fragment.type as 'text' | 'emote',
+        content: fragment.text,
+        emoteId: fragment.emote?.id
+      }))
+    } else {
+      // Fallback to plain text if no fragments
+      const messageText = event.message?.text || ''
+      fragments = [{ type: 'text', content: messageText }]
+    }
+
     // Log chat activity
-    console.debug(`[${chatterName}]: ${messageText}`)
+    console.debug(`[${chatterName}]: ${fragments.map(f => f.content).join('')}`)
 
     // Add to ChatStore for dashboard display
-    chatStore.addMessage(chatterName, messageText, chatterColor)
+    chatStore.addMessage(chatterName, fragments, chatterColor)
   } catch (error) {
     console.error('Error handling chat message:', error)
   }
@@ -218,6 +237,23 @@ function handleSubscriptionStatus(message: any) {
     }
   } catch (error) {
     console.error('Error handling subscription status:', error)
+  }
+}
+
+function handleFollowerEvent(message: any) {
+  try {
+    console.log('Follower event:', message)
+    const event = message.event
+    if (!event) return
+
+    const username = event.user_name || event.user_login || 'Unknown'
+    const displayName = event.user_name || username
+    const followedAt = new Date(event.followed_at || Date.now())
+
+    followerStore.addFollower(username, displayName, followedAt)
+    console.log(`New follower: ${displayName} (${username})`)
+  } catch (error) {
+    console.error('Error handling follower event:', error)
   }
 }
 </script>

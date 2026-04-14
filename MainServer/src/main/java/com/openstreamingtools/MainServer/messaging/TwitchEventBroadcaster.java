@@ -68,6 +68,9 @@ public class TwitchEventBroadcaster {
                 case "channel.channel_points_automatic_reward_redemption.add":
                     broadcastPointsRedemption(eventPayload);
                     break;
+                case "channel.follow":
+                    broadcastFollowerEvent(eventPayload);
+                    break;
                 default:
                     log.warn("❓ UNHANDLED SUBSCRIPTION TYPE: {} - Payload: {}", subscriptionType, eventPayload);
             }
@@ -180,6 +183,24 @@ public class TwitchEventBroadcaster {
             log.info("📋 BROADCAST SUBSCRIPTION STATUS - Type: {}, Status: {}, Topic: /api/websocketData/twitch/subscription", subscriptionType, status);
         } catch (Exception e) {
             log.error("❌ ERROR broadcasting subscription status: {}", e.getMessage(), e);
+        }
+    }
+
+    /**
+     * Broadcast follower event
+     */
+    private void broadcastFollowerEvent(JsonNode eventPayload) {
+        try {
+            Map<String, Object> message = new HashMap<>();
+            message.put("type", "channel.follow");
+            message.put("event", eventPayload);
+            message.put("timestamp", System.currentTimeMillis());
+
+            String messageJson = objectMapper.writeValueAsString(message);
+            template.convertAndSend(TWITCH_BASE_TOPIC + "/follow", messageJson);
+            log.info("👥 BROADCAST FOLLOWER EVENT - Topic: {}/follow, Payload: {}", TWITCH_BASE_TOPIC, messageJson);
+        } catch (Exception e) {
+            log.error("❌ ERROR broadcasting follower event: {}", e.getMessage(), e);
         }
     }
 }

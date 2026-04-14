@@ -30,7 +30,7 @@ public class SongDataUpdateTask extends TimerTask {
             StateMapService.deckStates.get(songData.getDeckNumber())
                     .put(SimpleState.LAST_UPDATE, System.currentTimeMillis());
             Utils.removeScheduledTask(this);
-            if (!songData.getArtistName().equals(" ") || !songData.getTrackTitle().equals(" ")){
+            if (!songData.getArtistName().isBlank() || !songData.getTrackTitle().isBlank()){
                 StateMapService.deckStates.get(songData.getDeckNumber()).put(SimpleState.IS_SHOWING, true);
             } else {
                 StateMapService.deckStates.get(songData.getDeckNumber()).put(SimpleState.IS_SHOWING, false);

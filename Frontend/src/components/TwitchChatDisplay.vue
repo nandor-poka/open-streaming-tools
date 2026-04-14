@@ -99,7 +99,21 @@ const messageCount = computed(() => chatStore.messages.length)
           >
             {{ msg.username }}:
           </span>
-          <span class="message-text">{{ msg.message }}</span>
+          <span class="message-text">
+            <span
+              v-for="(fragment, index) in msg.fragments"
+              :key="index"
+              :class="fragment.type === 'emote' ? 'emote' : ''"
+            >
+              <img
+                v-if="fragment.type === 'emote' && fragment.emoteId"
+                :src="`https://static-cdn.jtvnw.net/emoticons/v2/${fragment.emoteId}/default/dark/1.0`"
+                :alt="fragment.content"
+                class="emote-image"
+              />
+              <span v-else>{{ fragment.content }}</span>
+            </span>
+          </span>
         </div>
       </template>
     </div>
@@ -340,6 +354,12 @@ const messageCount = computed(() => chatStore.messages.length)
   background: rgba(46, 213, 115, 0.1);
   color: var(--azure);
   border-color: var(--azure);
+}
+
+.emote-image {
+  height: 1.2em;
+  vertical-align: middle;
+  margin: 0 0.1em;
 }
 </style>
 
