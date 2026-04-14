@@ -6,6 +6,8 @@ import { SettingsStore } from '@/stores/SettingsStore'
 import { ChatStore } from '@/stores/ChatStore'
 import TwitchClient from './TwitchClient.vue'
 import TwitchChatDisplay from './TwitchChatDisplay.vue'
+import FollowerList from './FollowerList.vue'
+import UserStats from './UserStats.vue'
 import type { Axios } from 'axios'
 import { inject, onMounted, ref, onBeforeUnmount } from 'vue'
 import { useRouter } from 'vue-router'
@@ -182,6 +184,10 @@ onBeforeUnmount(() => {
       <div class="chat-container">
         <TwitchChatDisplay />
       </div>
+
+      <FollowerList />
+
+      <UserStats />
     </section>
 
     <!-- Credentials Modal -->

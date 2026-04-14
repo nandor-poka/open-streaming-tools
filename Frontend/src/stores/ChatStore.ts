@@ -1,10 +1,16 @@
 import { defineStore } from 'pinia'
 import { ref } from 'vue'
 
+export interface MessageFragment {
+  type: 'text' | 'emote'
+  content: string
+  emoteId?: string
+}
+
 export interface ChatMessage {
   id: string
   username: string
-  message: string
+  fragments: MessageFragment[]
   timestamp: Date
   color?: string
 }
@@ -13,11 +19,11 @@ export const ChatStore = defineStore('chat', () => {
   const messages = ref<ChatMessage[]>([])
   const maxMessages = ref(100) // Keep last 100 messages in display
 
-  function addMessage(username: string, message: string, color?: string) {
+  function addMessage(username: string, fragments: MessageFragment[], color?: string) {
     const chatMessage: ChatMessage = {
       id: `${Date.now()}-${Math.random()}`,
       username,
-      message,
+      fragments,
       timestamp: new Date(),
       color,
     }
@@ -46,4 +52,3 @@ export const ChatStore = defineStore('chat', () => {
     getMessages,
   }
 })
-

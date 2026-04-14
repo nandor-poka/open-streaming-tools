@@ -29,7 +29,8 @@ public class TwitchUtils {
     private static final String[] subscriptions= new String[]{
             "channel.chat.message",
             "channel.channel_points_custom_reward_redemption.add",
-            "channel.channel_points_automatic_reward_redemption.add"
+            "channel.channel_points_automatic_reward_redemption.add",
+            "channel.follow"
     };
 
     public enum TwitchUserType {
@@ -252,7 +253,8 @@ public class TwitchUtils {
 
             String[] channelSubscriptions = {
                 "channel.channel_points_custom_reward_redemption.add",
-                "channel.channel_points_automatic_reward_redemption.add"
+                "channel.channel_points_automatic_reward_redemption.add",
+                "channel.follow"
             };
 
             String broadcasterToken = OSTConfiguration.settings.getTwitchBroadcasterToken().getAccess_token();

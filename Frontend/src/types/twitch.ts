@@ -13,6 +13,14 @@ export interface TwitchChatMessage {
   event: {
     message?: {
       text: string
+      fragments?: Array<{
+        type: 'text' | 'emote'
+        text: string
+        emote?: {
+          id: string
+          emote_set_id: string
+        }
+      }>
     }
     chatter_user_login?: string
     chatter_user_name?: string
@@ -65,6 +73,4 @@ export type TwitchEvent =
   | TwitchChannelPointsRedemption
   | TwitchConnectionStatus
   | TwitchError
-
-
 
