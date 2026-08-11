@@ -28,5 +28,7 @@ public class Settings {
     private OauthToken twitchBroadcasterToken;
     private TwitchUser twitchUser;
     private TwitchUser botUser;
+    private boolean botTokenRefreshSuccess = true;
+    private boolean broadcasterTokenRefreshSuccess = true;
 }
 

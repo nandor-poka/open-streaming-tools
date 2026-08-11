@@ -4,6 +4,7 @@ import com.openstreamingtools.MainServer.config.OSTConfiguration;
 import com.openstreamingtools.MainServer.db.entities.Track;
 import com.openstreamingtools.MainServer.db.repositories.TrackRepository;
 import com.openstreamingtools.MainServer.twitch.TwitchUtils;
+import com.openstreamingtools.MainServer.twitch.UserType;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -32,7 +33,7 @@ public class RecommendationController {
         for (Track track : getInKeyTracks(key).subList(0, limit)) {
             twitchMessage.append(i++).append(". ").append(track.getTitle()).append(" - ").append(track.getArtist()).append(",\n");
         }
-        TwitchUtils.sendToChat(twitchMessage.toString());
+        TwitchUtils.sendToChat(twitchMessage.toString(), UserType.BOT);
     }
 
     @GetMapping(value = "/api/getBroadInKeyRecommendation/{key}", produces = "application/json")
@@ -48,7 +49,7 @@ public class RecommendationController {
         for (Track track : getInKeyTracks(key-1).subList(0, 2)) {
             twitchMessage.append(i++).append(". ").append(track.getTitle()).append(" - ").append(track.getArtist()).append(",\n");
         }
-        TwitchUtils.sendToChat(twitchMessage.toString());
+        TwitchUtils.sendToChat(twitchMessage.toString(), UserType.BOT);
 
     }
 

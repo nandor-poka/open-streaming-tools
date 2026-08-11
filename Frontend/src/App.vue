@@ -1,12 +1,29 @@
 <script setup lang="ts">
 import { Client } from '@stomp/stompjs'
+import { provide, inject } from 'vue'
 import { UnitStore } from '@/stores/UnitStore'
+import { ChatStore, type MessageFragment } from '@/stores/ChatStore'
 import type { SongData } from '@/types/SongData'
 import type { ChannelVolumeData } from '@/types/ChannelVolumeData'
 import type { Unit } from './types/Unit'
 import { TrackStore } from './stores/TrackStore'
+import { SettingsStore } from '@/stores/SettingsStore'
+import type { Axios } from 'axios'
+import type {
+  TwitchSessionWelcome,
+  TwitchChatMessage,
+  TwitchChatCommand,
+  TwitchChannelPointsRedemption,
+  TwitchConnectionStatus,
+  TwitchError,
+} from '@/types/twitch'
+import { FollowerStore } from '@/stores/FollowerStore'
 const unitStore = UnitStore()
 const trackStore = TrackStore()
+const settingsStore = SettingsStore()
+const chatStore = ChatStore()
+const axios: Axios = inject('axios') as Axios
+const followerStore = FollowerStore()
 
 const ostClient = new Client({
   brokerURL: 'ws://localhost:8080/api/websocket',
@@ -48,13 +65,197 @@ const ostClient = new Client({
           break
       }
     })
+
+    // Subscribe to Twitch events from the backend WebSocket
+    ostClient.subscribe('/api/websocketData/twitch/session', (message: any) => {
+      handleSessionWelcome(JSON.parse(message.body))
+    })
+
+    ostClient.subscribe('/api/websocketData/twitch/chat', (message: any) => {
+      handleChatMessage(JSON.parse(message.body))
+    })
+
+    ostClient.subscribe('/api/websocketData/twitch/chat/command', (message: any) => {
+      handleChatCommand(JSON.parse(message.body))
+    })
+
+    ostClient.subscribe('/api/websocketData/twitch/points', (message: any) => {
+      handlePointsRedemption(JSON.parse(message.body))
+    })
+
+    ostClient.subscribe('/api/websocketData/twitch/status', (message: any) => {
+      handleStatusUpdate(JSON.parse(message.body))
+    })
+
+    ostClient.subscribe('/api/websocketData/twitch/error', (message: any) => {
+      handleError(JSON.parse(message.body))
+    })
+
+    ostClient.subscribe('/api/websocketData/twitch/subscription', (message: any) => {
+      handleSubscriptionStatus(JSON.parse(message.body))
+    })
+
+    ostClient.subscribe('/api/websocketData/twitch/follow', (message: any) => {
+      handleFollowerEvent(JSON.parse(message.body))
+    })
+
     ostClient.publish({ destination: '/app/startup', body: 'Frontend running.' })
   },
 })
 ostClient.activate()
 
+// Provide the WebSocket client to all child components
+provide('ostWebSocketClient', ostClient)
 
+// Twitch event handlers
+function handleSessionWelcome(message: TwitchSessionWelcome) {
+  console.log('Session welcome:', message)
+  settingsStore.twitchResponse = 'Session established: ' + message.sessionId
+}
 
+function handleChatMessage(message: TwitchChatMessage) {
+  try {
+    console.log('Chat message received:', message)
+    const event = message.event
+    if (!event) return
+
+    const chatterName = event.chatter_user_name || event.chatter_user_login || 'Unknown'
+    const chatterColor = event.chatter_user_color || undefined
+
+    // Parse message fragments for emotes
+    let fragments: MessageFragment[] = []
+    if (event.message?.fragments && event.message.fragments.length > 0) {
+      fragments = event.message.fragments.map(fragment => ({
+        type: fragment.type as 'text' | 'emote',
+        content: fragment.text,
+        emoteId: fragment.emote?.id
+      }))
+    } else {
+      // Fallback to plain text if no fragments
+      const messageText = event.message?.text || ''
+      fragments = [{ type: 'text', content: messageText }]
+    }
+
+    // Log chat activity
+    console.debug(`[${chatterName}]: ${fragments.map(f => f.content).join('')}`)
+
+    // Add to ChatStore for dashboard display
+    chatStore.addMessage(chatterName, fragments, chatterColor)
+  } catch (error) {
+    console.error('Error handling chat message:', error)
+  }
+}
+
+function handleChatCommand(message: TwitchChatCommand) {
+  try {
+    console.log('Chat command received:', message.command, message)
+
+    switch (message.command) {
+      case 'recommend':
+        handleRecommendCommand(message.event)
+        break
+      case 'shoutout':
+        handleShoutoutCommand(message.event)
+        break
+      default:
+        console.warn('Unknown chat command:', message.command)
+    }
+  } catch (error) {
+    console.error('Error handling chat command:', error)
+  }
+}
+
+function handleRecommendCommand(event: any) {
+  try {
+    console.log('Processing !recommend command')
+    // Get recommendation in current key
+    axios.get('api/getInKeyRecommendation/' + trackStore.currentKey, {
+      headers: {
+        'Content-Type': 'application/json',
+      },
+    }).catch(function (error) {
+      console.error('Error getting recommendation:', error)
+    })
+  } catch (error) {
+    console.error('Error handling recommend command:', error)
+  }
+}
+
+function handleShoutoutCommand(event: any) {
+  try {
+    console.log('Shoutout command processed on backend')
+    // Shoutout is handled entirely on backend via TwitchUtils.sendToChat()
+    // Frontend just logs or displays confirmation if needed
+  } catch (error) {
+    console.error('Error handling shoutout command:', error)
+  }
+}
+
+function handlePointsRedemption(message: TwitchChannelPointsRedemption) {
+  try {
+    console.log('Points redemption:', message)
+    // Handle custom reward redemptions here
+  } catch (error) {
+    console.error('Error handling points redemption:', error)
+  }
+}
+
+function handleStatusUpdate(message: TwitchConnectionStatus) {
+  console.log('Twitch connection status:', message.status)
+  settingsStore.twitchResponse = 'Connection status: ' + message.status
+}
+
+function handleError(message: TwitchError) {
+  console.error('Twitch error:', message.error)
+  settingsStore.twitchResponse = 'Error: ' + message.error
+}
+
+function handleSubscriptionStatus(message: any) {
+  try {
+    console.log('Subscription status update:', message)
+    const subscriptionType = message.subscriptionType
+    const status = message.status
+
+    switch (subscriptionType) {
+      case 'BOT_chat':
+        settingsStore.botChatSubscriptionStatus = status
+        break
+      case 'BROADCASTER_custom_rewards':
+        settingsStore.broadcasterCustomRewardsSubscriptionStatus = status
+        break
+      case 'BROADCASTER_automatic_rewards':
+        settingsStore.broadcasterAutomaticRewardsSubscriptionStatus = status
+        break
+      case 'BROADCASTER_stream_online':
+        settingsStore.broadcasterStreamOnlineSubscriptionStatus = status
+        break
+      case 'BROADCASTER_stream_offline':
+        settingsStore.broadcasterStreamOfflineSubscriptionStatus = status
+        break
+      default:
+        console.warn('Unknown subscription type:', subscriptionType)
+    }
+  } catch (error) {
+    console.error('Error handling subscription status:', error)
+  }
+}
+
+function handleFollowerEvent(message: any) {
+  try {
+    console.log('Follower event:', message)
+    const event = message.event
+    if (!event) return
+
+    const username = event.user_name || event.user_login || 'Unknown'
+    const displayName = event.user_name || username
+    const followedAt = new Date(event.followed_at || Date.now())
+
+    followerStore.addFollower(username, displayName, followedAt)
+    console.log(`New follower: ${displayName} (${username})`)
+  } catch (error) {
+    console.error('Error handling follower event:', error)
+  }
+}
 </script>
 
 <template>
