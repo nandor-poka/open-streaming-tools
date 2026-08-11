@@ -18,6 +18,13 @@ export const SettingsStore = defineStore('SettingsStore', () => {
   const clientSecretFilePath = ref("")
   const autoShoutoutList = ref([])
   const versionString = ref("")
+  const botTokenRefreshSuccess = ref(true)
+  const broadcasterTokenRefreshSuccess = ref(true)
+  const botChatSubscriptionStatus = ref("inactive")
+  const broadcasterCustomRewardsSubscriptionStatus = ref("inactive")
+  const broadcasterAutomaticRewardsSubscriptionStatus = ref("inactive")
+  const broadcasterStreamOnlineSubscriptionStatus = ref("inactive")
+  const broadcasterStreamOfflineSubscriptionStatus = ref("inactive")
   return {
     showTrackDelay,
     volumeThreshold,
@@ -35,6 +42,13 @@ export const SettingsStore = defineStore('SettingsStore', () => {
     clientIdFilePath,
     clientSecretFilePath,
     autoShoutoutList,
-    versionString
+    versionString,
+    botTokenRefreshSuccess,
+    broadcasterTokenRefreshSuccess,
+    botChatSubscriptionStatus,
+    broadcasterCustomRewardsSubscriptionStatus,
+    broadcasterAutomaticRewardsSubscriptionStatus,
+    broadcasterStreamOnlineSubscriptionStatus,
+    broadcasterStreamOfflineSubscriptionStatus
   }
 })

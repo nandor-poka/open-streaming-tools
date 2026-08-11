@@ -3,220 +3,132 @@
 import Navbar from './Navbar.vue'
 import { SettingsStore } from '@/stores/SettingsStore'
 import type { Axios } from 'axios'
-import { inject, onMounted, useTemplateRef } from 'vue'
+import { inject, onMounted, useTemplateRef, ref, onBeforeUnmount } from 'vue'
 
+import SettingsGeneral from './settings/SettingsGeneral.vue'
+import SettingsTwitch from './settings/SettingsTwitch.vue'
+import SettingsPlayback from './settings/SettingsPlayback.vue'
+import SettingsDisplay from './settings/SettingsDisplay.vue'
+
+type TabId = 'general' | 'twitch' | 'playback' | 'display'
 const settingsStore = SettingsStore()
-const saveSettingButton = useTemplateRef("saveSettings")
-const axios = inject("axios") as Axios
-onMounted(() => {
-  if(saveSettingButton.value){
-    saveSettingButton.value.onclick= function(){
-      axios
-    .post('api/saveSettings', {
-      showTrackDelay:  settingsStore.showTrackDelay,
-      volumeThreshold:  settingsStore.volumeThreshold ,
-      sdRed: settingsStore.sdRed,
-      sdGreen: settingsStore.sdGreen,
-      sdBlue: settingsStore.sdBlue,
-      faderRed: settingsStore.faderRed,
-      faderGreen: settingsStore.faderGreen,
-      faderBlue: settingsStore.faderBlue,
-      channelUserName: settingsStore.channelUserName,
-      botUserName: settingsStore.botUserName,
-      clientIdFilePath: settingsStore.clientIdFilePath,
-      clientSecretFilePath: settingsStore.clientSecretFilePath,
-      //autoShoutoutList : settingsStore.autoShoutoutList
+const saveSettingButton = useTemplateRef('saveSettings')
+const axios = inject('axios') as Axios
 
-    })
-    .catch(function (error) {
-      // handle error
-      console.log(error)
-    })
+const activeTab = ref<TabId>('general')
+const tabs: { id: TabId; label: string }[] = [
+  { id: 'general', label: 'General' },
+  { id: 'twitch', label: 'Twitch' },
+  { id: 'playback', label: 'Playback' },
+  { id: 'display', label: 'Display' },
+]
+
+// refs for keyboard navigation
+const tabRefs = ref<Array<HTMLButtonElement | null>>([])
+let onKeyDown: ((e: KeyboardEvent) => void) | null = null
+
+function focusTabIndex(i: number){
+  const btn = tabRefs.value[i]
+  if(btn) btn.focus()
+}
+
+function selectTab(id: TabId) { activeTab.value = id }
+
+onMounted(() => {
+  if (saveSettingButton.value) {
+    saveSettingButton.value.onclick = function () {
+      axios
+        .post('api/saveSettings', {
+          showTrackDelay: settingsStore.showTrackDelay,
+          volumeThreshold: settingsStore.volumeThreshold,
+          sdRed: settingsStore.sdRed,
+          sdGreen: settingsStore.sdGreen,
+          sdBlue: settingsStore.sdBlue,
+          faderRed: settingsStore.faderRed,
+          faderGreen: settingsStore.faderGreen,
+          faderBlue: settingsStore.faderBlue,
+          channelUserName: settingsStore.channelUserName,
+          botUserName: settingsStore.botUserName,
+          clientIdFilePath: settingsStore.clientIdFilePath,
+          clientSecretFilePath: settingsStore.clientSecretFilePath,
+          //autoShoutoutList : settingsStore.autoShoutoutList
+        })
+        .catch(function (error) {
+          // handle error
+          console.log(error)
+        })
     }
   }
 
+  // keyboard navigation handler on the tablist
+  onKeyDown = (e: KeyboardEvent) => {
+    const idx = tabRefs.value.findIndex((b)=> b === document.activeElement)
+    if(idx === -1) return
+    if(e.key === 'ArrowRight'){
+      e.preventDefault()
+      const next = (idx + 1) % tabRefs.value.length
+      focusTabIndex(next)
+      activeTab.value = tabs[next].id
+    } else if(e.key === 'ArrowLeft'){
+      e.preventDefault()
+      const prev = (idx - 1 + tabRefs.value.length) % tabRefs.value.length
+      focusTabIndex(prev)
+      activeTab.value = tabs[prev].id
+    } else if(e.key === 'Home'){
+      e.preventDefault()
+      focusTabIndex(0)
+      activeTab.value = tabs[0].id
+    } else if(e.key === 'End'){
+      e.preventDefault()
+      focusTabIndex(tabRefs.value.length-1)
+      activeTab.value = tabs[tabRefs.value.length-1].id
+    }
+  }
+  window.addEventListener('keydown', onKeyDown)
 })
+onBeforeUnmount(()=>{ if(onKeyDown) window.removeEventListener('keydown', onKeyDown) })
 </script>
 
 <template>
   <Navbar />
-  <h1>Settings</h1>
-  <div>
-    <table>
-      <tbody>
-        <tr>
-          <th>Setting</th>
-          <th>Value</th>
-          <th>Comments</th>
-        </tr>
-        <tr>
-          <td>User name for the Twitch channel to send message to</td>
-          <td>
-            <input v-model="settingsStore.channelUserName" type="text" id="channelUserName"/>
-          </td>
-          <td>
-            The name of the Twitch user who owns the channel that the bot will send message to. Typically your own user name for your own channel.
-          </td>
-        </tr>
-        <tr>
-          <td>User name for the Twitch user that acts as the bot</td>
-          <td>
-            <input v-model="settingsStore.botUserName" type="text" id="botUserName" />
-          </td>
-          <td>
-            The name of the Twitch user who owns the channel that the bot will send message to. Typically your own user name for your own channel.
-          </td>
-        </tr>
-        <tr>
-          <td>Path to the file containing the client ID</td>
-          <td>
-            <input v-model="settingsStore.clientIdFilePath" type="text" id="clientIDPath" />
-          </td>
-          <td>
-            Fully quialified path to the file that has the Twitch client ID.
-          </td>
-        </tr>
-        <tr>
-          <td>Path to the file containing the client secret</td>
-          <td>
-            <input v-model="settingsStore.clientSecretFilePath" type="text" id="clientSecretPath" />
-          </td>
-          <td>
-            Fully quialified path to the file that has the Twitch client secret.
-          </td>
-        </tr>
-        <tr>
-          <td>Auto shoutout list</td>
-          <td>
-            <textarea v-model="settingsStore.autoShoutoutList" rows="10" cols="35" id="autoShoutoutList"></textarea>
-          </td>
-        </tr>
-        <hr/>
-        <tr>
-          <td>Show track after info</td>
-          <td>
-            <input v-model="settingsStore.showTrackDelay" type="number" id="showTrackDelay" />
-          </td>
-          <td>
-            seconds, 0 disables delay, meaning information will be shown immediately after loading
-            the track or on any other condition fulfilment
-          </td>
-        </tr>
-        <tr>
-          <td>Only show track info if volume is above (percent, 0 disables)</td>
-          <td>
-            <input
-              v-model="settingsStore.volumeThreshold"
-              type="number"
-              id="volumeThreshold"
-            />
-          </td>
-          <td>
-            percent, this takes into consideration cross-fader position as well, 0 disables this
-            condition, meaning that track info will be shown immedaitely after track loading or any
-            other condition fulfilment
-          </td>
-        </tr>
-      </tbody>
-    </table>
-  </div>
-  <hr />
-  <div></div>
-  <div class="parent">
-    <div class="box">
-      <label for="volumeSlider">Volume slider tester</label>
-      <input ref="volSliderRef"  v-model="settingsStore.volumeSliderValue" type="range" min="0" max="100" class="slider" id="volumeSlider" />
-      <div>
-        <p>Fader level indicator color</p>
-        <p>
-          <label for="faderRed">Red</label>
-          <input v-model="settingsStore.faderRed" type="range" min="0" max="255" class="slider" id="faderRed" />
-        </p>
-        <p>
-          <label for="faderGreen">Green</label>
-          <input v-model="settingsStore.faderGreen" type="range" min="0" max="255" class="slider" id="faderGreen" />
-        </p>
-        <p>
-          <label for="faderBlue">Blue</label>
-          <input v-model="settingsStore.faderBlue" type="range" min="0" max="255" class="slider" id="sdblue" />
-        </p>
-      </div>
-      <div>
-        <p>Song data color</p>
-        <p>
-          <label for="sdred">Red</label>
-          <input ref="sdRed"   v-model="settingsStore.sdRed" type="range" min="0" max="255" class="slider" id="sdred" />
-        </p>
-        <p>
-          <label for="sdgreen">Green</label>
-          <input ref="sdGreen"  v-model="settingsStore.sdGreen" type="range" min="0" max="255" class="slider" id="sdgreen" />
-        </p>
-        <p>
-          <label for="sdblue">Blue</label>
-          <input ref="sdBlue"   v-model="settingsStore.sdBlue" type="range" min="0" max="255" class="slider" id="sdblue" />
-        </p>
-      </div>
-      <div>
-        <p>Song data transition settings</p>
-        <p>
-          <label for="animDuration"></label>
-          <input ref="transitionDuration" type="float" min="0" max="5" id="animDuration" />
-        </p>
-        <p>
-          <label for="animDisposition">Disposition in pixel</label>
-          <input
-            ref="animationDisposition"
-            type="number"
-            min="50"
-            max="250"
-            value="50"
-            id="animDisposition"
-          />
-        </p>
-      </div>
-      <button type="button">Test animation</button>
-      <p>
-        <button ref="saveSettings" type="button">Save config</button>
-      </p>
-    </div>
-    <div>
-      <p>Sample song id display</p>
-      <div
-        v-bind:style="{
-          backgroundImage:
-            'linear-gradient(to right, rgb( ' +
-              settingsStore.faderRed +',' +
-              settingsStore.faderGreen +',' +
-              settingsStore.faderBlue +') '  +
-            settingsStore.volumeSliderValue +
-            '% , var(--ost-deck-empty-color) ' +
-            (settingsStore.volumeSliderValue > 50
-              ? 100 - settingsStore.volumeSliderValue
-              : settingsStore.volumeSliderValue) +
-            '%)',
-          color:
-            'rgb( ' +
-            settingsStore.sdRed +
-            ',' +
-            settingsStore.sdGreen +
-            ',' +
-            settingsStore.sdBlue +
-            ') ',
-        }"
-        class="box"
+
+  <!-- Header with title and right-aligned save button -->
+  <div class="settings-header">
+    <div class="title-actions">
+      <h1>Settings</h1>
+      <button
+        ref="saveSettings"
+        class="save-btn in-title"
+        aria-label="Save settings"
+        title="Save settings"
+        type="button"
       >
-        <p class="deckNumber">Deck 1</p>
-
-        <p class="songTitle textWrap">
-          <b> Track title </b>
-        </p>
-
-        <p class="artist">
-          <b> Artist</b>
-        </p>
-      </div>
+        Save
+      </button>
     </div>
   </div>
+
+  <!-- Tab bar -->
+  <div class="settings-tabs" role="tablist" aria-label="Settings sections">
+    <button
+      v-for="(tab, index) in tabs"
+      :key="tab.id"
+      :class="['tab-btn', { active: activeTab === tab.id }]"
+      @click="selectTab(tab.id)"
+      role="tab"
+      :aria-selected="activeTab === tab.id"
+      :ref="el => tabRefs[index] = el as HTMLButtonElement"
+    >
+      {{ tab.label }}
+    </button>
+  </div>
+
+  <hr />
+
+  <component :is="activeTab === 'general' ? SettingsGeneral : activeTab === 'twitch' ? SettingsTwitch : activeTab === 'playback' ? SettingsPlayback : SettingsDisplay" />
+
+  <!-- Fallback / empty area if no tab selected -->
+  <div v-if="!activeTab" style="padding:1rem">Select a section</div>
 </template>
 
 <style lang="css">
@@ -227,8 +139,9 @@ td {
   padding: 5px;
 }
 
+/* Use project blue/green variables for separators and tabs */
 hr {
-  border: 1px solid var(--safety-orange);
+  border: 1px solid var(--azure);
 }
 input {
   padding: 5px;
@@ -236,4 +149,66 @@ input {
 label {
   padding: 5px;
 }
+
+/* Header */
+.settings-header{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:1rem;
+  margin-bottom:0.5rem;
+}
+.title-actions{ display:flex; gap:0.5rem; align-items:center }
+.save-btn{
+  padding:0.45rem 0.9rem;
+  border-radius:6px;
+  border:1px solid var(--azure);
+  background:var(--azure);
+  color:#001f1f; /* darkish text */
+  cursor:pointer;
+  font-weight:700;
+  transition: background 180ms ease, color 180ms ease, box-shadow 180ms ease;
+}
+.save-btn.in-title{ padding:0.25rem 0.6rem; font-size:0.95rem }
+.save-btn:hover{ background: linear-gradient(180deg, var(--azure), var(--sgbus-green)); color:#001800 }
+.save-btn:focus{ outline:3px solid rgba(0,152,255,0.12); outline-offset:2px }
+
+/* Tabs */
+.settings-tabs{
+  display:flex;
+  gap:0.5rem;
+  margin-bottom:0.25rem;
+}
+.tab-btn{
+  padding:0.45rem 0.9rem;
+  border-radius:6px;
+  border:1px solid var(--azure);
+  background:transparent;
+  color:var(--azure);
+  cursor:pointer;
+  font-weight:600;
+  transition: background 180ms ease, color 180ms ease, box-shadow 180ms ease, border-color 180ms ease;
+}
+.tab-btn:hover{
+  background: rgba(0,152,255,0.06); /* subtle blue hover */
+}
+.tab-btn:focus{
+  outline:3px solid rgba(0,152,255,0.12);
+  outline-offset:2px;
+}
+.tab-btn.active{
+  /* Match the save button gradient for active state */
+  background: linear-gradient(180deg, var(--azure), var(--sgbus-green));
+  color: #001800; /* dark text on bright green */
+  border-color: var(--sgbus-green);
+  box-shadow: 0 0 0 3px rgba(82,223,0,0.08) inset;
+}
+
+.settings-section{
+  color: var(--color-text); /* ensure section text matches project color */
+  margin-top: 0.5rem;
+}
+
+.parent{ display:flex; gap:1rem; align-items:flex-start }
+.box{ padding:1rem; border:1px solid #eee; background:white }
 </style>
