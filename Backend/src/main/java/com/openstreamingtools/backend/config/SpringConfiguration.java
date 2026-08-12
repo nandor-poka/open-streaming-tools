@@ -1,0 +1,29 @@
+package com.openstreamingtools.backend.config;
+
+import com.openstreamingtools.backend.udp.StageLinQDiscoveryHandler;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.integration.ip.udp.inbound.MulticastReceivingChannelAdapter;
+import org.springframework.lang.NonNull;
+import org.springframework.web.servlet.config.annotation.CorsRegistry;
+import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
+
+@Configuration
+public class SpringConfiguration {
+    @Bean
+    public MulticastReceivingChannelAdapter udpIn() {
+        MulticastReceivingChannelAdapter  adapter = new MulticastReceivingChannelAdapter ("239.255.255.250",51337);
+        adapter.setOutputChannelName(StageLinQDiscoveryHandler.StageLinQChannelID);
+        return adapter;
+    }
+
+    @Bean
+    public WebMvcConfigurer corsConfigurer() {
+        return new WebMvcConfigurer() {
+            @Override
+            public void addCorsMappings(@NonNull CorsRegistry registry) {
+                registry.addMapping("/*/**").allowedOrigins(OSTConfiguration.FRONTEND_ORIGN, OSTConfiguration.FRONTEND_JAR_ORIGN);
+            }
+        };
+    }
+}
