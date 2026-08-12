@@ -51,6 +51,6 @@ MainServer/enginedj.db.bkp
 # WebSocket client backup
 MainServer/src/main/java/com/openstreamingtools/MainServer/twitch/TwitchWebSocketClient.java.backup
 
-# local maven command files
-./Backend/mvnw*
-./Backend/.mvn/
+# local files
+/.idea/
+/Backend/.mvn/
