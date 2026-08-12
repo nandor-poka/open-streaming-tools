@@ -43,5 +43,9 @@
     "vite-plugin-vue-devtools": "^7.6.8",
     "vitest": "^3.0.7",
     "vue-tsc": "^2.1.10"
+  },
+  "allowScripts": {
+    "esbuild@0.25.12": true,
+    "vue-demi@0.14.10": true
   }
 }

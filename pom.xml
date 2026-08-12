@@ -12,7 +12,7 @@
 
     <modules>
         <module>Frontend</module>
-        <module>MainServer</module>
+        <module>Backend</module>
     </modules>
 
 </project>

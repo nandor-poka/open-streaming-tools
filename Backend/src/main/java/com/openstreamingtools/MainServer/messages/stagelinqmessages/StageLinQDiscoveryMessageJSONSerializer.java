@@ -3,11 +3,11 @@ package com.openstreamingtools.MainServer.messages.stagelinqmessages;
 import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.databind.JsonSerializer;
 import com.fasterxml.jackson.databind.SerializerProvider;
-import org.springframework.boot.jackson.JsonComponent;
+import org.springframework.boot.jackson.JacksonComponent;
 
 import java.io.IOException;
 
-@JsonComponent
+@JacksonComponent
 public class StageLinQDiscoveryMessageJSONSerializer extends JsonSerializer<StageLinQDiscoveryMessage> {
 
     @Override
