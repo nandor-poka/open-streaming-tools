@@ -3,7 +3,6 @@ package com.openstreamingtools.backend.dj;
 import com.openstreamingtools.backend.dj.stagelinq.DenonUnit;
 import com.openstreamingtools.backend.dj.stagelinq.ModelCode;
 import com.openstreamingtools.backend.dj.stagelinq.ModelType;
-import com.openstreamingtools.backend.dj.stagelinq.UnitType;
 
 import java.util.AbstractMap;
 import java.util.Map;
@@ -21,7 +20,7 @@ public class UnitUtils {
      * A map that holds unit instances, fot easy lookup using model code as key.
      */
     public static final Map<ModelCode, GenericUnit> unitMapping = Map.ofEntries(
-            new AbstractMap.SimpleEntry<ModelCode, GenericUnit>(ModelCode.JP21,
+            new AbstractMap.SimpleEntry<ModelCode, GenericUnit>(ModelCode.JP20,
                     new DenonUnit(UnitType.CONTROLLER,ModelType.SCX4,"DenonDJ SC Live 4", 4))
     );
 

@@ -72,7 +72,7 @@ public class BroadcasterTwitchWebSocketClient extends BaseTwitchWebSocketClient 
             // Log detailed payload for channel points subscription
             try {
                 String channelPayloadJson = Utils.objectMapper.writeValueAsString(subscribeMessage);
-                log.info("📤 {} SUBSCRIPTION PAYLOAD - Length: {} bytes", subType.toUpperCase(), channelPayloadJson.length());
+                log.debug("📤 {} SUBSCRIPTION PAYLOAD - Length: {} bytes", subType.toUpperCase(), channelPayloadJson.length());
                 log.debug("📄 {} subscription payload: {}", subType, channelPayloadJson);
                 log.debug("   └─ Type: {}", subscribeMessage.getType());
                 log.debug("   └─ Transport: Session ID {}", transport.getSession_id());

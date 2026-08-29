@@ -54,7 +54,7 @@ public class TwitchUtils {
         }
 
         // Log detailed request information
-        log.info("🔗 POST {} - Getting auth token for {}", TWITCH_API_GET_TOKEN_URL, userType);
+        log.debug("🔗 POST {} - Getting auth token for {}", TWITCH_API_GET_TOKEN_URL, userType);
         log.debug("📋 Request params: client_id={}, grant_type=authorization_code, redirect_uri={}",
                  OSTConfiguration.getTWITCH_CLIEND_ID(),
                  userType == TwitchUserType.BOT ? "http://localhost:8080/api/twitchBot" : "http://localhost:8080/api/twitchBroadcaster");
@@ -103,7 +103,7 @@ public class TwitchUtils {
             params.add("refresh_token", URLEncoder.encode(OSTConfiguration.settings.getTwitchBotToken().getRefresh_token(), StandardCharsets.UTF_8));
             params.add("redirect_uri", "http://localhost:8080/api/twitchBot");
 
-            log.info("🔄 POST {} - Refreshing bot auth token", TWITCH_API_GET_TOKEN_URL);
+            log.debug("🔄 POST {} - Refreshing bot auth token", TWITCH_API_GET_TOKEN_URL);
 
             OauthToken response = Utils.restClient.post()
                     .uri(TWITCH_API_GET_TOKEN_URL)
@@ -208,7 +208,7 @@ public class TwitchUtils {
 
         // Subscribe to chat messages for bot's channel
         if (OSTConfiguration.settings.getBotUser() != null) {
-            log.info("📝 Subscribing to chat messages for bot channel: {}", OSTConfiguration.settings.getBotUser().getLogin());
+            log.debug("📝 Subscribing to chat messages for bot channel: {}", OSTConfiguration.settings.getBotUser().getLogin());
             TwitchSubscribeMessage chatSubscribeMessage = new TwitchSubscribeMessage();
             chatSubscribeMessage.setType("channel.chat.message");
             chatSubscribeMessage.setTransport(transport);
@@ -249,7 +249,7 @@ public class TwitchUtils {
 
         // Subscribe to channel points for broadcaster's channel
         if (OSTConfiguration.settings.getTwitchUser() != null) {
-            log.info("🎯 Subscribing to channel points for broadcaster channel: {}", OSTConfiguration.settings.getTwitchUser().getLogin());
+            log.debug("🎯 Subscribing to channel points for broadcaster channel: {}", OSTConfiguration.settings.getTwitchUser().getLogin());
 
             String[] channelSubscriptions = {
                 "channel.channel_points_custom_reward_redemption.add",
@@ -344,7 +344,7 @@ public class TwitchUtils {
         // Log detailed payload for chat message
         try {
             String chatMessageJson = Utils.objectMapper.writeValueAsString(chatMessage);
-            log.info("💬 CHAT MESSAGE PAYLOAD - Length: {} bytes", chatMessageJson.length());
+            log.debug("💬 CHAT MESSAGE PAYLOAD - Length: {} bytes", chatMessageJson.length());
             log.debug("📄 Chat message payload: {}", chatMessageJson);
             log.debug("   └─ Broadcaster ID: {}", chatMessage.getBroadcaster_id());
             log.debug("   └─ Sender ID: {}", chatMessage.getSender_id());
@@ -374,7 +374,7 @@ public class TwitchUtils {
                     .body(String.class);
 
             // Log detailed response information
-            log.info("✅ Message sent to chat - Response: {}", respoonse);
+            log.debug("✅ Message sent to chat - Response: {}", respoonse);
             log.debug("📄 Response details: {}", respoonse);
         } catch (JsonProcessingException e) {
             throw new RuntimeException(e);

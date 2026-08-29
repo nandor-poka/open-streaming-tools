@@ -1,6 +1,7 @@
 package com.openstreamingtools.backend.services.stagelinq;
 
 import com.openstreamingtools.backend.dj.stagelinq.DenonUnit;
+import lombok.extern.slf4j.Slf4j;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -8,13 +9,13 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
 
+@Slf4j
 public class DirectoryService {
 
     public static final int SERVICE_REQUEST = 2;
     public static final int SERVICE_ANNOUNCEMENT = 0;
     public static final int TIMESTAMP = 1;
 
-    private static final Logger logger = LoggerFactory.getLogger(DirectoryService.class);
 
     public static Map<UUID, DenonUnit> connectedUnits = new HashMap();
 
@@ -23,7 +24,7 @@ public class DirectoryService {
             return;
         }
         connectedUnits.put(unit.getDeviceID(),unit);
-        logger.debug("Added unit {}",unit);
+        log.debug("Added unit {}",unit);
     }
 
     public static DenonUnit getUnit(UUID deviceID){
@@ -35,6 +36,10 @@ public class DirectoryService {
     }
     public static void removeUnit(UUID deviceID){
         connectedUnits.remove(deviceID);
+    }
+
+    public static void clearUnits(){
+        connectedUnits.clear();
     }
 
     public static DenonUnit getUnitByIP(String ip){

@@ -3,6 +3,7 @@ package com.openstreamingtools.backend.messaging;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.openstreamingtools.backend.config.OSTConfiguration;
+import lombok.extern.slf4j.Slf4j;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,8 +14,8 @@ import java.net.SocketException;
 import java.net.UnknownHostException;
 
 @Component
+@Slf4j
 public class MessageSender {
-    private static final Logger logger = LoggerFactory.getLogger(MessageSender.class);
 
 
     private final SimpMessagingTemplate template;
@@ -29,11 +30,12 @@ public class MessageSender {
     }
 
     public static void sendMessage (String message){
+        log.debug("sending to frontend: {}", message);
         instance.template.convertAndSend(OSTConfiguration.WEBSOCKET_DATA_PATH, message);
     }
 
     public static void sendMessage (Object message) throws JsonProcessingException {
-        logger.debug("sending to frontend: {}",instance.objectMapper.writeValueAsString(message));
+        log.debug("sending to frontend: {}",instance.objectMapper.writeValueAsString(message));
         instance.template.convertAndSend(OSTConfiguration.WEBSOCKET_DATA_PATH, instance.objectMapper.writeValueAsString(message));
     }
 

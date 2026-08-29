@@ -4,7 +4,7 @@ import type { Playlist } from '@/types/Playlist'
 export const PlaylistStore = defineStore('PlaylistStore', () => {
   const playlists = ref(Array<Playlist>())
   const activePlaylistId = ref(0)
-  const playlistDatabasePath = ref('../databases/enginedj.db')
+  const playlistDatabasePath = ref('enginedj.db')
   async function fetchPlaylists(fetcher?: () => Promise<any>) {
     try {
       let data

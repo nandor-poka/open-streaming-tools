@@ -29,7 +29,7 @@ import java.util.Vector;
 public class StateMapMessageSerializer  implements Deserializer<byte[]>, Serializer<byte[]> {
 
     @Override
-    public byte[] deserialize(InputStream inputStream) throws IOException {
+    public byte[] deserialize(InputStream inputStream) {
         try {
             BufferedInputStream bis = new BufferedInputStream(inputStream);
 

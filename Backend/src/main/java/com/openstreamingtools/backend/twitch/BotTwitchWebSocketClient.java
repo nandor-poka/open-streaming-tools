@@ -57,7 +57,7 @@ public class BotTwitchWebSocketClient extends BaseTwitchWebSocketClient {
 
             // Log detailed payload for chat subscription
             String chatPayloadJson = Utils.objectMapper.writeValueAsString(chatSubscribeMessage);
-            log.info("📤 {} CHAT SUBSCRIPTION PAYLOAD - Length: {} bytes", clientType, chatPayloadJson.length());
+            log.debug("📤 {} CHAT SUBSCRIPTION PAYLOAD - Length: {} bytes", clientType, chatPayloadJson.length());
             log.debug("📄 {} Chat subscription payload: {}", clientType, chatPayloadJson);
 
             String response = Utils.restClient.post()

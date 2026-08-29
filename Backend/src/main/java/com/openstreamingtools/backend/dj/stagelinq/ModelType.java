@@ -4,7 +4,7 @@ package com.openstreamingtools.backend.dj.stagelinq;
  * Enum class for the canonical model types that are in the discovery packets
  */
 public enum ModelType {
-    SCX4("scx4"), UNKOWN("UNKNOWN");
+    SCX4("scx4"), SCX2("scx2"), UNKOWN("UNKNOWN");
 
     private String modelType;
     ModelType(String modelType) {

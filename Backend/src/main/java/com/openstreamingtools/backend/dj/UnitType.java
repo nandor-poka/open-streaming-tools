@@ -1,4 +1,4 @@
-package com.openstreamingtools.backend.dj.stagelinq;
+package com.openstreamingtools.backend.dj;
 
 /**
  * Enum for unit types

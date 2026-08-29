@@ -1,6 +1,7 @@
 package com.openstreamingtools.backend.dj.stagelinq;
 
 import com.openstreamingtools.backend.dj.GenericUnit;
+import com.openstreamingtools.backend.dj.UnitType;
 import com.openstreamingtools.backend.messages.stagelinqmessages.Service;
 import com.openstreamingtools.backend.messages.stagelinqmessages.ServiceType;
 

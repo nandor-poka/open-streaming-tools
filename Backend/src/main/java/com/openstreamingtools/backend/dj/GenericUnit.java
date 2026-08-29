@@ -1,7 +1,6 @@
 package com.openstreamingtools.backend.dj;
 
 import com.openstreamingtools.backend.dj.stagelinq.ModelType;
-import com.openstreamingtools.backend.dj.stagelinq.UnitType;
 import lombok.Getter;
 import lombok.Setter;
 import org.springframework.boot.jackson.JacksonComponent;

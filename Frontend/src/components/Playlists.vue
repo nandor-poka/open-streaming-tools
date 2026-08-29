@@ -10,7 +10,6 @@ import TrackMetadataPanel from './playlists/TrackMetadataPanel.vue'
 const axios: Axios = inject('axios') as Axios
 const playlistStore = PlaylistStore()
 const trackStore = TrackStore()
-const selectedPlaylistId = ref<number | string | null>(null)
 
 onMounted(() => {
   loadPlaylists()
@@ -30,7 +29,6 @@ function loadPlaylists(){
 function onPlaylistChange(e: Event){
   const target = e.target as HTMLSelectElement
   const id = target.value
-  selectedPlaylistId.value = id
   axios
     .get('api/getTracksForPlaylist/' + id)
     .then(function (response) {
