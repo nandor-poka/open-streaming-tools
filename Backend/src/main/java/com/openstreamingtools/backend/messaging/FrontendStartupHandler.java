@@ -3,8 +3,6 @@ package com.openstreamingtools.backend.messaging;
 import com.openstreamingtools.backend.config.OSTConfiguration;
 import com.openstreamingtools.backend.services.stagelinq.DirectoryService;
 import lombok.extern.slf4j.Slf4j;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.messaging.Message;
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.handler.annotation.SendTo;

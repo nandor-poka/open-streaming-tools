@@ -5,8 +5,6 @@ import com.openstreamingtools.backend.messages.stagelinqmessages.ServiceAnnounce
 import com.openstreamingtools.backend.services.stagelinq.DirectoryService;
 import com.openstreamingtools.backend.services.stagelinq.StateMapService;
 import lombok.extern.slf4j.Slf4j;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.integration.annotation.MessageEndpoint;
 import org.springframework.integration.annotation.ServiceActivator;
 import org.springframework.messaging.Message;

@@ -3,8 +3,6 @@ package com.openstreamingtools.backend.tcp;
 import com.openstreamingtools.backend.messages.stagelinqmessages.DirectoryMessage;
 import com.openstreamingtools.backend.services.stagelinq.DirectoryService;
 import lombok.extern.slf4j.Slf4j;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.core.serializer.Deserializer;
 import org.springframework.core.serializer.Serializer;
 import org.springframework.lang.NonNull;
@@ -15,6 +13,7 @@ import java.io.InputStream;
 import java.io.OutputStream;
 
 import static com.openstreamingtools.backend.utils.Utils.putIntegerToByteArray;
+
 @Slf4j
 public class DirectoryMessageSerializer implements Serializer<byte[]>, Deserializer<DirectoryMessage>  {
 

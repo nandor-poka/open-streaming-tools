@@ -2,8 +2,6 @@ package com.openstreamingtools.backend.messages.stagelinqmessages;
 
 import com.openstreamingtools.backend.services.stagelinq.DirectoryService;
 import lombok.extern.slf4j.Slf4j;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.math.BigInteger;
 import java.nio.ByteBuffer;
