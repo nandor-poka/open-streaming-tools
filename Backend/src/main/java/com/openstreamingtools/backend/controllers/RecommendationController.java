@@ -15,15 +15,28 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+/**
+ * REST controller for music recommendation based on musical key.
+ * Recommends tracks from the playlist that match a specified musical key,
+ * with optional broadened recommendations including compatible keys.
+ * Sends recommendations to Twitch chat via the bot account.
+ */
 @RestController
 @Slf4j
 public class RecommendationController {
 
     private final String twitchMessageHeader = "I recommend the following songs to you to request:\n";
 
+    /** Repository for accessing track data */
     @Autowired
     private TrackRepository trackRepository;
 
+    /**
+     * Recommends up to 5 tracks in the specified musical key.
+     * Sends recommendations to Twitch chat via bot account.
+     *
+     * @param key the musical key (typically 0-11 for the 12 semitones)
+     */
     @GetMapping(value = "/api/getInKeyRecommendation/{key}", produces = "application/json")
     public void getInKeyRecommendation(@PathVariable int key){
         StringBuilder twitchMessage = new StringBuilder(twitchMessageHeader);
@@ -36,6 +49,13 @@ public class RecommendationController {
         TwitchUtils.sendToChat(twitchMessage.toString(), UserType.BOT);
     }
 
+    /**
+     * Recommends tracks from a broader key range: 3 in the exact key,
+     * 2 in the key above, and 2 in the key below. Accommodates musical harmony concepts.
+     * Sends recommendations to Twitch chat via bot account.
+     *
+     * @param key the primary musical key
+     */
     @GetMapping(value = "/api/getBroadInKeyRecommendation/{key}", produces = "application/json")
     public void getInBroadKeyRecommendation(@PathVariable int key){
         StringBuilder twitchMessage = new StringBuilder(twitchMessageHeader);
@@ -53,6 +73,13 @@ public class RecommendationController {
 
     }
 
+    /**
+     * Retrieves all tracks in the configured playlist that match the specified key.
+     * Results are shuffled to provide variety in recommendations.
+     *
+     * @param key the musical key to search for
+     * @return list of tracks matching the key, shuffled randomly
+     */
     private List<Track> getInKeyTracks(int key){
         List<Track> tracksInKey = new ArrayList<>();
         log.debug("getting in key songs for playlist id {}", OSTConfiguration.settings.getPlaylistID());

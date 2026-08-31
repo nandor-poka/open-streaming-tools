@@ -3,8 +3,12 @@ package com.openstreamingtools.backend.twitch;
 import lombok.Getter;
 import lombok.Setter;
 
-/*
-https://dev.twitch.tv/docs/api/reference/#get-users
+/**
+ * Data transfer object representing a Twitch user as returned by the Helix API.
+ * Contains user profile information including ID, login name, display name, and media URLs.
+ * Fields are automatically handled by Lombok @Getter/@Setter annotations.
+ *
+ * @see <a href="https://dev.twitch.tv/docs/api/reference/#get-users">Twitch Get Users API Documentation</a>
  */
 @Getter
 @Setter

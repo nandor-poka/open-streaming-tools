@@ -111,4 +111,14 @@ public class ServiceAnnouncement {
     public UUID getDeviceId() {
         return deviceId;
     }
+
+    @Override
+    public String toString() {
+        return "ServiceAnnouncement{" +
+                "messageId=" + messageId +
+                ", deviceId=" + deviceId +
+                ", services=" + services +
+                ", isServer=" + isServer +
+                '}';
+    }
 }

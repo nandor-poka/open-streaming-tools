@@ -17,11 +17,24 @@ import org.springframework.stereotype.Controller;
 
 import java.util.UUID;
 
+/**
+ * WebSocket message handler for processing frontend unit data requests.
+ * Handles requests for DJ unit information and returns serialized unit data.
+ */
 @Controller
 public class UnitRequestHandler {
     private static final Logger logger = LoggerFactory.getLogger(UnitRequestHandler.class);
     private final ObjectMapper objectMapper = new ObjectMapper();
 
+    /**
+     * Processes a request from the frontend for unit data.
+     * Retrieves the specified unit from the directory and returns its data.
+     * Marks the unit as acknowledged once data is sent.
+     *
+     * @param message the frontend message containing the unit UUID request
+     * @return JSON-serialized UnitData object containing the unit information
+     * @throws JsonProcessingException if JSON serialization fails
+     */
     @MessageMapping("/getUnit")
     @SendTo(OSTConfiguration.WEBSOCKET_DATA_PATH)
     public String frontendStartup(Message<String> message) throws JsonProcessingException {

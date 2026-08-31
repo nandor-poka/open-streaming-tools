@@ -6,11 +6,13 @@ import com.openstreamingtools.backend.dj.stagelinq.StageLinQAction;
 import com.openstreamingtools.backend.messages.MessageToFrontend;
 import com.openstreamingtools.backend.messages.MessageType;
 import com.openstreamingtools.backend.utils.Utils;
+import lombok.extern.slf4j.Slf4j;
 
 import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
 import java.util.UUID;
 
+@Slf4j
 public class StageLinQDiscoveryMessage extends MessageToFrontend {
     private StageLinQAction action;
     private ModelType modelType;
@@ -32,17 +34,19 @@ public class StageLinQDiscoveryMessage extends MessageToFrontend {
     public static StageLinQDiscoveryMessage parse(byte[] rawMessage){
         //raw message as string airDV$C2{scx4"DISCOVERER_HOWDY_JP21
         //4.2.0=
-
         UUID deviceID = Utils.convertBytesToUUID(Arrays.copyOfRange(rawMessage, 4, 21));
         StageLinQAction action = StageLinQAction.getByValue(new String(Arrays.copyOfRange(rawMessage,37,71), StandardCharsets.UTF_16LE) );
         ModelType type = ModelType.getByValue(new String(Arrays.copyOfRange(rawMessage,25,33), StandardCharsets.UTF_16LE) );
-        ModelCode name = ModelCode.getByValue(new String(Arrays.copyOfRange(rawMessage,75,83), StandardCharsets.UTF_16LE) );
+        ModelCode modelCode = ModelCode.getByValue(new String(Arrays.copyOfRange(rawMessage,75,83), StandardCharsets.UTF_16LE) );
+        if (modelCode.equals(ModelCode.UNKNOWN)) {
+           log.warn("Unknown model code received: " + new String(Arrays.copyOfRange(rawMessage,75,83), StandardCharsets.UTF_16LE) );
+        }
         // must replace last byte with 0 because in the original message the last byte is padding only and is not UTF-16 encoded
         // for 5 UTF-16 chars we need an array of 10 bytes and the last needs to be fixed.
         byte[] versionRaw = Arrays.copyOfRange(rawMessage,87,97);
         versionRaw[9]=0;
         String version = new String(versionRaw, StandardCharsets.UTF_16LE);
-        return new StageLinQDiscoveryMessage(deviceID,action, type, name, version);
+        return new StageLinQDiscoveryMessage(deviceID,action, type, modelCode, version);
     }
 
     @Override

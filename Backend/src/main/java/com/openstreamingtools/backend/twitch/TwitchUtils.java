@@ -15,6 +15,24 @@ import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 
 
+/**
+ * Utility class for Twitch API interactions including authentication, token management,
+ * event subscriptions, and chat message sending. Provides static methods for managing
+ * OAuth tokens, validating credentials, and interfacing with Twitch's EventSub WebSocket
+ * subscriptions and Helix API endpoints.
+ *
+ * <p>This class handles:
+ * <ul>
+ *   <li>OAuth token acquisition and refresh for both Bot and Broadcaster users</li>
+ *   <li>Token validation against Twitch's OAuth validation endpoint</li>
+ *   <li>EventSub subscription management (chat messages, channel points, follows)</li>
+ *   <li>Sending chat messages to Twitch chat</li>
+ *   <li>Retrieving Twitch user information by login name</li>
+ * </ul>
+ *
+ * @see BotTwitchWebSocketClient
+ * @see BroadcasterTwitchWebSocketClient
+ */
 @Slf4j
 public class TwitchUtils {
     public static final String TWITCH_API_GET_TOKEN_URL = "https://id.twitch.tv/oauth2/token";
@@ -33,11 +51,22 @@ public class TwitchUtils {
             "channel.follow"
     };
 
+    /**
+     * Enumeration of Twitch user types that can authenticate with this application.
+     */
     public enum TwitchUserType {
         BOT,
         BROADCASTER
     }
 
+    /**
+     * Exchanges an OAuth authorization code for an access token from Twitch.
+     * Stores the received token in configuration based on the user type.
+     * Sets up periodic token validation tasks if not already started.
+     *
+     * @param code the OAuth authorization code from Twitch redirect
+     * @param userType {@link TwitchUserType#BOT} or {@link TwitchUserType#BROADCASTER}
+     */
     public static void getAuthTokenFromTwitch(String code, TwitchUserType userType){
         MultiValueMap<String, String> params = new LinkedMultiValueMap<>();
         params.add("client_id", OSTConfiguration.getTWITCH_CLIEND_ID());
@@ -87,6 +116,12 @@ public class TwitchUtils {
         OSTConfiguration.saveSettings();
     }
 
+    /**
+     * Refreshes the bot's OAuth access token using the stored refresh token.
+     * Updates the configuration with the new token and sets the refresh success flag.
+     *
+     * @return true if token refresh was successful, false if token is invalid or refresh fails
+     */
     public static boolean refreshBotToken() {
         if (OSTConfiguration.settings.getTwitchBotToken() == null ||
             OSTConfiguration.settings.getTwitchBotToken().getRefresh_token() == null) {
@@ -129,6 +164,12 @@ public class TwitchUtils {
         }
     }
 
+    /**
+     * Refreshes the broadcaster's OAuth access token using the stored refresh token.
+     * Updates the configuration with the new token and sets the refresh success flag.
+     *
+     * @return true if token refresh was successful, false if token is invalid or refresh fails
+     */
     public static boolean refreshBroadcasterToken() {
         if (OSTConfiguration.settings.getTwitchBroadcasterToken() == null ||
             OSTConfiguration.settings.getTwitchBroadcasterToken().getRefresh_token() == null) {
@@ -171,6 +212,12 @@ public class TwitchUtils {
         }
     }
 
+    /**
+     * Validates the broadcaster's OAuth access token against Twitch's validation endpoint.
+     * Used to verify token validity before making API calls.
+     *
+     * @return true if the token is valid (HTTP 200 response), false otherwise
+     */
     public static boolean validateToken(){
         try {
             ResponseEntity response = Utils.restClient.get()
@@ -193,6 +240,14 @@ public class TwitchUtils {
         }
         return false;
     }
+    /**
+     * Subscribes to all required Twitch EventSub events including chat messages,
+     * channel points redemptions, and follow events. Starts a periodic token validation task.
+     *
+     * @param sessionId the WebSocket session ID for the EventSub subscription transport
+     * @return a status message describing subscription results for both bot and broadcaster channels,
+     *         or an error message if required tokens/users are not configured
+     */
     public static String subscribeToTwitch(String sessionId) {
         String response = null;
         if (OSTConfiguration.settings.getTwitchBroadcasterToken() == null){
@@ -312,6 +367,13 @@ public class TwitchUtils {
         return "Subscribed - Chat: " + botChannel + ", Channel Points: " + broadcasterChannel;
     }
 
+    /**
+     * Retrieves Twitch user information by login name from the Helix API.
+     *
+     * @param name the Twitch login name to look up
+     * @return {@link TwitchUsers} object containing user data from the API response
+     * @throws JsonProcessingException if the API response cannot be parsed as JSON
+     */
     public static TwitchUsers getIdforUser(String name) throws JsonProcessingException {
         MultiValueMap<String, String> params = new LinkedMultiValueMap<>();
         params.add("login", name);
@@ -331,6 +393,13 @@ public class TwitchUtils {
         return Utils.objectMapper.readValue(response , TwitchUsers.class ) ;
     }
 
+    /**
+     * Sends a message to the broadcaster's Twitch chat channel.
+     * Requires both broadcaster and bot users to be configured.
+     *
+     * @param message the text message to send to chat
+     * @param userType {@link UserType#BROADCASTER} or {@link UserType#BOT} to determine which token to use
+     */
     public static void sendToChat(String message, UserType userType){
         if (OSTConfiguration.settings.getTwitchUser() == null
         || OSTConfiguration.settings.getBotUser() == null){
@@ -382,6 +451,12 @@ public class TwitchUtils {
         log.debug(respoonse);
     }
 
+    /**
+     * Retrieves the list of active EventSub subscriptions for the broadcaster's channel
+     * from the Twitch Helix API.
+     *
+     * @return a JSON string containing the subscription list, or error response on failure
+     */
     public static String getSubscriptions() {
         String response = Utils.restClient.get()
                 .uri(TWITCH_SUBSCRIBE)

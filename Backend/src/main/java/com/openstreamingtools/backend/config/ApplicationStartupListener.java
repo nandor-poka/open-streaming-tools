@@ -16,20 +16,30 @@ import java.io.IOException;
 
 import static com.openstreamingtools.backend.utils.Utils.objectMapper;
 
+/**
+ * Application startup listener that initializes settings and Twitch connections.
+ * Listens for the Spring context refresh event and performs initialization tasks including:
+ * <ul>
+ *   <li>Creating settings directory and file if they don't exist</li>
+ *   <li>Loading application configuration from settings file</li>
+ *   <li>Refreshing Twitch OAuth tokens</li>
+ *   <li>Initiating WebSocket connections for Bot and Broadcaster clients</li>
+ * </ul>
+ */
 @Slf4j
 @Component
-/**
- * Thic class listens for the Spring Boot Application startup event and
- * initializes the settings file resource object so that the settings
- * can be read and saved.
- */
-//@Component
 public class ApplicationStartupListener implements
         ApplicationListener<ContextRefreshedEvent> {
 
     private final BotTwitchWebSocketClient botTwitchWebSocketClient;
     private final BroadcasterTwitchWebSocketClient broadcasterTwitchWebSocketClient;
 
+    /**
+     * Initializes the startup listener with WebSocket client references.
+     *
+     * @param botTwitchWebSocketClient the WebSocket client for bot authentication
+     * @param broadcasterTwitchWebSocketClient the WebSocket client for broadcaster authentication
+     */
     @Autowired
     public ApplicationStartupListener(BotTwitchWebSocketClient botTwitchWebSocketClient,
                                      BroadcasterTwitchWebSocketClient broadcasterTwitchWebSocketClient) {
@@ -39,7 +49,12 @@ public class ApplicationStartupListener implements
 
 
 
-    // event listener to for the startup event
+    /**
+     * Handles the Spring context refresh event to perform startup initialization.
+     * Creates necessary directories/files, loads settings, refreshes tokens, and connects WebSocket clients.
+     *
+     * @param event the ContextRefreshedEvent triggered by Spring on startup
+     */
     @Override public void onApplicationEvent(ContextRefreshedEvent event) {
         File settingsFileDir = new File(OSTConfiguration.SETTINGS_DIR_PATH);
         if (!settingsFileDir.exists()) {

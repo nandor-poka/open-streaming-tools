@@ -1,6 +1,7 @@
 package com.openstreamingtools.backend.messages.stagelinqmessages;
 
 import com.openstreamingtools.backend.services.stagelinq.DirectoryService;
+import lombok.extern.slf4j.Slf4j;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -9,9 +10,8 @@ import java.nio.ByteBuffer;
 import java.util.Arrays;
 import java.util.UUID;
 
+@Slf4j
 public class DirectoryMessage {
-
-    private static final Logger logger = LoggerFactory.getLogger(DirectoryMessage.class);
 
     private int messageId;
     private UUID deviceId;
@@ -44,7 +44,7 @@ public class DirectoryMessage {
     public static DirectoryMessage parseMessage(byte[] message){
         //quick fail if message is too short
         if (message.length < 20){
-            logger.debug("Directory message is shorter than 20 bytes, ignoring");
+            log.debug("Directory message is shorter than 20 bytes, ignoring");
             return new DirectoryMessage(-1);
         }
         int messageId = parseMessageId(message);
@@ -57,7 +57,7 @@ public class DirectoryMessage {
                 return new DirectoryMessage(messageId, deviceId);
             case DirectoryService.SERVICE_ANNOUNCEMENT:
                 if (message.length < 26){
-                    logger.debug("Directory announcement message is shorter than 26 bytes, ignoring");
+                    log.debug("Directory announcement message is shorter than 26 bytes, ignoring");
                     return new DirectoryMessage(-1);
                 }
                 String serviceName = new String(Arrays.copyOfRange(message, 20, 24));
@@ -65,13 +65,13 @@ public class DirectoryMessage {
                 return new DirectoryMessage(messageId, deviceId, serviceName, servicePort);
             case DirectoryService.TIMESTAMP:
                 if (message.length < 44){
-                    logger.debug("Directory timestamp message is shorter than 44 bytes, ignoring");
+                    log.debug("Directory timestamp message is shorter than 44 bytes, ignoring");
                     return new DirectoryMessage(-1);
                 }
                 long timestamp =  new BigInteger(Arrays.copyOfRange(message, 36, 44)).longValue();
                 return new DirectoryMessage(messageId, deviceId, timestamp);
             default:
-                logger.debug("Directory message id is invalid, ignoring");
+                log.warn("Directory message id is invalid, ignoring");
                 return new DirectoryMessage(-1);
         }
     }

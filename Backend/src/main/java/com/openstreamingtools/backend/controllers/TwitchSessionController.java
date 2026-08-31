@@ -11,6 +11,19 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 
+/**
+ * REST controller managing Twitch OAuth authentication and WebSocket connections.
+ * Handles OAuth redirect callbacks, session management, and EventSub subscriptions
+ * for both Bot and Broadcaster users.
+ *
+ * <p>Provides endpoints for:
+ * <ul>
+ *   <li>OAuth callback handling (redirects from Twitch auth flow)</li>
+ *   <li>Generating OAuth authorization URLs</li>
+ *   <li>EventSub subscription management</li>
+ *   <li>WebSocket client connection initialization</li>
+ * </ul>
+ */
 @Slf4j
 @RestController
 public class TwitchSessionController {
@@ -18,6 +31,12 @@ public class TwitchSessionController {
     private final BotTwitchWebSocketClient botTwitchWebSocketClient;
     private final BroadcasterTwitchWebSocketClient broadcasterTwitchWebSocketClient;
 
+    /**
+     * Initializes controller with WebSocket clients for both user types.
+     *
+     * @param botTwitchWebSocketClient the WebSocket client for bot user
+     * @param broadcasterTwitchWebSocketClient the WebSocket client for broadcaster user
+     */
     @Autowired
     public TwitchSessionController(BotTwitchWebSocketClient botTwitchWebSocketClient,
                                   BroadcasterTwitchWebSocketClient broadcasterTwitchWebSocketClient) {
@@ -25,6 +44,14 @@ public class TwitchSessionController {
         this.broadcasterTwitchWebSocketClient = broadcasterTwitchWebSocketClient;
     }
 
+    /**
+     * OAuth callback handler for bot user authentication.
+     * Exchanges authorization code for access token and initializes bot WebSocket client.
+     *
+     * @param code the OAuth authorization code from Twitch
+     * @param scope the requested OAuth scopes
+     * @return redirect to application home page
+     */
     @GetMapping (value= "/api/twitchBot")
     public String twitchBotRedirect(@RequestParam String code,@RequestParam String scope){
         log.debug(code);
@@ -48,6 +75,14 @@ public class TwitchSessionController {
         return "redirect:/";
     }
 
+    /**
+     * OAuth callback handler for broadcaster user authentication.
+     * Exchanges authorization code for access token and initializes broadcaster WebSocket client.
+     *
+     * @param code the OAuth authorization code from Twitch
+     * @param scope the requested OAuth scopes
+     * @return redirect to application home page
+     */
     @GetMapping (value= "/api/twitchBroadcaster")
     public String twitchChannelRedirect(@RequestParam String code,@RequestParam String scope){
         log.debug("Broadcaster authentication code received");
@@ -79,6 +114,14 @@ public class TwitchSessionController {
         return "redirect:/";
     }
 
+    /**
+     * Deprecated endpoint for subscribing to EventSub events.
+     * Subscriptions are now handled automatically by WebSocket clients.
+     *
+     * @param websocketSessionId the WebSocket session ID
+     * @return status message about subscription
+     * @deprecated since 0.0.3, use automatic subscription via WebSocket instead
+     */
     @PostMapping(value= "/api/subscribeToTwtitch", consumes = "application/json")
     @Deprecated(since = "0.0.3", forRemoval = true)
     public String subscribeToEventSub(@RequestBody WebsocketSessionId websocketSessionId)  {
@@ -88,11 +131,22 @@ public class TwitchSessionController {
         return TwitchUtils.subscribeToTwitch(websocketSessionId.getSessionId());
     }
 
+    /**
+     * Retrieves the list of active EventSub subscriptions from Twitch.
+     *
+     * @return JSON string containing subscription list
+     */
     @GetMapping(value= "/api/getSubscriptions")
     public String getSubscriptions(){
         return TwitchUtils.getSubscriptions();
     }
 
+    /**
+     * Generates the OAuth authorization URL for bot user authentication.
+     * The URL directs users to Twitch's authorization page.
+     *
+     * @return the complete OAuth authorization URL
+     */
     @GetMapping(value= "/api/twitchBotOAuthUrl")
     public String getTwitchBotOAuthUrl(){
         log.info("📋 Generating Twitch Bot OAuth URL");
@@ -105,6 +159,12 @@ public class TwitchSessionController {
         return oauthUrl;
     }
 
+    /**
+     * Generates the OAuth authorization URL for broadcaster user authentication.
+     * The URL directs users to Twitch's authorization page with broadcaster-specific scopes.
+     *
+     * @return the complete OAuth authorization URL
+     */
     @GetMapping(value= "/api/twitchBroadcasterOAuthUrl")
     public String getTwitchBroadcasterOAuthUrl(){
         log.info("📋 Generating Twitch Broadcaster OAuth URL");

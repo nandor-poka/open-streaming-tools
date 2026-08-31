@@ -1,17 +1,25 @@
 package com.openstreamingtools.backend.messages.stagelinqmessages;
 
-public class StateMapMessage <T>{
+import lombok.Getter;
+import lombok.Setter;
+import lombok.ToString;
 
-    private StateData message;
+@Getter
+@Setter
+
+public class StateMapMessage<T> {
+
+    private int header;
+    private T data ;
 
     public StateMapMessage() {
     }
 
-    public StateMapMessage(StateData message) {
-        this.message = message;
-    }
-
-    public StateData getMessage() {
-        return message;
+    @Override
+    public String toString() {
+        return "StateMapMessage{" +
+                "header=" + header +
+                ", data=" + data +
+                '}';
     }
 }

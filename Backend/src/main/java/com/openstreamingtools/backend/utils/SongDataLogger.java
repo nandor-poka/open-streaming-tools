@@ -20,6 +20,11 @@ import java.util.concurrent.TimeUnit;
 
 import static com.openstreamingtools.backend.config.OSTConfiguration.settings;
 
+/**
+ * Background runnable that logs played tracks to a text file and announces them in Twitch chat.
+ * Consumes song data from a queue, formats it with timestamps, and writes to a log file
+ * while also sending track announcements to the bot's Twitch chat channel.
+ */
 @Slf4j
 public class SongDataLogger implements Runnable{
     private static final  String userDirectory = Paths.get("")
@@ -28,6 +33,14 @@ public class SongDataLogger implements Runnable{
     private static final DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd_HHmmss");
     private static final File youtubeSongLog = new File(userDirectory + "/youtubeTracklist"+ LocalDateTime.now().format(dateFormatter) +".txt");
     private static int counter=0;
+
+    /**
+     * Logs a list of song data entries to the log file and announces in Twitch chat.
+     * Formats each entry with an incrementing track number and timestamp, then writes to file.
+     * Sends a chat message to the bot's channel announcing the played tracks.
+     *
+     * @param songDataList list of song data entries to log
+     */
     public static void logSongData(List<SongData> songDataList) {
         try {
             log.debug( youtubeSongLog.createNewFile() ? youtubeSongLog.getAbsolutePath()+" created." : "");
@@ -56,6 +69,11 @@ public class SongDataLogger implements Runnable{
 
     }
 
+    /**
+     * Continuously processes song data from the log queue.
+     * Groups song data entries together, logs them, and sends announcements.
+     * Runs until the thread is interrupted.
+     */
     @Override
     public void run() {
         List<SongData>  songDataToLog = new ArrayList<>();

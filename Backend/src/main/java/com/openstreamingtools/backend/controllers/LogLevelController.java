@@ -8,15 +8,31 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+/**
+ * REST controller for managing application logging levels at runtime.
+ * Provides endpoints to query and update the root logger level dynamically
+ * without requiring server restart.
+ */
 @RestController
 @Slf4j
 public class LogLevelController {
 
+    /**
+     * Retrieves the current root logging level.
+     *
+     * @return the current root log level as a string (e.g., "INFO", "DEBUG", "WARN")
+     */
     @GetMapping(value = "/api/getLogLevel", produces = "application/json")
     public String getLogLevel() {
         return System.getProperty("logging.level.root", "INFO");
     }
 
+    /**
+     * Sets the root logging level to the specified level.
+     * Valid levels are: TRACE, DEBUG, INFO, WARN, ERROR, FATAL, OFF.
+     *
+     * @param logLevel the desired log level (case-insensitive)
+     */
     @PostMapping(value = "/api/setLogLevel/{logLevel}")
     public void setLogLevel(@PathVariable String logLevel) {
         LoggingSystem system = LoggingSystem.get(LogLevelController.class.getClassLoader());

@@ -9,15 +9,20 @@ import java.util.Map;
 
 
 /**
- * Utility method for handling units
+ * Utility methods and constants for handling DJ equipment units.
+ * Provides mappings of unit model codes to their implementations
+ * and constants for StageLinQ protocol communication.
  */
 public class UnitUtils {
 
+    /** StageLinQ message frame start identifier */
     public final static String STAGELINQ_MESSAGE_START = "airD";
+    /** Log message for StageLinQ device discovery */
     public final static String STAGELINQ_UNIT_DISCOVERED = "StageLinQ device discovered";
 
     /**
-     * A map that holds unit instances, fot easy lookup using model code as key.
+     * Map of DJ unit implementations indexed by their model codes.
+     * Enables quick lookup of unit instances to handle device-specific behavior.
      */
     public static final Map<ModelCode, GenericUnit> unitMapping = Map.ofEntries(
             new AbstractMap.SimpleEntry<ModelCode, GenericUnit>(ModelCode.JP20,

@@ -4,6 +4,7 @@ import com.openstreamingtools.backend.messages.stagelinqmessages.DirectoryMessag
 import com.openstreamingtools.backend.messages.stagelinqmessages.ServiceAnnouncement;
 import com.openstreamingtools.backend.services.stagelinq.DirectoryService;
 import com.openstreamingtools.backend.services.stagelinq.StateMapService;
+import lombok.extern.slf4j.Slf4j;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.integration.annotation.MessageEndpoint;
@@ -13,21 +14,19 @@ import org.springframework.stereotype.Component;
 
 @Component
 @MessageEndpoint
+@Slf4j
 public class DirectoryMessageHandler {
-
-    Logger logger = LoggerFactory.getLogger(DirectoryMessageHandler.class);
 
     @ServiceActivator(inputChannel = "toDirectory")
     public byte[] handleTCPMessage(Message<DirectoryMessage> message) {
         DirectoryMessage directoryMessage = message.getPayload();
-        //logger.debug("TCP Message Received:" + directoryMessage);
+        log.debug("TCP Message Received:" + directoryMessage);
         if (DirectoryService.hasUnit(directoryMessage.getDeviceId())) {
             switch (directoryMessage.getMessageId()) {
                 case DirectoryService.SERVICE_REQUEST:
                     if (DirectoryService.hasUnit(directoryMessage.getDeviceId())) {
                         return new ServiceAnnouncement(DirectoryService.SERVICE_REQUEST,
                                 new StateMapService()).toBytes();
-
                     }
                     return new byte[0];
                 case DirectoryService.SERVICE_ANNOUNCEMENT:

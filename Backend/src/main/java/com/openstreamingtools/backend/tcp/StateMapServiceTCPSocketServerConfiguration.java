@@ -17,6 +17,12 @@ import org.springframework.integration.ip.tcp.outbound.TcpOutboundGateway;
 import org.springframework.messaging.MessageChannel;
 import org.springframework.messaging.handler.annotation.Header;
 
+/**
+ * Spring Integration configuration for StateMap service TCP socket communication.
+ * Sets up bidirectional TCP communication with StageLinQ devices for state map data exchange.
+ * Configures client and server connection factories, messaging channels, and gateways for
+ * inbound and outbound TCP communication.
+ */
 @Configuration
 @EnableIntegration
 @IntegrationComponentScan
@@ -26,11 +32,18 @@ public class StateMapServiceTCPSocketServerConfiguration {
     public static final StateMapMessageSerializer SERIALIZER = new StateMapMessageSerializer();
 
     /**
+     * Messaging gateway for sending state map messages.
      * Reply messages are routed to the connection only if the reply contains the ip_connectionId header
      * that was inserted into the original message by the connection factory.
      */
     @MessagingGateway(defaultRequestChannel = "toStateMap")
     public interface Gateway {
+        /**
+         * Sends a message to the state map service.
+         *
+         * @param message the message content
+         * @param connectionId the TCP connection ID
+         */
         void send(String message, @Header(IpHeaders.CONNECTION_ID) String connectionId);
     }
 
@@ -39,12 +52,23 @@ public class StateMapServiceTCPSocketServerConfiguration {
         return new DirectChannel();
     }
 
+    /**
+     * Creates the messaging channel for receiving state map data from the TCP server.
+     *
+     * @return DirectChannel for inbound state map messages
+     */
     @Bean
     public MessageChannel fromStateMap() {
         return new DirectChannel();
     }
 
 
+    /**
+     * Creates the TCP server connection factory for state map service communication.
+     * Listens on the configured StateMap service port.
+     *
+     * @return server connection factory with serializers configured
+     */
     @Bean
     public AbstractServerConnectionFactory StateMapServiceServerCF() {
         TcpNetServerConnectionFactory stateMapServerCf = new TcpNetServerConnectionFactory(socketPort);
@@ -55,18 +79,29 @@ public class StateMapServiceTCPSocketServerConfiguration {
         return stateMapServerCf;
     }
 
+    /**
+     * Creates the TCP client connection factory for state map service communication.
+     * Connects to local host on the configured StateMap service port.
+     *
+     * @return client connection factory with serializers configured
+     */
     @Bean
     public AbstractClientConnectionFactory StateMapServiceClientCF() {
 
-        TcpNetClientConnectionFactory sstateMapClientCf = new TcpNetClientConnectionFactory("localhost", socketPort);
-        sstateMapClientCf.setSerializer(SERIALIZER);
-        sstateMapClientCf.setDeserializer(SERIALIZER);
-        sstateMapClientCf.setSoTcpNoDelay(true);
-        sstateMapClientCf.setSoKeepAlive(true);
-        return sstateMapClientCf;
+        TcpNetClientConnectionFactory stateMapClientCf = new TcpNetClientConnectionFactory("localhost", socketPort);
+        stateMapClientCf.setSerializer(SERIALIZER);
+        stateMapClientCf.setDeserializer(SERIALIZER);
+        stateMapClientCf.setSoTcpNoDelay(true);
+        stateMapClientCf.setSoKeepAlive(true);
+        return stateMapClientCf;
     }
 
 
+    /**
+     * Creates the TCP inbound gateway for receiving state map messages.
+     *
+     * @return configured TcpInboundGateway
+     */
     @Bean
     public TcpInboundGateway StateMapTcpInGate() {
         TcpInboundGateway StateMapServiceTCPInGate = new TcpInboundGateway();
@@ -76,6 +111,11 @@ public class StateMapServiceTCPSocketServerConfiguration {
         return StateMapServiceTCPInGate;
     }
 
+    /**
+     * Creates the TCP outbound gateway for sending state map messages.
+     *
+     * @return configured TcpOutboundGateway
+     */
     @Bean
     public TcpOutboundGateway StateMapTcpOutGate() {
         TcpOutboundGateway StateMapServiceTCPOutGate = new TcpOutboundGateway();

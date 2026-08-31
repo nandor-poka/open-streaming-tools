@@ -5,17 +5,36 @@ import com.openstreamingtools.backend.messages.MessageType;
 import lombok.Getter;
 import lombok.Setter;
 
+/**
+ * Data transfer object for song/track information sent to the frontend.
+ * Extends MessageToFrontend to include track details like artist, title, musical key,
+ * and the deck number where the track is playing.
+ */
 @Getter
 @Setter
 public class SongData extends MessageToFrontend {
 
+    /** DJ deck/player number where this track is playing */
     private int deckNumber;
+    /** Title of the track being played */
     private String trackTitle;
+    /** Artist name of the track */
     private String artistName;
+    /** Musical key of the track (0-11 representing semitones) */
     private int key;
+    /** Timestamp when this song data was captured */
     private long timestamp;
 
 
+    /**
+     * Creates a SongData message with track information.
+     *
+     * @param deckNumber the deck number playing this track
+     * @param trackTitle the track title
+     * @param artistName the artist name
+     * @param key the musical key of the track
+     * @param timestamp the timestamp of data capture
+     */
     public SongData(int deckNumber, String trackTitle, String artistName, Integer key, long timestamp) {
         super();
         this.type =MessageType.SONG_DATA;

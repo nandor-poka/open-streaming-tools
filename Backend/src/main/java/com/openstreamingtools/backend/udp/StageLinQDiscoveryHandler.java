@@ -41,10 +41,13 @@ public class StageLinQDiscoveryHandler {
 
     @ServiceActivator(inputChannel = StageLinQChannelID)
     public void handleMessage(Message message) throws JsonProcessingException {
+       /*
         if (!OSTConfiguration.isFrontEndRunning()){
+
             log.debug("Ignoring StageLinQ discovery message because frontend is not running.");
             return;
-        }
+        }*/
+
         log.debug("Received StageLinQ discovery message. Payload type={}, headers={}",
                 message.getPayload().getClass().getSimpleName(),
                 message.getHeaders());
@@ -69,13 +72,17 @@ public class StageLinQDiscoveryHandler {
         }
 
         byte[] messageBytes = (byte[]) message.getPayload();
+        if (messageBytes.length > 98) { // ignoring discovery messages for offilne analyzer internal model
+            return;
+        }
         StageLinQDiscoveryMessage disMessage = StageLinQDiscoveryMessage.parse(messageBytes);
         log.debug("Parsed StageLinQ discovery message. modelType={}, modelCode={}, deviceId={}, softwareVersion={}, senderIp={}",
                 disMessage.getModelType(), disMessage.getModelCode(), disMessage.getDeviceID(), disMessage.getSoftwareVersion(), senderIp);
 
         // Retrun if we detect message from unknown model must change later
-        if (disMessage.getModelCode().equals(ModelCode.UNKOWN)){
-            log.warn("Ignoring discovery message from unknown model. deviceId={}, senderIp={}", disMessage.getDeviceID(), senderIp);
+        if (disMessage.getModelCode().equals(ModelCode.UNKNOWN)){
+            log.warn("Ignoring discovery message from unknown model. deviceId={}, senderIp={}",
+                    disMessage.getDeviceID(), senderIp);
             return;
         }
 

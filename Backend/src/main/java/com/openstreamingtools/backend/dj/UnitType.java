@@ -1,8 +1,18 @@
 package com.openstreamingtools.backend.dj;
 
 /**
- * Enum for unit types
+ * Enumeration of DJ equipment unit types that can be discovered via StageLinQ protocol.
+ * Represents different types of DJ equipment in a typical setup.
  */
 public enum UnitType {
-    SOFTWARE,MIXER,PLAYER,CONTROLLER,OTHER
+    /** Software-based DJ application or control application */
+    SOFTWARE,
+    /** Audio mixer unit */
+    MIXER,
+    /** DJ player/deck unit */
+    PLAYER,
+    /** Controller device */
+    CONTROLLER,
+    /** Other or unknown unit type */
+    OTHER
 }
