@@ -1,9 +1,12 @@
 package com.openstreamingtools.backend.messages.frontend;
 
+import lombok.Getter;
+
 /**
  * Data transfer object for unit data requests from the frontend.
  * Contains the UUID of a DJ unit for which data is being requested.
  */
+@Getter
 public class UnitRequest {
     /** The UUID of the unit being requested */
     private String uuid;

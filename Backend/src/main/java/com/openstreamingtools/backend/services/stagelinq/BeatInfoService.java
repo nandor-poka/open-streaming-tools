@@ -1,11 +1,16 @@
 package com.openstreamingtools.backend.services.stagelinq;
 
+import lombok.Getter;
+import lombok.Setter;
+
 import java.util.UUID;
 
 /**
  * Service for handling beat and timing information from StageLinQ devices.
  * Manages beat information requests and synchronization with DJ equipment.
  */
+@Getter
+@Setter
 public class BeatInfoService {
 
     /** Beat information request payload in StageLinQ protocol format */
@@ -16,4 +21,7 @@ public class BeatInfoService {
     private long clock;
     /** Number of decks available on the device */
     private int deckCount;
+
+    private boolean everyBeat = false;
+    
 }

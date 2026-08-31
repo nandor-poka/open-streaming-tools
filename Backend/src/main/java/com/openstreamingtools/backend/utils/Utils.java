@@ -143,6 +143,9 @@ public class Utils {
        return networkBytes;
     }
 
+    public static long convertBytesToLong(byte[] bytes){
+         return ByteBuffer.wrap(bytes).getLong();
+    }
     /**
      * Converts a 4-byte array to an integer in big-endian (network) byte order.
      *
@@ -161,6 +164,10 @@ public class Utils {
      */
     public static int convertBytesToShort(byte[] bytes) {
        return ByteBuffer.wrap(bytes).getShort();
+    }
+
+    public static double convertBytesToDouble(byte[] bytes){
+        return ByteBuffer.wrap(bytes).getDouble();
     }
 
     /**

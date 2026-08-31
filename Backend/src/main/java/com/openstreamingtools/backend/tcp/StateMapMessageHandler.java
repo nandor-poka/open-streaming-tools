@@ -30,7 +30,7 @@ public class StateMapMessageHandler {
         if (!DirectoryService.getUnitByIP((String) message.getHeaders().get(IpHeaders.IP_ADDRESS)).hasService(ServiceType.STATEMAP)) {
             if (stateMapMessage.getData() instanceof ServiceAnnouncement sa) {
                 if (sa.hasService(ServiceType.STATEMAP)) {
-                    Vector<Byte> buffer = new Vector<Byte>();
+                    Vector<Byte> buffer = new Vector<>();
                     for (State state : PlayerState.values()) {
                         log.debug("Subscribing to state {}", state);
                         for (byte b : new StateMapSubscribeMessage(state).getBytes()) {
@@ -74,7 +74,7 @@ public class StateMapMessageHandler {
     private void checkStateData(StateData stateData)  {
         try{
             State state = stateData.getState();
-            ///Engine/Deck2/Track/ArtistName, type 0, jsonString: {"string":"Ekko & Sidetrack","type":8}
+            // /Engine/Deck2/Track/ArtistName, type 0, jsonString: {"string":"Ekko & Sidetrack","type":8}
             if (state.equals(PlayerState.EngineDeck1TrackArtistName)
                     || state.equals(PlayerState.EngineDeck2TrackArtistName)
                     || state.equals(PlayerState.EngineDeck3TrackArtistName)

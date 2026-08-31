@@ -1,9 +1,14 @@
 package com.openstreamingtools.backend.messages;
 
+import lombok.Getter;
+import lombok.Setter;
+
 /**
  * Abstract base class for messages sent to the frontend via WebSocket.
  * Provides common structure for all backend-to-frontend messages with type and payload.
  */
+@Getter
+@Setter
 public abstract class MessageToFrontend {
     /** Type of message being sent */
     protected MessageType type = MessageType.GENERAL_MESSAGE;

@@ -1,9 +1,12 @@
 package com.openstreamingtools.backend.dj.stagelinq;
 
+import lombok.Getter;
+
 /**
  * Enumeration of StageLinQ device role identifiers for the "acting as" parameter.
  * Each role is represented by a 16-byte array used in StageLinQ protocol discovery.
  */
+@Getter
 public enum ActingAs {
     /** SoundSwitch software acting as role */
     SOUNDSWITCH(new byte[]{82, (byte) 253, (byte)252, 7, 33, (byte)130, 101, 79, 22, 63, 95, 15, (byte)154, 98, 29, 114}),

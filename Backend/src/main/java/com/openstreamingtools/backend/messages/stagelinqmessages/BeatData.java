@@ -9,5 +9,5 @@ public class BeatData {
     private double beat;
     private double totalBeats;
     private double BPM;
-    private int samples;
+    private double samples;
 }

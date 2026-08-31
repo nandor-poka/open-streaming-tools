@@ -1,9 +1,14 @@
 package com.openstreamingtools.backend.messages;
 
+import lombok.Getter;
+import lombok.Setter;
+
 /**
  * Data transfer object for messages received from the frontend via WebSocket.
  * Contains a message type identifier and payload that can be JSON or plain text.
  */
+@Getter
+@Setter
 public class MessageFromFrontend {
     /** Type of message being sent */
     protected MessageType type = MessageType.GENERAL_MESSAGE;
